@@ -29,12 +29,14 @@ require_once FLASHOFFERS_PATH . 'includes/bogo-frontend.php';
 add_action('admin_init', function () {
     if (current_user_can('activate_plugins')) {
         flashoffers_migrate_categories_table();
+        flashoffers_migrate_use_offers_column();
     }
 });
 
 // Enqueue countdown script on single product pages
 add_action('wp_enqueue_scripts', function () {
-    if (is_product()) {
+    // Enqueue on Product, Shop, Category, and Home pages
+    if (is_product() || is_shop() || is_product_category() || is_front_page()) {
         wp_enqueue_script('flashoffers-timer', plugin_dir_url(__FILE__) . 'assets/js/countdown.js', [], null, true);
     }
     // Get countdown format from settings

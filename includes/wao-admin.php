@@ -36,6 +36,7 @@ function flash_offer_details_callback($post)
     $end = $offer ? $offer->end_date : '';
     $start = $offer ? $offer->start_date : '';
     $discount = $offer ? $offer->discount : '';
+    $use_offers = $offer ? $offer->use_offers : '';
 
     // Get assigned products
     $products = [];
@@ -60,12 +61,12 @@ function flash_offer_details_callback($post)
         'taxonomy' => 'product_cat',
         'hide_empty' => false
     ]);
-?>
+    ?>
 
     <div class="flash-offer-admin">
         <p>
             <label for="offer_type">Offer Type:</label><br>
-            <select name="offer_type" id="offer_type" style="width:100%;">
+            <select name="offer_type" id="offer_type" style="width:200px;">
                 <option value="flash" <?php selected($offer_type, 'flash'); ?>>Flash Offer</option>
                 <option value="upcoming" <?php selected($offer_type, 'upcoming'); ?>>Upcoming Offer</option>
                 <option value="special" <?php selected($offer_type, 'special'); ?>>Special Offer</option>
@@ -76,29 +77,35 @@ function flash_offer_details_callback($post)
             <label for="flash_offer_start">Start Date & Time:</label><br>
             <input type="datetime-local" name="flash_offer_start"
                 value="<?php echo esc_attr($start ? str_replace(' ', 'T', substr($start, 0, 16)) : ''); ?>"
-                style="width:100%;">
+                style="width:200px;">
         </p>
 
         <p>
             <label for="flash_offer_end">End Date & Time:</label><br>
             <input type="datetime-local" name="flash_offer_end"
                 value="<?php echo esc_attr($end ? str_replace(' ', 'T', substr($end, 0, 16)) : ''); ?>"
-                style="width:100%;">
+                style="width:200px;">
         </p>
 
         <p>
             <label for="flash_offer_discount">Discount (%):</label><br>
-            <input type="number" name="flash_offer_discount" value="<?php echo esc_attr($discount); ?>" min="1" max="100" style="width:100%;">
+            <input type="number" name="flash_offer_discount" value="<?php echo esc_attr($discount); ?>" min="1" max="100"
+                style="width:200px;">
+        </p>
+        <p>
+            <label for="flash_offer_use_offers">How Many Time User Can Use This Offers:</label><br>
+            <input type="number" name="flash_offer_use_offers" value="<?php echo esc_attr($use_offers); ?>" min="1"
+                max="100" style="width:200px;">
         </p>
 
 
         <div id="flash_offer_upcoming_offer_fields_product">
             <p>
                 <label>Assign to Categories:</label><br>
-                <select id="flash_offer_category_selector" name="flash_offer_offer_categories[]" multiple="multiple" style="width:100%;" class="flash_offer_wc-enhanced-select">
+                <select id="flash_offer_category_selector" name="flash_offer_offer_categories[]" multiple="multiple"
+                    style="width:400px;" class="flash_offer_wc-enhanced-select">
                     <?php foreach ($categories_list as $category): ?>
-                        <option value="<?php echo esc_attr($category->term_id); ?>"
-                            <?php selected(in_array($category->term_id, $categories)); ?>>
+                        <option value="<?php echo esc_attr($category->term_id); ?>" <?php selected(in_array($category->term_id, $categories)); ?>>
                             <?php echo esc_html($category->name); ?>
                         </option>
                     <?php endforeach; ?>
@@ -110,10 +117,12 @@ function flash_offer_details_callback($post)
                     <div class="product-select-list">
                         <?php foreach ($products as $product_id):
                             $product = wc_get_product($product_id);
-                            if (!$product) continue;
-                        ?>
+                            if (!$product)
+                                continue;
+                            ?>
                             <label class="product-box">
-                                <input type="checkbox" name="offer_products[]" value="<?php echo esc_attr($product_id); ?>" checked />
+                                <input type="checkbox" name="offer_products[]" value="<?php echo esc_attr($product_id); ?>"
+                                    checked />
                                 <div style="height:100px; display:flex; align-items:center; justify-content:center;">
                                     <?php echo $product->get_image('thumbnail'); ?>
                                 </div>
@@ -136,7 +145,7 @@ function flash_offer_details_callback($post)
         <div id="hidden-offer-products"></div>
     </div>
 
-<?php
+    <?php
 }
 
 // Save offer details in database
@@ -150,8 +159,10 @@ add_action('save_post_flash_offer', function ($post_id) {
         return;
     }
 
-    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
-    if (!current_user_can('edit_post', $post_id)) return;
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE)
+        return;
+    if (!current_user_can('edit_post', $post_id))
+        return;
 
     // Prevent duplicate saves with transient lock
     $lock_key = 'flash_offer_saving_' . $post_id;
@@ -168,7 +179,8 @@ add_action('save_post_flash_offer', function ($post_id) {
         'offer_type' => sanitize_text_field($_POST['offer_type']),
         'start_date' => sanitize_text_field($_POST['flash_offer_start']),
         'end_date' => sanitize_text_field($_POST['flash_offer_end']),
-        'discount' => floatval($_POST['flash_offer_discount'])
+        'discount' => floatval($_POST['flash_offer_discount']),
+        'use_offers' => intval($_POST['flash_offer_use_offers'])
     ];
 
     // Check if offer exists
@@ -182,7 +194,7 @@ add_action('save_post_flash_offer', function ($post_id) {
             $wpdb->prefix . 'flash_offers',
             $offer_data,
             ['id' => $offer->id],
-            ['%d', '%s', '%s', '%s', '%f'],
+            ['%d', '%s', '%s', '%s', '%f', '%d'],
             ['%d']
         );
         $offer_id = $offer->id;
@@ -190,7 +202,7 @@ add_action('save_post_flash_offer', function ($post_id) {
         $wpdb->insert(
             $wpdb->prefix . 'flash_offers',
             $offer_data,
-            ['%d', '%s', '%s', '%s', '%f']
+            ['%d', '%s', '%s', '%s', '%f', '%d']
         );
         $offer_id = $wpdb->insert_id;
     }
@@ -307,12 +319,13 @@ function add_conditional_shortcode_meta_box($post)
 function display_special_offer_shortcode($post)
 {
     $shortcode = '[flash_special_offer id=' . $post->ID . ']';
-?>
+    ?>
     <p>Use this shortcode to display this special offer:</p>
     <input type="text" value="<?php echo esc_attr($shortcode); ?>" readonly class="widefat" id="special-offer-shortcode">
-    <button type="button" class="button button-primary copy-shortcode" data-clipboard-text="<?php echo esc_attr($shortcode); ?>">Copy</button>
+    <button type="button" class="button button-primary copy-shortcode"
+        data-clipboard-text="<?php echo esc_attr($shortcode); ?>">Copy</button>
 
-<?php
+    <?php
 }
 
 
@@ -402,7 +415,8 @@ function flash_offer_get_products_by_categories()
         while ($products_query->have_posts()) {
             $products_query->the_post();
             $product = wc_get_product(get_the_ID());
-            if (!$product) continue;
+            if (!$product)
+                continue;
 
             $product_id = $product->get_id();
             $checked = in_array($product_id, $current_offer_products) ? 'checked' : '';

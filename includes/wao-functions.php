@@ -42,6 +42,7 @@ function flashoffers_create_database_tables()
                 start_date datetime DEFAULT NULL,
                 end_date datetime NOT NULL,
                 discount decimal(5,2) NOT NULL,
+                use_offers int(11) NOT NULL DEFAULT 1,
                 PRIMARY KEY (id),
                 KEY post_id (post_id)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;",
@@ -129,6 +130,27 @@ function flashoffers_migrate_categories_table()
     }
 }
 
+// Migrate flash_offers table to include use_offers column
+function flashoffers_migrate_use_offers_column()
+{
+    global $wpdb;
+
+    $table_name = $wpdb->prefix . 'flash_offers';
+
+    // Check if table exists
+    if ($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
+        return;
+    }
+
+    // Check if use_offers column already exists
+    $column_exists = $wpdb->get_results("SHOW COLUMNS FROM $table_name LIKE 'use_offers'");
+
+    if (empty($column_exists)) {
+        // Add use_offers column
+        $wpdb->query("ALTER TABLE $table_name ADD COLUMN use_offers int(11) NOT NULL DEFAULT 1");
+    }
+}
+
 /**
  * Get the primary category ID for a product
  * Priority: 1. Yoast SEO primary category, 2. First assigned category
@@ -141,14 +163,14 @@ function flashoffers_get_product_primary_category($product_id)
         $primary_category_id = $primary_term->get_primary_term();
 
         if ($primary_category_id && $primary_category_id > 0) {
-            return (int)$primary_category_id;
+            return (int) $primary_category_id;
         }
     }
 
     // Method 2: Check for RankMath primary category
     $rankmath_primary = get_post_meta($product_id, 'rank_math_primary_product_cat', true);
     if ($rankmath_primary && $rankmath_primary > 0) {
-        return (int)$rankmath_primary;
+        return (int) $rankmath_primary;
     }
 
     // Method 3: Get the first assigned category (fallback)
@@ -160,7 +182,7 @@ function flashoffers_get_product_primary_category($product_id)
     ]);
 
     if (!is_wp_error($categories) && !empty($categories)) {
-        $primary_category_id = (int)$categories[0];
+        $primary_category_id = (int) $categories[0];
         return $primary_category_id;
     }
 
@@ -410,7 +432,7 @@ add_action('admin_init', function () {
         'flash_offers_main_section'
     );
 
-     add_settings_field(
+    add_settings_field(
         'bogo_offer_variation_type',
         __('BOGO Offer Modal Format Type', 'flash-offers'),
         'bogo_offer_variation_type_callback',
@@ -418,7 +440,7 @@ add_action('admin_init', function () {
         'flash_offers_main_section'
     );
 
-     add_settings_field(
+    add_settings_field(
         'bogo_offer_badge',
         __('BOGO Offer Badge Text', 'flash-offers'),
         'bogo_offer_badge_callback',
@@ -456,41 +478,26 @@ function flashoffers_get_offer_data($product)
         return false;
     }
 
-    // Get offer assigned to this product
-    $offer = $wpdb->get_row(
+    // Get ALL potential offers assigned to this product, data checks done in loop
+    $offers = $wpdb->get_results(
         $wpdb->prepare(
             "SELECT o.* FROM {$wpdb->prefix}flash_offers o
              JOIN {$wpdb->prefix}flash_offer_products p ON o.id = p.offer_id
              WHERE p.product_id = %d
              AND o.end_date > %s
-             ORDER BY o.discount DESC
-             LIMIT 1",
+             ORDER BY o.discount DESC",
             $product_id,
             current_time('mysql')
         )
     );
 
-    if (!$offer) return false;
-
-    // Validate 'special' offers must come from URL
-    if ($offer->offer_type === 'special') {
-        if (!isset($_GET['from_offer']) || (int)$_GET['from_offer'] !== (int)$offer->post_id) {
-            return false;
-        }
-
-        $is_in_offer = $wpdb->get_var($wpdb->prepare(
-            "SELECT COUNT(*) FROM {$wpdb->prefix}flash_offer_products 
-             WHERE offer_id = %d AND product_id = %d",
-            $offer->id,
-            $product_id
-        ));
-
-        if (!$is_in_offer) return false;
+    if (empty($offers)) {
+        return false;
     }
 
     // Get settings once
     $options = get_option('flash_offers_options');
-    $bg_color = $options['badge_bg_color'] ?? '#ff4d4f';
+    $bg_color = $options['badge_bg_color'] ?? '#00a99d';
     $locations = $options['locations'] ?? [];
     $countdown_locations = $options['countdown_locations'] ?? [];
     $flash_override_type = $options['flash_override_type'] ?? 'sale';
@@ -498,60 +505,104 @@ function flashoffers_get_offer_data($product)
     $bogo_format = $options['bogo_format'] ?? 'defualt';
 
     // Badge texts
-    $active_badge_text   = $options['active_badge_text'] ?? '';
+    $active_badge_text = $options['active_badge_text'] ?? '';
     $upcoming_badge_text = $options['upcoming_badge_text'] ?? '';
-    $special_badge_text  = $options['special_badge_text'] ?? '';
+    $special_badge_text = $options['special_badge_text'] ?? '';
 
-    // Time checks
-    $now        = current_time('timestamp');
-    $start_time = strtotime($offer->start_date);
-    $end_time   = strtotime($offer->end_date);
+    $now = current_time('timestamp');
+    $user_id = is_user_logged_in() ? get_current_user_id() : 0;
 
-    // Determine status
-    $status = 'expired';
-    if ($now < $start_time) {
-        $status = 'upcoming';
-    } elseif ($now <= $end_time) {
-        $status = 'active';
+    foreach ($offers as $offer) {
+        // Validate 'special' offers must come from URL
+        if ($offer->offer_type === 'special') {
+            if (!isset($_GET['from_offer']) || (int) $_GET['from_offer'] !== (int) $offer->post_id) {
+                continue; // Skip this offer, look for next
+            }
+
+            // Double check product assignment (redundant with join but safe)
+            $is_in_offer = $wpdb->get_var($wpdb->prepare(
+                "SELECT COUNT(*) FROM {$wpdb->prefix}flash_offer_products 
+                 WHERE offer_id = %d AND product_id = %d",
+                $offer->id,
+                $product_id
+            ));
+
+            if (!$is_in_offer)
+                continue;
+        }
+
+        // Time checks
+        $start_time = strtotime($offer->start_date);
+        $end_time = strtotime($offer->end_date);
+
+        // Determine status
+        $status = 'expired';
+        if ($now < $start_time) {
+            $status = 'upcoming';
+        } elseif ($now <= $end_time) {
+            $status = 'active';
+        }
+
+        if ($status === 'expired') {
+            continue;
+        }
+
+        // Check usage limit
+        if ($status === 'active' && $user_id) {
+            $limit = isset($offer->use_offers) ? (int) $offer->use_offers : 1;
+
+            // Check past purchase count
+            $past_usage = flashoffers_get_user_purchase_count($user_id, $product_id, $offer->start_date, $offer->end_date);
+
+            // If satisfied by past purchases alone
+            if ($past_usage >= $limit) {
+                continue;
+            }
+        }
+
+        // If we got here, this offer is valid for the user
+        // Build badge text
+        $discount = (float) $offer->discount;
+        $badge_text = '';
+        if ($status === 'upcoming' && $now < $start_time) {
+            $badge_text = "{$upcoming_badge_text} {$discount}% Off";
+        } elseif ($status === 'active' && $offer->offer_type === 'special') {
+            $badge_text = "{$special_badge_text} {$discount}% Off";
+        } elseif ($status === 'active' && $now >= $start_time && $now <= $end_time) {
+            $badge_text = "{$active_badge_text} {$discount}% Off";
+        }
+
+        return [
+            'status' => $status,
+            'offer_type' => $offer->offer_type,
+            'start' => $offer->start_date,
+            'end' => $offer->end_date,
+            'discount' => $discount,
+            'use_offers' => isset($offer->use_offers) ? (int) $offer->use_offers : 1,
+            'background_color' => $bg_color,
+            'badge_text' => $badge_text,
+            'locations' => $locations,
+            'countdown_locations' => $countdown_locations,
+            'flash_override_type' => $flash_override_type,
+            'countdown_format' => $countdown_format,
+            'bogo_format' => $bogo_format,
+            'countdown_format' => $countdown_format,
+            'bogo_format' => $bogo_format,
+            'use_offers' => isset($offer->use_offers) ? $offer->use_offers : '',
+            'remaining_usage' => isset($limit) && isset($past_usage) ? max(0, $limit - $past_usage) : 9999,
+            'remaining_display' => isset($limit) && isset($past_usage) ? max(0, $limit - ($past_usage + flashoffers_get_cart_qty($product_id))) : 9999,
+        ];
     }
 
-    if ($status === 'expired') {
-        return false;
-    }
-
-    // Build badge text
-    $discount   = (float) $offer->discount;
-    $badge_text = '';
-    if ($status === 'upcoming' && $now < $start_time) {
-        $badge_text = "{$upcoming_badge_text} {$discount}% Off";
-    } elseif ($status === 'active' && $offer->offer_type === 'special') {
-        $badge_text = "{$special_badge_text} {$discount}% Off";
-    } elseif ($status === 'active' && $now >= $start_time && $now <= $end_time) {
-        $badge_text = "{$active_badge_text} {$discount}% Off";
-    }
-
-    // Return everything in one array
-    return [
-        'status'             => $status,
-        'offer_type'         => $offer->offer_type,
-        'start'              => $offer->start_date,
-        'end'                => $offer->end_date,
-        'discount'           => $discount,
-        'background_color'   => $bg_color,
-        'badge_text'         => $badge_text,
-        'locations'          => $locations,
-        'countdown_locations' => $countdown_locations,
-        'flash_override_type'      => $flash_override_type,
-        'countdown_format'   => $countdown_format,
-        'bogo_format'       => $bogo_format,
-    ];
+    return false; // No valid offers found
 }
 
 
 // Calculate discount amount
 function flashoffers_calculate_discount($regular_price, $discount)
 {
-    if ($regular_price <= 0 || $discount <= 0) return $regular_price;
+    if ($regular_price <= 0 || $discount <= 0)
+        return $regular_price;
     return round($regular_price - ($regular_price * ($discount / 100)), wc_get_price_decimals());
 }
 
@@ -565,16 +616,56 @@ add_filter('woocommerce_product_variation_get_sale_price', 'flashoffers_discount
 function flashoffers_discount_price($price, $product)
 {
     $offer_data = flashoffers_get_offer_data($product);
-    if (!$offer_data || $offer_data['status'] !== 'active') return $price;
+    if (!$offer_data || $offer_data['status'] !== 'active')
+        return $price;
+
+    // Check global flag - if we are rendering the product page summary (e.g. table)
+    // and the limit is reached (remaining_display <= 0), show regular price.
+    global $wao_rendering_product_summary;
+    if (!empty($wao_rendering_product_summary) && isset($offer_data['remaining_display']) && $offer_data['remaining_display'] <= 0) {
+        return $price;
+    }
+
     $flash_override_type = $offer_data['flash_override_type'];
 
     $data = $product->get_data();
     $sale_price = $data['sale_price'];
     $regular_price = $data['regular_price'];
     $base_price = ($flash_override_type === 'sale' && $sale_price > 0) ? $sale_price : $regular_price;
-    if ($base_price <= 0) return $price;
+    if ($base_price <= 0)
+        return $price;
 
-    return flashoffers_calculate_discount($base_price, $offer_data['discount']);
+    $discount_price = flashoffers_calculate_discount($base_price, $offer_data['discount']);
+
+    // Check if we need to apply quantity-based mixed pricing
+    // (Only if user is logged in and we have a limit)
+    if (is_user_logged_in() && !empty($offer_data['use_offers'])) {
+
+        // If NO remaining usage (all used up in past), return standard price
+        if (isset($offer_data['remaining_usage']) && $offer_data['remaining_usage'] <= 0) {
+            return $price;
+        }
+
+        // Check if we have remaining usage
+        if (!empty($offer_data['remaining_usage'])) {
+            // Get quantity in cart for this product
+            $cart_qty = flashoffers_get_cart_qty($product->get_id());
+
+            // If we have items in cart, and they exceed the remaining limit
+            if ($cart_qty > $offer_data['remaining_usage']) {
+                $qty_at_discount = $offer_data['remaining_usage'];
+                $qty_at_regular = $cart_qty - $qty_at_discount;
+
+                // Calculate weighted average
+                if ($cart_qty > 0) {
+                    $total_price = ($qty_at_discount * $discount_price) + ($qty_at_regular * $base_price);
+                    return $total_price / $cart_qty;
+                }
+            }
+        }
+    }
+
+    return $discount_price;
 }
 
 add_filter('woocommerce_product_variation_get_regular_price', 'flashoffers_discount_regular_price', 20, 2);
@@ -613,7 +704,7 @@ function flashoffers_get_price_html($product)
 function flashoffers_get_current_offer_id()
 {
     if (isset($_GET['from_offer'])) {
-        return (int)$_GET['from_offer'];
+        return (int) $_GET['from_offer'];
     }
 
     // Check if in cart context
@@ -640,6 +731,19 @@ function flashoffers_show_discounted_price_html($price_html, $product)
         return $price_html;
     }
 
+    // Check usage limits
+    if (isset($offer_data['remaining_display'])) {
+        // If usage exceeds limit (e.g. cart has more than allowed), revert to default display (likely mixed or regular)
+        if ($offer_data['remaining_display'] < 0) {
+            return $price_html;
+        }
+        // If usage exactly meets limit, hide discount on Shop/Product pages (prevents new adds at discount)
+        // But keep it for Cart/Checkout (shows discount for current item)
+        if ($offer_data['remaining_display'] == 0 && !is_cart() && !is_checkout()) {
+            return $price_html;
+        }
+    }
+
     $flash_override_type = $offer_data['flash_override_type'] ?? 'sale';
     // 🔷 ACTIVE — Show discounted price
     if ($offer_data['status'] === 'active') {
@@ -649,7 +753,8 @@ function flashoffers_show_discounted_price_html($price_html, $product)
 
             foreach ($product->get_available_variations() as $variation) {
                 $variation_obj = wc_get_product($variation['variation_id']);
-                if (!$variation_obj) continue;
+                if (!$variation_obj)
+                    continue;
 
                 $data = $variation_obj->get_data();
                 $sale_price = (float) $data['sale_price'];
@@ -657,7 +762,8 @@ function flashoffers_show_discounted_price_html($price_html, $product)
 
                 $base_price = ($flash_override_type === 'sale' && $sale_price > 0) ? $sale_price : $regular_price;
 
-                if ($base_price <= 0) continue;
+                if ($base_price <= 0)
+                    continue;
 
                 $reg_prices[] = $base_price;
                 $disc_prices[] = flashoffers_calculate_discount($base_price, $offer_data['discount']);
@@ -695,13 +801,95 @@ function flashoffers_show_discounted_price_html($price_html, $product)
 // Add hidden field to maintain offer parameter
 add_action('woocommerce_before_add_to_cart_button', function () {
     if (isset($_GET['from_offer'])) {
-        echo '<input type="hidden" name="from_offer" value="' . esc_attr((int)$_GET['from_offer']) . '">';
+        echo '<input type="hidden" name="from_offer" value="' . esc_attr((int) $_GET['from_offer']) . '">';
     }
 });
 
 // bogo offer
 
-add_action('wp_enqueue_scripts', function() {
-    wp_enqueue_script('wc-add-to-cart-variation'); 
+add_action('wp_enqueue_scripts', function () {
+    wp_enqueue_script('wc-add-to-cart-variation');
 });
+
+
+/**
+ * Get total quantity of a product purchased by a user within a date range
+ */
+function flashoffers_get_user_purchase_count($user_id, $product_id, $start_date, $end_date)
+{
+    global $wpdb;
+
+    if (empty($start_date))
+        $start_date = '2000-01-01 00:00:00';
+    if (empty($end_date))
+        $end_date = '2099-12-31 23:59:59';
+
+    $sql = $wpdb->prepare(
+        "SELECT SUM(qty.meta_value) 
+        FROM {$wpdb->prefix}woocommerce_order_items as items
+        JOIN {$wpdb->prefix}woocommerce_order_itemmeta as pid ON items.order_item_id = pid.order_item_id
+        JOIN {$wpdb->prefix}woocommerce_order_itemmeta as qty ON items.order_item_id = qty.order_item_id
+        JOIN {$wpdb->posts} as orders ON items.order_id = orders.ID
+        WHERE orders.post_author = %d
+        AND orders.post_type = 'shop_order'
+        AND orders.post_status IN ('wc-completed', 'wc-processing', 'wc-on-hold')
+        AND orders.post_date >= %s 
+        AND orders.post_date <= %s
+        AND pid.meta_key IN ('_product_id', '_variation_id')
+        AND pid.meta_value = %d
+        AND qty.meta_key = '_qty'",
+        $user_id,
+        $start_date,
+        $end_date,
+        $product_id
+    );
+
+    $count = $wpdb->get_var($sql);
+
+    return $count ? (int) $count : 0;
+}
+
+/**
+ * Get quantity of a product currently in the cart
+ */
+function flashoffers_get_cart_qty($product_id)
+{
+    if (!WC()->cart) {
+        return 0;
+    }
+
+    $qty = 0;
+    foreach (WC()->cart->get_cart() as $cart_item) {
+        // Check for product ID or variation ID match
+        if ($cart_item['product_id'] == $product_id || (isset($cart_item['variation_id']) && $cart_item['variation_id'] == $product_id)) {
+            $qty += $cart_item['quantity'];
+        }
+    }
+    return $qty;
+}
+
+
+// Require login for flash offers add to cart
+add_filter('woocommerce_add_to_cart_validation', 'flashoffers_validate_add_to_cart_login', 10, 3);
+
+function flashoffers_validate_add_to_cart_login($passed, $product_id, $quantity)
+{
+    if (is_user_logged_in()) {
+        return $passed;
+    }
+
+    $product = wc_get_product($product_id);
+    if (!$product) {
+        return $passed;
+    }
+
+    $offer_data = flashoffers_get_offer_data($product);
+
+    if ($offer_data && $offer_data['status'] === 'active') {
+        wc_add_notice(sprintf(__('You must be <a href="%s">logged in</a> to use this exclusive offer.', 'flash-offers'), get_permalink(wc_get_page_id('myaccount'))), 'error');
+        return false;
+    }
+
+    return $passed;
+}
 

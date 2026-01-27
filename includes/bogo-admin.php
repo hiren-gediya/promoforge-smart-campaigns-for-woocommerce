@@ -81,7 +81,7 @@ function bogo_products_box_callback($post)
     <div class="bogo-offer-configuration">
         <p>
             <label for="bogo_offer_type"><strong>BOGO Offer Type:</strong></label><br>
-            <select name="bogo_offer_type" id="bogo_offer_type" style="width:100%;">
+            <select name="bogo_offer_type" id="bogo_offer_type" style="width:300px;">
                 <option value="buy_x_get_y" <?php selected($offer_type, 'buy_x_get_y'); ?>>Buy X Get Y (Different Products)</option>
                 <option value="buy_one_get_one" <?php selected($offer_type, 'buy_one_get_one'); ?>>Buy One Get One (Same Product)</option>
             </select>
@@ -90,7 +90,7 @@ function bogo_products_box_callback($post)
         <div id="buy_x_get_y_fields" class="bogo-type-fields" style="display:<?php echo ($offer_type === 'buy_one_get_one') ? 'none' : 'block'; ?>">
             <p>
                 <label for="bogo_buy_product"><strong>Buy Product:</strong></label><br>
-                <select name="bogo_buy_product" style="width:100%;">
+                <select name="bogo_buy_product" style="100%">
                     <option value="">Select Buy Product</option>
                     <?php foreach ($products as $product): ?>
                         <option value="<?php echo $product->ID; ?>" <?php selected($buy_product_id, $product->ID); ?>>
@@ -102,12 +102,12 @@ function bogo_products_box_callback($post)
 
             <p>
                 <label for="bogo_buy_quantity"><strong>Buy Quantity:</strong></label><br>
-                <input type="number" name="bogo_buy_quantity" value="<?php echo esc_attr($buy_quantity); ?>" min="1" style="width:100%;" />
+                <input type="number" name="bogo_buy_quantity" value="<?php echo esc_attr($buy_quantity); ?>" min="1" style="width:200px;" />
             </p>
 
             <p>
                 <label for="bogo_get_product"><strong>Get Product:</strong></label><br>
-                <select name="bogo_get_product" style="width:100%;">
+                <select name="bogo_get_product" style="100%;">
                     <option value="">Select Get Product</option>
                     <?php foreach ($products as $product): ?>
                         <option value="<?php echo $product->ID; ?>" <?php selected($get_product_id, $product->ID); ?>>
@@ -119,12 +119,12 @@ function bogo_products_box_callback($post)
 
             <p>
                 <label for="bogo_get_quantity"><strong>Get Quantity:</strong></label><br>
-                <input type="number" name="bogo_get_quantity" value="<?php echo esc_attr($get_quantity); ?>" min="1" style="width:100%;" />
+                <input type="number" name="bogo_get_quantity" value="<?php echo esc_attr($get_quantity); ?>" min="1" style="width:200px;" />
             </p>
 
             <p>
                 <label for="bogo_discount"><strong>Discount (%):</strong></label><br>
-                <input type="number" name="bogo_discount" value="<?php echo esc_attr($discount); ?>" min="0" max="100" style="width:100%;" />
+                <input type="number" name="bogo_discount" value="<?php echo esc_attr($discount); ?>" min="0" max="100" style="width:200px;" />
                 <em>Set to 100 for free product, 0 for no discount</em>
             </p>
         </div>
@@ -132,7 +132,7 @@ function bogo_products_box_callback($post)
         <div id="buy_one_get_one_fields" class="bogo-type-fields" style="display:<?php echo ($offer_type === 'buy_one_get_one') ? 'block' : 'none'; ?>">
             <p>
                 <label for="bogo_bogo_product"><strong>Product:</strong></label><br>
-                <select name="bogo_bogo_product" style="width:100%;">
+                <select name="bogo_bogo_product" style="width:200px;">
                     <option value="">Select Product</option>
                     <?php foreach ($products as $product): ?>
                         <option value="<?php echo $product->ID; ?>" <?php selected($buy_product_id, $product->ID); ?>>
@@ -149,12 +149,12 @@ function bogo_products_box_callback($post)
 
         <p>
             <label for="bogo_start_date"><strong>Start Date:</strong></label><br>
-            <input type="datetime-local" name="bogo_start_date" value="<?php echo esc_attr($start_date); ?>" style="width:100%;" />
+            <input type="datetime-local" name="bogo_start_date" value="<?php echo esc_attr($start_date); ?>" style="width:200px;" />
         </p>
 
         <p>
             <label for="bogo_end_date"><strong>End Date:</strong></label><br>
-            <input type="datetime-local" name="bogo_end_date" value="<?php echo esc_attr($end_date); ?>" style="width:100%;" />
+            <input type="datetime-local" name="bogo_end_date" value="<?php echo esc_attr($end_date); ?>" style="width:200px;" />
         </p>
     </div>
 
