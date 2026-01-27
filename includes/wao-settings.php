@@ -4,10 +4,11 @@ function flash_offer_message_field_callback()
 {
     $options = get_option('flash_offers_options');
     $message = isset($options['message']) ? $options['message'] : 'Congratulations! You saved {amount} in this order';
-?>
-    <textarea name="flash_offers_options[message]" rows="5" cols="50" class="large-text"><?php echo esc_textarea($message); ?></textarea>
+    ?>
+    <textarea name="flash_offers_options[message]" rows="5" cols="50"
+        class="large-text"><?php echo esc_textarea($message); ?></textarea>
     <p class="description"><?php _e('Enter the flash offer message to be displayed.', 'flash-offers'); ?></p>
-<?php
+    <?php
 }
 // Display locations field for badge  callback function
 function flash_offer_locations_field_callback()
@@ -18,7 +19,7 @@ function flash_offer_locations_field_callback()
     $category_page = isset($options['locations']['category_page']) ? 1 : 0;
     $home_page = isset($options['locations']['home_page']) ? 1 : 0;
     $other_page = isset($options['locations']['other_page']) ? 1 : 0;
-?>
+    ?>
     <label>
         <input type="checkbox" name="flash_offers_options[locations][shop_loop]" value="1" <?php checked($shop_loop, 1); ?>>
         <?php _e('Shop/Archive Pages', 'flash-offers'); ?>
@@ -39,7 +40,7 @@ function flash_offer_locations_field_callback()
         <input type="checkbox" name="flash_offers_options[locations][other_page]" value="1" <?php checked($other_page, 1); ?>>
         <?php _e('Other Pages', 'flash-offers'); ?>
     </label>
-<?php
+    <?php
 }
 
 // Countdown locations field
@@ -47,12 +48,12 @@ function flash_offer_countdown_locations_field_callback()
 {
     $options = get_option('flash_offers_options');
 
-    $shop_loop    = isset($options['countdown_locations']['shop_loop']) ? 1 : 0;
+    $shop_loop = isset($options['countdown_locations']['shop_loop']) ? 1 : 0;
     $product_page = isset($options['countdown_locations']['product_page']) ? 1 : 0;
     $category_page = isset($options['countdown_locations']['category_page']) ? 1 : 0;
     $home_page = isset($options['countdown_locations']['home_page']) ? 1 : 0;
     $other_page = isset($options['countdown_locations']['other_page']) ? 1 : 0;
-?>
+    ?>
     <label>
         <input type="checkbox" name="flash_offers_options[countdown_locations][shop_loop]" value="1" <?php checked($shop_loop, 1); ?>>
         <?php _e('Shop/Archive Pages', 'flash-offers'); ?>
@@ -73,18 +74,19 @@ function flash_offer_countdown_locations_field_callback()
         <input type="checkbox" name="flash_offers_options[countdown_locations][other_page]" value="1" <?php checked($other_page, 1); ?>>
         <?php _e('Other Pages', 'flash-offers'); ?>
     </label>
-<?php
+    <?php
 }
 
 // Badge style field callback function
 function bogo_offer_badge_callback()
 {
     $options = get_option('flash_offers_options');
-    $text = $options['bogo_offer_badge_text'] ?? '';
-?>
-    <textarea name="flash_offers_options[bogo_offer_badge_text]" rows="2" cols="50" class="large-text"><?php echo esc_textarea($text); ?></textarea>
+    $text = $options['bogo_offer_badge_text'] ?? 'BOGO Deal! 🔥';
+    ?>
+    <textarea name="flash_offers_options[bogo_offer_badge_text]" rows="2" cols="50"
+        class="large-text"><?php echo esc_textarea($text); ?></textarea>
     <p class="description"><?php _e('Enter the BOGO offer badge text to be displayed.', 'flash-offers'); ?></p>
-<?php
+    <?php
 }
 
 // Callback: Active Badge
@@ -92,9 +94,10 @@ function flash_offer_active_badge_text_callback()
 {
     $options = get_option('flash_offers_options');
     $text = $options['active_badge_text'] ?? 'Hot Deal! 🔥';
-?>
-    <textarea name="flash_offers_options[active_badge_text]" rows="2" cols="50" class="large-text"><?php echo esc_textarea($text); ?></textarea>
-<?php
+    ?>
+    <textarea name="flash_offers_options[active_badge_text]" rows="2" cols="50"
+        class="large-text"><?php echo esc_textarea($text); ?></textarea>
+    <?php
 }
 
 // Callback: Upcoming Badge
@@ -102,9 +105,10 @@ function flash_offer_upcoming_badge_text_callback()
 {
     $options = get_option('flash_offers_options');
     $text = $options['upcoming_badge_text'] ?? 'Coming Soon ⏳';
-?>
-    <textarea name="flash_offers_options[upcoming_badge_text]" rows="2" cols="50" class="large-text"><?php echo esc_textarea($text); ?></textarea>
-<?php
+    ?>
+    <textarea name="flash_offers_options[upcoming_badge_text]" rows="2" cols="50"
+        class="large-text"><?php echo esc_textarea($text); ?></textarea>
+    <?php
 }
 
 // Callback: Special Badge
@@ -112,49 +116,50 @@ function flash_offer_special_badge_text_callback()
 {
     $options = get_option('flash_offers_options');
     $text = $options['special_badge_text'] ?? 'Special Offer ✨';
-?>
-    <textarea name="flash_offers_options[special_badge_text]" rows="2" cols="50" class="large-text"><?php echo esc_textarea($text); ?></textarea>
-<?php
+    ?>
+    <textarea name="flash_offers_options[special_badge_text]" rows="2" cols="50"
+        class="large-text"><?php echo esc_textarea($text); ?></textarea>
+    <?php
 }
 
 // Callback: Selections for override Price
 function flash_offer_render_price_type_field()
 {
     $options = get_option('flash_offers_options');
-    $value = $options['flash_override_type'];    ?>
+    $value = $options['flash_override_type']; ?>
     <select name="flash_offers_options[flash_override_type]">
         <option value="sale" <?php selected($value, 'sale'); ?>>Sale Price</option>
         <option value="regular" <?php selected($value, 'regular'); ?>>Regular Price</option>
     </select>
     <p class="description">Choose which price the offer should override.</p>
-<?php
+    <?php
 }
 
 // Callback: Selections for BOGO override Price
 function bogo_offer_render_price_type_field()
 {
     $options = get_option('flash_offers_options');
-    $value = $options['bogo_override_type'];    ?>
+    $value = $options['bogo_override_type']; ?>
     <select name="flash_offers_options[bogo_override_type]">
         <option value="sale" <?php selected($value, 'sale'); ?>>Sale Price</option>
         <option value="regular" <?php selected($value, 'regular'); ?>>Regular Price</option>
     </select>
     <p class="description">Choose which price the offer should override.</p>
-<?php
+    <?php
 }
 // Callback: Countdown Format Selection
 function flash_offer_countdown_format_field_callback()
 {
     $options = get_option('flash_offers_options');
     $format = $options['countdown_format'] ?? 'format1';
-?>
+    ?>
     <select name="flash_offers_options[countdown_format]">
         <option value="format1" <?php selected($format, 'format1'); ?>>d h m s</option>
         <option value="format2" <?php selected($format, 'format2'); ?>>Day Hours Minutes Seconds</option>
         <option value="format3" <?php selected($format, 'format3'); ?>>00:00:00:00</option>
     </select>
     <p class="description">Choose how the countdown timer should be displayed.</p>
-<?php
+    <?php
 }
 
 // Callback: Countdown Format Selection
@@ -162,13 +167,30 @@ function bogo_offer_variation_type_callback()
 {
     $options = get_option('flash_offers_options');
     $format = $options['bogo_format'] ?? 'default';
-?>
+    ?>
     <select name="flash_offers_options[bogo_format]">
         <option value="default" <?php selected($format, 'default'); ?>>default</option>
         <option value="table" <?php selected($format, 'table'); ?>>Tabel</option>
     </select>
     <p class="description">Choose how the Product Price should be displayed.</p>
-<?php
+    <?php
+}
+
+function flashoffers_get_cart_product_qty($product_id) {
+
+    if (!WC()->cart) {
+        return 0;
+    }
+
+    $qty = 0;
+
+    foreach (WC()->cart->get_cart() as $cart_item) {
+        if ($cart_item['product_id'] == $product_id) {
+            $qty += $cart_item['quantity'];
+        }
+    }
+
+    return $qty;
 }
 
 /**
@@ -176,38 +198,106 @@ function bogo_offer_variation_type_callback()
  */
 add_action('woocommerce_before_shop_loop_item_title', 'display_flash_offer_badge', 9);
 add_action('woocommerce_single_product_summary', 'display_flash_offer_badge', 8);
-add_action('display_flash_offer_badge', 'display_flash_offer_badge');
 
-// Display flash offer badge
-function display_flash_offer_badge()
-{
-    global $product;
+function display_flash_offer_badge() {
+
+    // Removed is_user_logged_in check
+
+
+    global $product, $wpdb;
     if (!$product) return;
 
-    $offer_data = flashoffers_get_offer_data($product);
-    if (!$offer_data || empty($offer_data['badge_text'])) return;
+    $product_id = $product->get_id();
+    $user_id    = get_current_user_id();
 
-    $locations = $offer_data['locations'];
-    $show_on_shop = is_shop() && !empty($locations['shop_loop']);
-    $show_on_home = is_front_page() && !empty($locations['home_page']);
-    $show_on_category = is_product_category() && !empty($locations['category_page']);
-    $is_other_location = !is_shop() && !is_product_category() && !is_product() && !empty($locations['other_page']);
-    $show_on_single = is_product() && !empty($locations['product_page']);
+    // Get active offers
+    $offers = $wpdb->get_results(
+        $wpdb->prepare(
+            "SELECT o.*
+             FROM {$wpdb->prefix}flash_offers o
+             INNER JOIN {$wpdb->prefix}flash_offer_products p
+                ON o.id = p.offer_id
+             WHERE p.product_id = %d
+             AND o.end_date > %s",
+            $product_id,
+            current_time('mysql')
+        )
+    );
 
-    if ($show_on_shop || $show_on_home || $show_on_category || $is_other_location || $show_on_single) {
-        echo '<span class="flash-offer-badge ' . esc_attr($offer_data['status']) . '" style="width: fit-content; background-color:' . esc_attr($offer_data['background_color']) . '">' . esc_html($offer_data['badge_text']) . '</span>';
+    if (empty($offers)) return;
+
+    $valid_offer = null;
+
+    foreach ($offers as $offer) {
+
+        $limit = !empty($offer->use_offers) ? (int)$offer->use_offers : 1;
+
+        // ✅ Past orders usage
+        $past_usage = 0;
+        if ($user_id) {
+            $past_usage = flashoffers_get_user_purchase_count(
+                $user_id,
+                $product_id,
+                null,
+                $offer->end_date
+            );
+        }
+
+        // ✅ Cart usage
+        $cart_usage = flashoffers_get_cart_product_qty($product_id);
+
+        $total_used = $past_usage + $cart_usage;
+
+        // ❌ Limit crossed
+        if ($total_used >= $limit) {
+            continue;
+        }
+
+        // ✅ Offer still usable
+        $valid_offer = $offer;
+        break;
     }
+
+    if (!$valid_offer) return;
+
+    // Badge data
+    $offer_data = flashoffers_get_offer_data($product);
+    if (empty($offer_data['badge_text'])) return;
+
+    // Location check
+    $locations = $offer_data['locations'];
+    $show =
+        (is_shop() && !empty($locations['shop_loop'])) ||
+        (is_front_page() && !empty($locations['home_page'])) ||
+        (is_product_category() && !empty($locations['category_page'])) ||
+        (is_product() && !empty($locations['product_page']));
+
+    if (!$show) return;
+
+    echo '<span class="flash-offer-badge active"
+        style="background:' . esc_attr($offer_data['background_color']) . '">
+        ' . esc_html($offer_data['badge_text']) . '
+    </span>';
 }
+
+
 
 // Helper function to show countdown
 add_action('woocommerce_before_shop_loop_item_title', 'flashoffers_show_countdown', 9);
 add_action('woocommerce_single_product_summary', 'flashoffers_show_countdown', 8);
 function flashoffers_show_countdown()
 {
+    // Removed is_user_logged_in check
+
     global $product;
     $offer_data = flashoffers_get_offer_data($product);
 
     if (!$offer_data || ($offer_data['status'] === 'special' && !isset($_GET['from_offer']))) {
+        return;
+    }
+
+    // Check usage limits
+    if (isset($offer_data['remaining_display']) && $offer_data['remaining_display'] <= 0) {
         return;
     }
 
@@ -251,7 +341,8 @@ add_action('woocommerce_before_single_product_summary', 'remove_flash_sale_badge
 function remove_flash_sale_badge_css()
 {
     global $product;
-    if (!$product) return;
+    if (!$product)
+        return;
 
     // Get BOGO data
     $offer_data = flashoffers_get_offer_data($product);
@@ -273,11 +364,11 @@ function remove_flash_sale_badge_css()
 function flash_offer_render_color_picker()
 {
     $options = get_option('flash_offers_options');
-    $badge_color = $options['badge_bg_color'] ?? '#ff4d4f';
-?>
-    <input type="text"
-        name="flash_offers_options[badge_bg_color]" id="flash_offer_badge_bg_color" class="flash-offer-color-field" value="<?php echo esc_attr($badge_color); ?>" />
-<?php
+    $badge_color = $options['badge_bg_color'] ?? '#00a99d';
+    ?>
+    <input type="text" name="flash_offers_options[badge_bg_color]" id="flash_offer_badge_bg_color"
+        class="flash-offer-color-field" value="<?php echo esc_attr($badge_color); ?>" />
+    <?php
 }
 
 // Settings page
@@ -296,7 +387,7 @@ add_action('admin_menu', function () {
 // Settings page content
 function flash_offers_settings_page()
 {
-?>
+    ?>
     <div class="wrap">
         <h1><?php _e('Flash Offers Settings', 'flash-offers'); ?></h1>
         <?php settings_errors(); ?>
@@ -308,5 +399,9 @@ function flash_offers_settings_page()
             ?>
         </form>
     </div>
-<?php
+    <?php
 }
+
+// Global flag to indicate we are rendering product summary
+add_action('woocommerce_single_product_summary', function() { $GLOBALS['wao_rendering_product_summary'] = true; }, 1);
+add_action('woocommerce_single_product_summary', function() { $GLOBALS['wao_rendering_product_summary'] = false; }, 1000);

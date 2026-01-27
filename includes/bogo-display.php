@@ -12,8 +12,8 @@ function display_bogo_offer_on_product_page()
 
     global $product, $wpdb;
 
-    $product_id   = $product->get_id();
-    $table_name   = $wpdb->prefix . 'bogo_offers';
+    $product_id = $product->get_id();
+    $table_name = $wpdb->prefix . 'bogo_offers';
     $current_date = current_time('mysql');
 
     $bogo_offers = $wpdb->get_results($wpdb->prepare(
@@ -31,7 +31,8 @@ function display_bogo_offer_on_product_page()
         foreach ($bogo_offers as $offer) {
             $buy_product = wc_get_product($offer->buy_product_id);
             $get_product = wc_get_product($offer->get_product_id);
-            if (!$buy_product || !$get_product) continue;
+            if (!$buy_product || !$get_product)
+                continue;
 
             $buy_in_cart = false;
             $get_in_cart = false;
@@ -55,7 +56,7 @@ function display_bogo_offer_on_product_page()
             echo '<div class="bogo-offer-notice">';
             echo '<h3>' . __('Special BOGO Offer!', 'flash-offers') . '</h3>';
 
-            $offer_type   = $offer->offer_type;
+            $offer_type = $offer->offer_type;
             $discount_text = $offer->discount > 0 ? $offer->discount . '%' : '100%';
             echo '<p>' . sprintf(
                 __('Buy %d %s and get %d %s with %s discount!', 'flash-offers'),
@@ -105,11 +106,8 @@ function bogo_custom_display_variable_product($product_type = '')
         $product_id = $product->get_ID();
         // $price = $product->get_sale_price() ?: $product->get_regular_price();
         $price_override_type = $offer_data['bogo_override_type'] ?? 'sale';
-        echo "<pre>";
-        print_r($price_override_type);
-        echo "</pre>";
         $regular_price = (float) $product->get_regular_price();
-        $sale_price    = (float) $product->get_sale_price();
+        $sale_price = (float) $product->get_sale_price();
         // $price_per_piece = $price; // assuming 1 piece
         $offer_type = $GLOBALS['bogo_data']['offer_type'];
         $buy_product_id = $GLOBALS['bogo_data']['buy_product_id'];
@@ -140,7 +138,7 @@ function bogo_custom_display_variable_product($product_type = '')
                 echo '<td class="price">' . wc_price($regular_price) . '</td>';
             }
         }
-      
+
         if ($price_override_type === 'regular') {
             $price_per_piece = $regular_price;
         } else {
@@ -189,7 +187,7 @@ function bogo_custom_display_variable_product($product_type = '')
         foreach ($available_variations as $variation) {
             $variation_obj = wc_get_product($variation['variation_id']);
             $regular_price = (float) $variation_obj->get_regular_price();
-            $sale_price    = (float) $variation_obj->get_sale_price();
+            $sale_price = (float) $variation_obj->get_sale_price();
 
             $attributes = $variation['attributes'];
             $buy_quantity = $GLOBALS['bogo_data']['buy_quantity'];
@@ -202,14 +200,14 @@ function bogo_custom_display_variable_product($product_type = '')
 
             // ✅ Decide which price to use
             if ($price_override_type === 'regular') {
-                $final_price       = $regular_price;
+                $final_price = $regular_price;
                 $price_display_html = wc_price($regular_price);
             } else {
                 if ($sale_price && $sale_price < $regular_price) {
-                    $final_price       = $sale_price;
+                    $final_price = $sale_price;
                     $price_display_html = '<del>' . wc_price($regular_price) . '</del> <ins>' . wc_price($sale_price) . '</ins>';
                 } else {
-                    $final_price       = $regular_price;
+                    $final_price = $regular_price;
                     $price_display_html = wc_price($regular_price);
                 }
             }
@@ -356,7 +354,7 @@ function bogoffers_get_offer_data($product)
         'status' => $status,
         'start' => $start->format('Y-m-d H:i:s'),
         'end' => $end->format('Y-m-d H:i:s'),
-        'background_color' => $options['badge_bg_color'] ?? '#ff4d4f',
+        'background_color' => $options['badge_bg_color'] ?? '#00a99d',
     ];
 }
 
@@ -368,10 +366,13 @@ add_action('display_bogo_offer_badge', 'display_bogo_offer_badge');
 function display_bogo_offer_badge()
 {
     global $product;
-    if (!$product) return;
+    if (!$product)
+        return;
 
     $offer_data = bogoffers_get_offer_data($product);
-    if (!$offer_data || empty($offer_data['badge_text'])) return;
+
+    if (!$offer_data || empty($offer_data['badge_text']))
+        return;
 
     $locations = $offer_data['locations'];
     $show_on_shop = is_shop() && !empty($locations['shop_loop']);
@@ -380,7 +381,7 @@ function display_bogo_offer_badge()
     $is_other_location = !is_shop() && !is_product_category() && !is_product() && !is_front_page() && !empty($locations['other_page']);
     $show_on_single = is_product() && !empty($locations['product_page']);
     $options = get_option('flash_offers_options');
-    $badge_color = $options['badge_bg_color'] ?? '#ff4d4f';
+    $badge_color = $options['badge_bg_color'] ?? '#00a99d';
 
     if ($show_on_shop || $show_on_category || $show_on_home || $is_other_location || $show_on_single) {
         echo '<span class="flash-offer-badge ' . esc_attr($offer_data['status']) . '" style="width: fit-content;; background-color:' . esc_attr($badge_color) . ';">' . esc_html($offer_data['badge_text']) . '</span>';
@@ -394,7 +395,8 @@ add_action('woocommerce_before_single_product_summary', 'remove_bogo_sale_badge_
 function remove_bogo_sale_badge_css()
 {
     global $product;
-    if (!$product) return;
+    if (!$product)
+        return;
 
     // Get BOGO data
     $offer_data = bogoffers_get_offer_data($product);
@@ -420,10 +422,12 @@ add_action('woocommerce_single_product_summary', 'display_bogoffers_countdown', 
 function display_bogoffers_countdown()
 {
     global $product;
-    if (!$product) return;
+    if (!$product)
+        return;
 
     $offer_data = bogoffers_get_offer_data($product);
-    if (!$offer_data) return;
+    if (!$offer_data)
+        return;
 
     $locations = $offer_data['countdown_locations'];
     $show_on_shop = is_shop() && !empty($locations['shop_loop']);
