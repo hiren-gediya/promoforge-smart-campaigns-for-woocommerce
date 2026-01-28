@@ -1,6 +1,6 @@
-# WooCommerce Advanced Offers
+# Advanced Offers for WooCommerce
 
-WooCommerce Advanced Offers is a powerful and flexible plugin that allows you to create **Flash Offers, Upcoming Offers, Special Offers, and BOGO (Buy One Get One) Offers** with full control over products, categories, discounts, and offer visibility.
+Advanced Offers for WooCommerce is a powerful and flexible plugin that allows you to create **Flash Offers, Upcoming Offers, Special Offers, and BOGO (Buy One Get One) Offers** with full control over products, categories, discounts, and offer visibility.
 
 This plugin is designed for performance, scalability, and real-world WooCommerce use cases.
 
