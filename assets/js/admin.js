@@ -39,7 +39,8 @@ jQuery(document).ready(function ($) {
             data: {
                 action: 'get_products_by_categories',
                 categories: selectedCategories,
-                post_id: postId
+                post_id: postId,
+                nonce: $('#flash_offer_details_nonce').val()
             },
             beforeSend: function () {
                 $('#category-product-preview').html('<p>Loading products...</p>');

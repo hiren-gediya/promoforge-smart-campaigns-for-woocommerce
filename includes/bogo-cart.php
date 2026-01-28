@@ -1,14 +1,18 @@
 <?php
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 // ✅ Ensure minimum quantity for same-product BOGO
-add_filter('woocommerce_add_to_cart_quantity', 'handle_bogo_add_to_cart', 10, 2);
-function handle_bogo_add_to_cart($quantity, $product_id)
+add_filter('woocommerce_add_to_cart_quantity', 'flashoffers_handle_bogo_add_to_cart', 10, 2);
+function flashoffers_handle_bogo_add_to_cart($quantity, $product_id)
 {
     global $wpdb;
-    $table_name = $wpdb->prefix . 'bogo_offers';
     $current_date = current_time('mysql');
 
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
     $bogo_offers = $wpdb->get_results($wpdb->prepare(
-        "SELECT * FROM $table_name
+        "SELECT * FROM {$wpdb->prefix}bogo_offers
         WHERE buy_product_id = %d
         AND start_date <= %s
         AND end_date >= %s",
@@ -20,7 +24,8 @@ function handle_bogo_add_to_cart($quantity, $product_id)
     foreach ($bogo_offers as $offer) {
         if ($offer->buy_product_id == $product_id && $quantity < $offer->buy_quantity) {
             wc_add_notice(
-                sprintf(__('For this BOGO offer, please add at least %d items.', 'flash-offers'), $offer->buy_quantity),
+                /* translators: %d: Minimum quantity */
+                sprintf(esc_html__('For this BOGO offer, please add at least %d items.', 'advanced-offers-for-woocommerce'), intval($offer->buy_quantity)),
                 'notice'
             );
         }
@@ -31,34 +36,44 @@ function handle_bogo_add_to_cart($quantity, $product_id)
 
 
 // ✅ Apply BOGO discounts to cart
-add_action('woocommerce_before_calculate_totals', 'apply_bogo_discount', 20);
+add_action('woocommerce_before_calculate_totals', 'flashoffers_apply_bogo_discount', 20);
 
-function apply_bogo_discount($cart)
+function flashoffers_apply_bogo_discount($cart)
 {
-    if (is_admin() && !defined('DOING_AJAX')) return;
-    if (did_action('woocommerce_before_calculate_totals') >= 2) return;
+    if (is_admin() && !defined('DOING_AJAX'))
+        return;
+    if (did_action('woocommerce_before_calculate_totals') >= 2)
+        return;
 
     global $wpdb;
-    $table_name   = $wpdb->prefix . 'bogo_offers';
     $current_date = current_time('mysql');
 
     // Get all product IDs in cart
     $cart_product_ids = array();
     foreach ($cart->get_cart() as $cart_item) {
-        $cart_product_ids[] = $cart_item['product_id'];
+        $cart_product_ids[] = (int) $cart_item['product_id'];
     }
     $cart_product_ids = array_unique($cart_product_ids);
-    if (empty($cart_product_ids)) return;
+    if (empty($cart_product_ids))
+        return;
 
+    // Use placeholder format for IN clause
     $placeholders = implode(',', array_fill(0, count($cart_product_ids), '%d'));
-    $bogo_offers  = $wpdb->get_results($wpdb->prepare(
-        "SELECT * FROM $table_name
+
+    // Construct the query
+    $query = "SELECT * FROM {$wpdb->prefix}bogo_offers
         WHERE (buy_product_id IN ($placeholders) OR get_product_id IN ($placeholders))
         AND start_date <= %s
-        AND end_date >= %s",
-        array_merge($cart_product_ids, $cart_product_ids, [$current_date, $current_date])
-    ));
-    if (empty($bogo_offers)) return;
+        AND end_date >= %s";
+
+    // Flatten parameters for prepare()
+    $params = array_merge($cart_product_ids, $cart_product_ids, [$current_date, $current_date]);
+
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
+    $bogo_offers = $wpdb->get_results($wpdb->prepare($query, $params));
+
+    if (empty($bogo_offers))
+        return;
 
     // Get global BOGO override type
     $options = get_option('flash_offers_options');
@@ -66,7 +81,7 @@ function apply_bogo_discount($cart)
 
     // Reset all prices before applying discounts
     foreach ($cart->get_cart() as $cart_item_key => $cart_item) {
-        $product    = $cart_item['data'];
+        $product = $cart_item['data'];
         $product_id = $cart_item['product_id'];
 
         // Find matching offer
@@ -77,14 +92,15 @@ function apply_bogo_discount($cart)
                 break;
             }
         }
-        if (!$offer) continue;
+        if (!$offer)
+            continue;
 
         // Use override type from offer if available, else global
         $override_type = $offer->override_type ?? $bogo_override_type;
 
         $product_data = $product->get_data();
         $regular_price = (float) $product_data['regular_price'];
-        $sale_price    = (float) $product_data['sale_price'];
+        $sale_price = (float) $product_data['sale_price'];
 
         if ($override_type == 'regular') {
             $base_price = $regular_price;
@@ -101,19 +117,19 @@ function apply_bogo_discount($cart)
     // Apply discounts
     foreach ($bogo_offers as $offer) {
         if ($offer->buy_product_id == $offer->get_product_id) {
-            apply_bogo_same_product_discount($cart, $offer);
+            flashoffers_apply_bogo_same_product_discount($cart, $offer);
         } else {
-            apply_bogo_different_products_discount($cart, $offer);
+            flashoffers_apply_bogo_different_products_discount($cart, $offer);
         }
     }
 }
 
-function apply_bogo_same_product_discount($cart, $offer)
+function flashoffers_apply_bogo_same_product_discount($cart, $offer)
 {
-    $product_id   = $offer->buy_product_id;
+    $product_id = $offer->buy_product_id;
     $buy_quantity = $offer->buy_quantity;
     $get_quantity = $offer->get_quantity;
-    $discount     = $offer->discount > 0 ? $offer->discount : 100;
+    $discount = $offer->discount > 0 ? $offer->discount : 100;
 
     $product_count = 0;
     $product_cart_keys = [];
@@ -135,8 +151,8 @@ function apply_bogo_same_product_discount($cart, $offer)
             $original_price = $cart->cart_contents[$cart_key]['bogo_original_price'];
 
             // Split: free only applies once across all cart items
-            $line_free   = min($discount_items, $qty);
-            $line_paid   = $qty - $line_free;
+            $line_free = min($discount_items, $qty);
+            $line_paid = $qty - $line_free;
             $discount_items -= $line_free;
 
             // Weighted average
@@ -148,12 +164,12 @@ function apply_bogo_same_product_discount($cart, $offer)
     }
 }
 
-function apply_bogo_different_products_discount($cart, $offer)
+function flashoffers_apply_bogo_different_products_discount($cart, $offer)
 {
-    $buy_id   = $offer->buy_product_id;
-    $get_id   = $offer->get_product_id;
-    $buy_qty  = $offer->buy_quantity;
-    $get_qty  = $offer->get_quantity;
+    $buy_id = $offer->buy_product_id;
+    $get_id = $offer->get_product_id;
+    $buy_qty = $offer->buy_quantity;
+    $get_qty = $offer->get_quantity;
     $discount = $offer->discount > 0 ? $offer->discount : 100;
 
     $total_buy_qty = 0;
@@ -172,7 +188,7 @@ function apply_bogo_different_products_discount($cart, $offer)
 
     if ($total_buy_qty >= $buy_qty && $get_key !== null) {
         $product = $cart->cart_contents[$get_key]['data'];
-        $offer_data    = bogoffers_get_offer_data($product);
+        $offer_data = flashoffers_get_bogo_offer_data($product);
         $override_type = isset($offer_data['bogo_override_type']) ? $offer_data['bogo_override_type'] : '';
         // ✅ Apply override
         if ($override_type === 'regular') {
@@ -197,59 +213,59 @@ function apply_bogo_different_products_discount($cart, $offer)
     }
 }
 
-function display_bogo_discount_in_cart($price_html, $cart_item, $cart_item_key)
+function flashoffers_display_bogo_discount_in_cart($price_html, $cart_item, $cart_item_key)
 {
-    $product     = $cart_item['data'];
-    $product_id  = $cart_item['product_id'];
-    $offer       = get_offer_for_product($product_id);
+    $product = $cart_item['data'];
+    $product_id = $cart_item['product_id'];
+    $offer = flashoffers_get_offer_for_product($product_id);
 
     // ✅ If not part of any BOGO offer → use default Woo price display
     if (!$offer) {
-        $regular_price  = (float) $product->get_regular_price();
-        $sale_price     = (float) $product->get_sale_price();
-        $current_price  = (float) $product->get_price();
+        $regular_price = (float) $product->get_regular_price();
+        $sale_price = (float) $product->get_sale_price();
+        $current_price = (float) $product->get_price();
 
         if ($sale_price && $sale_price < $regular_price) {
-            return '<del>' . wc_price($regular_price) . '</del> <ins>' . wc_price($sale_price) . '</ins>';
+            return '<del>' . wp_kses_post(wc_price($regular_price)) . '</del> <ins>' . wp_kses_post(wc_price($sale_price)) . '</ins>';
         }
-        return wc_price($current_price);
+        return wp_kses_post(wc_price($current_price));
     }
 
     // ✅ Get offer data
-    $offer_data    = bogoffers_get_offer_data($product);
+    $offer_data = flashoffers_get_bogo_offer_data($product);
     $override_type = isset($offer_data['bogo_override_type']) ? $offer_data['bogo_override_type'] : '';
 
     $regular_price = (float) $product->get_regular_price();
-    $sale_price    = (float) $product->get_sale_price();
+    $sale_price = (float) $product->get_sale_price();
     $current_price = (float) $product->get_price();
     // 🟢 CASE 1: Override = regular → always show regular price without strike-through
     if ($override_type === 'regular') {
         if ($regular_price && $current_price < $regular_price) {
-            return '<del>' . wc_price($regular_price) . '</del> <ins>' . wc_price($current_price) . '</ins>';
+            return '<del>' . wp_kses_post(wc_price($regular_price)) . '</del> <ins>' . wp_kses_post(wc_price($current_price)) . '</ins>';
         } else {
-            return wc_price($regular_price);
+            return wp_kses_post(wc_price($regular_price));
         }
     }
 
     // 🟡 CASE 2: Override = sale → show sale price (if available)
     if ($override_type === 'sale') {
         if ($sale_price && $current_price < $sale_price) {
-            return '<del>' . wc_price($sale_price) . '</del> <ins>' . wc_price($current_price) . '</ins>';
+            return '<del>' . wp_kses_post(wc_price($sale_price)) . '</del> <ins>' . wp_kses_post(wc_price($current_price)) . '</ins>';
         } else {
-            return wc_price($sale_price);
+            return wp_kses_post(wc_price($sale_price));
         }
     }
 }
 
 
-function get_offer_for_product($product_id)
+function flashoffers_get_offer_for_product($product_id)
 {
     global $wpdb;
-    $table_name   = $wpdb->prefix . 'bogo_offers';
     $current_date = current_time('mysql');
 
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
     return $wpdb->get_row($wpdb->prepare(
-        "SELECT * FROM $table_name
+        "SELECT * FROM {$wpdb->prefix}bogo_offers
         WHERE (buy_product_id = %d OR get_product_id = %d)
         AND start_date <= %s AND end_date >= %s LIMIT 1",
         $product_id,

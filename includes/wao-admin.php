@@ -5,8 +5,8 @@ defined('ABSPATH') or die('Direct access not allowed');
 add_action('add_meta_boxes', function () {
     add_meta_box(
         'flash_offer_details',
-        'Offer Details',
-        'flash_offer_details_callback',
+        esc_html__('Offer Details', 'advanced-offers-for-woocommerce'),
+        'flashoffers_offer_details_callback',
         'flash_offer',
         'normal',
         'default'
@@ -14,19 +14,21 @@ add_action('add_meta_boxes', function () {
 });
 
 // Callback function to display the meta box
-function flash_offer_details_callback($post)
+function flashoffers_offer_details_callback($post)
 {
     global $wpdb;
 
     wp_nonce_field('flash_offer_details', 'flash_offer_details_nonce');
 
     // Verify tables exist
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
     if ($wpdb->get_var("SHOW TABLES LIKE '{$wpdb->prefix}flash_offers'") != $wpdb->prefix . 'flash_offers') {
-        echo '<div class="error"><p>Flash Offers tables not found. Please deactivate and reactivate the plugin.</p></div>';
+        echo '<div class="error"><p>' . esc_html__('Flash Offers tables not found. Please deactivate and reactivate the plugin.', 'advanced-offers-for-woocommerce') . '</p></div>';
         return;
     }
 
     // Get offer data
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
     $offer = $wpdb->get_row($wpdb->prepare(
         "SELECT * FROM {$wpdb->prefix}flash_offers WHERE post_id = %d",
         $post->ID
@@ -41,6 +43,7 @@ function flash_offer_details_callback($post)
     // Get assigned products
     $products = [];
     if ($offer) {
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $products = $wpdb->get_col($wpdb->prepare(
             "SELECT product_id FROM {$wpdb->prefix}flash_offer_products WHERE offer_id = %d",
             $offer->id
@@ -50,6 +53,7 @@ function flash_offer_details_callback($post)
     // Get assigned categories
     $categories = [];
     if ($offer) {
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $categories = $wpdb->get_col($wpdb->prepare(
             "SELECT category_id FROM {$wpdb->prefix}flash_offer_categories WHERE offer_id = %d",
             $offer->id
@@ -65,35 +69,45 @@ function flash_offer_details_callback($post)
 
     <div class="flash-offer-admin">
         <p>
-            <label for="offer_type">Offer Type:</label><br>
+            <label for="offer_type"><?php esc_html_e('Offer Type:', 'advanced-offers-for-woocommerce'); ?></label><br>
             <select name="offer_type" id="offer_type" style="width:200px;">
-                <option value="flash" <?php selected($offer_type, 'flash'); ?>>Flash Offer</option>
-                <option value="upcoming" <?php selected($offer_type, 'upcoming'); ?>>Upcoming Offer</option>
-                <option value="special" <?php selected($offer_type, 'special'); ?>>Special Offer</option>
+                <option value="flash" <?php selected($offer_type, 'flash'); ?>>
+                    <?php esc_html_e('Flash Offer', 'advanced-offers-for-woocommerce'); ?>
+                </option>
+                <option value="upcoming" <?php selected($offer_type, 'upcoming'); ?>>
+                    <?php esc_html_e('Upcoming Offer', 'advanced-offers-for-woocommerce'); ?>
+                </option>
+                <option value="special" <?php selected($offer_type, 'special'); ?>>
+                    <?php esc_html_e('Special Offer', 'advanced-offers-for-woocommerce'); ?>
+                </option>
             </select>
         </p>
 
         <p class="flash_offer_start_fields" style="display:<?php echo ($offer_type === 'flash') ? 'none' : 'block'; ?>">
-            <label for="flash_offer_start">Start Date & Time:</label><br>
+            <label
+                for="flash_offer_start"><?php esc_html_e('Start Date & Time:', 'advanced-offers-for-woocommerce'); ?></label><br>
             <input type="datetime-local" name="flash_offer_start"
                 value="<?php echo esc_attr($start ? str_replace(' ', 'T', substr($start, 0, 16)) : ''); ?>"
                 style="width:200px;">
         </p>
 
         <p>
-            <label for="flash_offer_end">End Date & Time:</label><br>
+            <label
+                for="flash_offer_end"><?php esc_html_e('End Date & Time:', 'advanced-offers-for-woocommerce'); ?></label><br>
             <input type="datetime-local" name="flash_offer_end"
                 value="<?php echo esc_attr($end ? str_replace(' ', 'T', substr($end, 0, 16)) : ''); ?>"
                 style="width:200px;">
         </p>
 
         <p>
-            <label for="flash_offer_discount">Discount (%):</label><br>
+            <label
+                for="flash_offer_discount"><?php esc_html_e('Discount (%):', 'advanced-offers-for-woocommerce'); ?></label><br>
             <input type="number" name="flash_offer_discount" value="<?php echo esc_attr($discount); ?>" min="1" max="100"
                 style="width:200px;">
         </p>
         <p>
-            <label for="flash_offer_use_offers">How Many Time User Can Use This Offers:</label><br>
+            <label
+                for="flash_offer_use_offers"><?php esc_html_e('How Many Time User Can Use This Offers:', 'advanced-offers-for-woocommerce'); ?></label><br>
             <input type="number" name="flash_offer_use_offers" value="<?php echo esc_attr($use_offers); ?>" min="1"
                 max="100" style="width:200px;">
         </p>
@@ -101,7 +115,7 @@ function flash_offer_details_callback($post)
 
         <div id="flash_offer_upcoming_offer_fields_product">
             <p>
-                <label>Assign to Categories:</label><br>
+                <label><?php esc_html_e('Assign to Categories:', 'advanced-offers-for-woocommerce'); ?></label><br>
                 <select id="flash_offer_category_selector" name="flash_offer_offer_categories[]" multiple="multiple"
                     style="width:400px;" class="flash_offer_wc-enhanced-select">
                     <?php foreach ($categories_list as $category): ?>
@@ -124,21 +138,21 @@ function flash_offer_details_callback($post)
                                 <input type="checkbox" name="offer_products[]" value="<?php echo esc_attr($product_id); ?>"
                                     checked />
                                 <div style="height:100px; display:flex; align-items:center; justify-content:center;">
-                                    <?php echo $product->get_image('thumbnail'); ?>
+                                    <?php echo wp_kses_post($product->get_image('thumbnail')); ?>
                                 </div>
                                 <strong><?php echo esc_html($product->get_name()); ?></strong>
-                                <span><?php echo $product->get_price_html(); ?></span>
+                                <span><?php echo wp_kses_post($product->get_price_html()); ?></span>
                             </label>
                         <?php endforeach; ?>
                     </div>
                 <?php else: ?>
-                    <p>Select categories to see products</p>
+                    <p><?php esc_html_e('Select categories to see products', 'advanced-offers-for-woocommerce'); ?></p>
                 <?php endif; ?>
             </div>
         </div>
 
         <div id="selected-product-list" style="margin-top: 30px;">
-            <h4>Selected Products:</h4>
+            <h4><?php esc_html_e('Selected Products:', 'advanced-offers-for-woocommerce'); ?></h4>
             <div class="selected-product-box" style="display: flex; flex-wrap: wrap; gap: 15px;"></div>
         </div>
 
@@ -154,7 +168,7 @@ add_action('save_post_flash_offer', function ($post_id) {
 
     if (
         !isset($_POST['flash_offer_details_nonce']) ||
-        !wp_verify_nonce($_POST['flash_offer_details_nonce'], 'flash_offer_details')
+        !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['flash_offer_details_nonce'])), 'flash_offer_details')
     ) {
         return;
     }
@@ -174,22 +188,26 @@ add_action('save_post_flash_offer', function ($post_id) {
 
 
     // Prepare offer data
+    // Prepare offer data
+    // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated
     $offer_data = [
         'post_id' => $post_id,
-        'offer_type' => sanitize_text_field($_POST['offer_type']),
-        'start_date' => sanitize_text_field($_POST['flash_offer_start']),
-        'end_date' => sanitize_text_field($_POST['flash_offer_end']),
-        'discount' => floatval($_POST['flash_offer_discount']),
-        'use_offers' => intval($_POST['flash_offer_use_offers'])
+        'offer_type' => sanitize_text_field(wp_unslash($_POST['offer_type'] ?? 'flash')),
+        'start_date' => sanitize_text_field(wp_unslash($_POST['flash_offer_start'] ?? '')),
+        'end_date' => sanitize_text_field(wp_unslash($_POST['flash_offer_end'] ?? '')),
+        'discount' => floatval($_POST['flash_offer_discount'] ?? 0),
+        'use_offers' => intval($_POST['flash_offer_use_offers'] ?? 0)
     ];
 
     // Check if offer exists
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
     $offer = $wpdb->get_row($wpdb->prepare(
         "SELECT id FROM {$wpdb->prefix}flash_offers WHERE post_id = %d",
         $post_id
     ));
 
     if ($offer) {
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $wpdb->update(
             $wpdb->prefix . 'flash_offers',
             $offer_data,
@@ -199,6 +217,7 @@ add_action('save_post_flash_offer', function ($post_id) {
         );
         $offer_id = $offer->id;
     } else {
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $wpdb->insert(
             $wpdb->prefix . 'flash_offers',
             $offer_data,
@@ -211,6 +230,7 @@ add_action('save_post_flash_offer', function ($post_id) {
     flashoffers_migrate_categories_table();
 
     // Get current products for this offer
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
     $current_products = $wpdb->get_col($wpdb->prepare(
         "SELECT product_id FROM {$wpdb->prefix}flash_offer_products WHERE offer_id = %d",
         $offer_id
@@ -229,18 +249,18 @@ add_action('save_post_flash_offer', function ($post_id) {
     // Remove products that are no longer selected
     if (!empty($products_to_remove)) {
         $placeholders = implode(',', array_fill(0, count($products_to_remove), '%d'));
-        $wpdb->query($wpdb->prepare(
-            "DELETE FROM {$wpdb->prefix}flash_offer_products
-             WHERE offer_id = %d AND product_id IN ($placeholders)",
-            array_merge([$offer_id], $products_to_remove)
-        ));
+        // Prepare delete reliably
+        // Prepare delete reliably
+        $query = "DELETE FROM {$wpdb->prefix}flash_offer_products WHERE offer_id = %d AND product_id IN ($placeholders)";
+        $params = array_merge([$offer_id], $products_to_remove);
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.NotPrepared
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.NoCaching
+        $wpdb->query($wpdb->prepare($query, $params));
 
         // Also remove from categories table
-        $wpdb->query($wpdb->prepare(
-            "DELETE FROM {$wpdb->prefix}flash_offer_categories
-             WHERE offer_id = %d AND product_id IN ($placeholders)",
-            array_merge([$offer_id], $products_to_remove)
-        ));
+        $query_cat = "DELETE FROM {$wpdb->prefix}flash_offer_categories WHERE offer_id = %d AND product_id IN ($placeholders)";
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.NoCaching
+        $wpdb->query($wpdb->prepare($query_cat, $params));
     }
 
     // Add new products
@@ -250,6 +270,7 @@ add_action('save_post_flash_offer', function ($post_id) {
             $product = wc_get_product($product_id);
             if ($product) {
                 // Insert into products table
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
                 $wpdb->query($wpdb->prepare(
                     "INSERT IGNORE INTO {$wpdb->prefix}flash_offer_products
                     (offer_id, product_id)
@@ -261,6 +282,7 @@ add_action('save_post_flash_offer', function ($post_id) {
                 // Get primary category for this product and insert into categories table
                 $primary_category_id = flashoffers_get_product_primary_category($product_id);
                 if ($primary_category_id > 0) {
+                    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
                     $wpdb->query($wpdb->prepare(
                         "INSERT IGNORE INTO {$wpdb->prefix}flash_offer_categories
                         (offer_id, category_id, product_id)
@@ -282,8 +304,8 @@ add_action('save_post_flash_offer', function ($post_id) {
 
 
 // Add shortcode meta box ONLY if offer is special
-add_action('add_meta_boxes_flash_offer', 'add_conditional_shortcode_meta_box');
-function add_conditional_shortcode_meta_box($post)
+add_action('add_meta_boxes_flash_offer', 'flashoffers_add_conditional_shortcode_meta_box');
+function flashoffers_add_conditional_shortcode_meta_box($post)
 {
     global $wpdb;
 
@@ -291,6 +313,8 @@ function add_conditional_shortcode_meta_box($post)
     $post_id = $post->ID;
 
     // Query the custom table for the current post only
+    // Query the custom table for the current post only
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
     $offer_type = $wpdb->get_var(
         $wpdb->prepare(
             "SELECT offer_type FROM {$wpdb->prefix}flash_offers WHERE post_id = %d AND offer_type = %s",
@@ -308,7 +332,7 @@ function add_conditional_shortcode_meta_box($post)
     add_meta_box(
         'special_offer_shortcode',
         'Special Offer Shortcode',
-        'display_special_offer_shortcode',
+        'flashoffers_display_special_offer_shortcode',
         'flash_offer',
         'side',
         'high'
@@ -316,23 +340,23 @@ function add_conditional_shortcode_meta_box($post)
 }
 
 // Display shortcode for special offer at edit post
-function display_special_offer_shortcode($post)
+function flashoffers_display_special_offer_shortcode($post)
 {
     $shortcode = '[flash_special_offer id=' . $post->ID . ']';
     ?>
-    <p>Use this shortcode to display this special offer:</p>
+    <p><?php esc_html_e('Use this shortcode to display this special offer:', 'advanced-offers-for-woocommerce'); ?></p>
     <input type="text" value="<?php echo esc_attr($shortcode); ?>" readonly class="widefat" id="special-offer-shortcode">
     <button type="button" class="button button-primary copy-shortcode"
-        data-clipboard-text="<?php echo esc_attr($shortcode); ?>">Copy</button>
+        data-clipboard-text="<?php echo esc_attr($shortcode); ?>"><?php esc_html_e('Copy', 'advanced-offers-for-woocommerce'); ?></button>
 
     <?php
 }
 
 
 // AJAX handler for getting products by categories
-add_action('wp_ajax_get_products_by_categories', 'flash_offer_get_products_by_categories');
+add_action('wp_ajax_get_products_by_categories', 'flashoffers_get_products_by_categories');
 
-function flash_offer_get_products_by_categories()
+function flashoffers_get_products_by_categories()
 {
     global $wpdb;
 
@@ -340,23 +364,27 @@ function flash_offer_get_products_by_categories()
         wp_die();
     }
 
+    check_ajax_referer('flash_offer_details', 'nonce'); // Make sure JS sends this
+
     $categories = isset($_POST['categories']) ? array_map('intval', $_POST['categories']) : [];
     $current_post_id = isset($_POST['post_id']) ? intval($_POST['post_id']) : 0;
 
     if (empty($categories)) {
-        echo '<p>Please select at least one category.</p>';
+        echo '<p>' . esc_html__('Please select at least one category.', 'advanced-offers-for-woocommerce') . '</p>';
         wp_die();
     }
 
     // 1. Get products already selected in current offer
     $current_offer_products = [];
     if ($current_post_id) {
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $offer_id = $wpdb->get_var($wpdb->prepare(
             "SELECT id FROM {$wpdb->prefix}flash_offers WHERE post_id = %d",
             $current_post_id
         ));
 
         if ($offer_id) {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             $current_offer_products = $wpdb->get_col($wpdb->prepare(
                 "SELECT product_id FROM {$wpdb->prefix}flash_offer_products WHERE offer_id = %d",
                 $offer_id
@@ -366,12 +394,16 @@ function flash_offer_get_products_by_categories()
 
     // 2. Get products used in other flash offers
     $excluded_product_ids = [];
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
     $other_offers = $wpdb->get_results(
-        "SELECT DISTINCT product_id FROM {$wpdb->prefix}flash_offer_products 
-         WHERE offer_id IN (
-             SELECT id FROM {$wpdb->prefix}flash_offers 
-             WHERE post_id != {$current_post_id} AND end_date > NOW()
-         )"
+        $wpdb->prepare(
+            "SELECT DISTINCT product_id FROM {$wpdb->prefix}flash_offer_products 
+             WHERE offer_id IN (
+                 SELECT id FROM {$wpdb->prefix}flash_offers 
+                 WHERE post_id != %d AND end_date > NOW()
+             )",
+            $current_post_id
+        )
     );
 
     foreach ($other_offers as $offer) {
@@ -380,7 +412,9 @@ function flash_offer_get_products_by_categories()
         }
     }
 
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
     $bogo_products = $wpdb->get_col("SELECT buy_product_id FROM {$wpdb->prefix}bogo_offers WHERE buy_product_id > 0");
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
     $bogo_products2 = $wpdb->get_col("SELECT get_product_id FROM {$wpdb->prefix}bogo_offers WHERE get_product_id > 0");
 
     $bogo_product_ids = array_merge($bogo_products, $bogo_products2);
@@ -396,7 +430,9 @@ function flash_offer_get_products_by_categories()
         'post_type' => 'product',
         'post_status' => 'publish',
         'posts_per_page' => -1,
+        // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_post__not_in
         'post__not_in' => $exclude_ids,
+        // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
         'tax_query' => [
             [
                 'taxonomy' => 'product_cat',
@@ -410,7 +446,7 @@ function flash_offer_get_products_by_categories()
     $products_query = new WP_Query($args);
 
     if ($products_query->have_posts()) {
-        echo '<div class="product-select-list" style="display: flex; flex-wrap: wrap;">';
+        echo '<div class="product-select-list">';
 
         while ($products_query->have_posts()) {
             $products_query->the_post();
@@ -422,16 +458,16 @@ function flash_offer_get_products_by_categories()
             $checked = in_array($product_id, $current_offer_products) ? 'checked' : '';
 
             echo '<label class="product-box">';
-            echo '<input type="checkbox" name="offer_products[]" value="' . esc_attr($product_id) . '" ' . $checked . ' />';
-            echo '<div style="height:100px; display:flex; align-items:center; justify-content:center;">' . $product->get_image('thumbnail') . '</div>';
+            echo '<input type="checkbox" name="offer_products[]" value="' . esc_attr($product_id) . '" ' . esc_attr($checked) . ' />';
+            echo '<div style="height:100px; display:flex; align-items:center; justify-content:center;">' . wp_kses_post($product->get_image('thumbnail')) . '</div>';
             echo '<strong style="display:block; margin-top:5px; font-size:0.9em;">' . esc_html($product->get_name()) . '</strong>';
-            echo '<span style="font-size:0.8em;">' . $product->get_price_html() . '</span>';
+            echo '<span style="font-size:0.8em;">' . wp_kses_post($product->get_price_html()) . '</span>';
             echo '</label>';
         }
 
         echo '</div>';
     } else {
-        echo '<p>No products found in selected categories.</p>';
+        echo '<p>' . esc_html__('No products found in selected categories.', 'advanced-offers-for-woocommerce') . '</p>';
     }
 
     wp_reset_postdata();
@@ -449,6 +485,7 @@ add_action('before_delete_post', function ($post_id) {
     }
 
     // Get the offer ID from the flash_offers table
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
     $offer = $wpdb->get_row($wpdb->prepare(
         "SELECT id FROM {$wpdb->prefix}flash_offers WHERE post_id = %d",
         $post_id
@@ -458,6 +495,7 @@ add_action('before_delete_post', function ($post_id) {
         $offer_id = $offer->id;
 
         // Delete from flash_offer_categories table
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $wpdb->delete(
             $wpdb->prefix . 'flash_offer_categories',
             ['offer_id' => $offer_id],
@@ -465,6 +503,7 @@ add_action('before_delete_post', function ($post_id) {
         );
 
         // Delete from flash_offer_products table
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $wpdb->delete(
             $wpdb->prefix . 'flash_offer_products',
             ['offer_id' => $offer_id],
@@ -472,6 +511,7 @@ add_action('before_delete_post', function ($post_id) {
         );
 
         // Delete from flash_offers table
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $wpdb->delete(
             $wpdb->prefix . 'flash_offers',
             ['post_id' => $post_id],

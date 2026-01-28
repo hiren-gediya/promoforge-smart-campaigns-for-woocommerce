@@ -1,8 +1,12 @@
 <?php
-// Shortcode to display special offer products
-add_shortcode('flash_special_offer', 'display_special_offer_products');
+if (!defined('ABSPATH')) {
+    exit;
+}
 
-function display_special_offer_products($atts)
+// Shortcode to display special offer products
+add_shortcode('flash_special_offer', 'flashoffers_display_special_offer_products');
+
+function flashoffers_display_special_offer_products($atts)
 {
     $atts = shortcode_atts([
         'id' => 0, // Special Offer post ID
@@ -10,12 +14,14 @@ function display_special_offer_products($atts)
         'limit' => -1,
     ], $atts, 'flash_special_offer');
 
-    $offer_id = (int)$atts['id'];
-    if (!$offer_id) return '<p class="flash-offer-error">Invalid offer ID.</p>';
+    $offer_id = (int) $atts['id'];
+    if (!$offer_id)
+        return '<p class="flash-offer-error">' . esc_html__('Invalid offer ID.', 'advanced-offers-for-woocommerce') . '</p>';
 
     global $wpdb;
 
     // Get offer info
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
     $offer = $wpdb->get_row($wpdb->prepare(
         "SELECT id, discount, end_date FROM {$wpdb->prefix}flash_offers 
          WHERE post_id = %d AND offer_type = %s",
@@ -23,20 +29,23 @@ function display_special_offer_products($atts)
         'special'
     ));
 
-    if (!$offer) return '<p class="flash-offer-error">Invalid or missing special offer.</p>';
+    if (!$offer)
+        return '<p class="flash-offer-error">' . esc_html__('Invalid or missing special offer.', 'advanced-offers-for-woocommerce') . '</p>';
 
     // Check if offer is expired
     if (strtotime($offer->end_date) < current_time('timestamp')) {
-        return '<p class="flash-offer-error">This special offer has expired.</p>';
+        return '<p class="flash-offer-error">' . esc_html__('This special offer has expired.', 'advanced-offers-for-woocommerce') . '</p>';
     }
 
     // Get product IDs linked to this offer
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
     $product_ids = $wpdb->get_col($wpdb->prepare(
         "SELECT product_id FROM {$wpdb->prefix}flash_offer_products WHERE offer_id = %d",
         $offer->id
     ));
 
-    if (empty($product_ids)) return '<p class="flash-offer-notice">No products found in this offer.</p>';
+    if (empty($product_ids))
+        return '<p class="flash-offer-notice">' . esc_html__('No products found in this offer.', 'advanced-offers-for-woocommerce') . '</p>';
 
     // Apply limit if set
     if ($atts['limit'] > 0) {
@@ -52,7 +61,8 @@ function display_special_offer_products($atts)
     ];
     $products = new WP_Query($args);
 
-    if (!$products->have_posts()) return '<p class="flash-offer-notice">No valid products found.</p>';
+    if (!$products->have_posts())
+        return '<p class="flash-offer-notice">' . esc_html__('No valid products found.', 'advanced-offers-for-woocommerce') . '</p>';
 
     // Force discount logic to work by setting `from_offer` param
     $_GET['from_offer'] = $offer_id;
@@ -63,12 +73,13 @@ function display_special_offer_products($atts)
 
     // Output
     ob_start();
-?>
+    ?>
 
     <div class="woocommerce flash-special-offer-container <?php echo esc_attr($slider_class); ?>">
         <ul class="products columns-<?php //echo esc_attr($atts['columns']); 
-                                    ?>">
-            <?php while ($products->have_posts()) : $products->the_post(); ?>
+            ?>">
+            <?php while ($products->have_posts()):
+                $products->the_post(); ?>
                 <?php
                 global $product;
                 $product_url = add_query_arg('from_offer', $offer_id, get_permalink($product->get_id()));
@@ -77,27 +88,28 @@ function display_special_offer_products($atts)
                 <li class="product flash-special-offer-product">
                     <a href="<?php echo esc_url($product_url); ?>" class="woocommerce-LoopProduct-link">
                         <?php
-                        // Temporarily modify the product link
-                        add_filter('post_type_link', function ($link, $post) use ($offer_id) {
+                        // Temporarily modify the product link using a variable for the closure so it can be removed
+                        $flash_special_offer_link_filter = function ($link, $post) use ($offer_id) {
                             if ($post->post_type === 'product') {
                                 return add_query_arg('from_offer', $offer_id, $link);
                             }
                             return $link;
-                        }, 10, 2);
+                        };
+
+                        add_filter('post_type_link', $flash_special_offer_link_filter, 10, 2);
 
                         // Display product content
+                        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
                         do_action('woocommerce_before_shop_loop_item');
+                        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
                         do_action('woocommerce_before_shop_loop_item_title');
+                        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
                         do_action('woocommerce_shop_loop_item_title');
+                        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
                         do_action('woocommerce_after_shop_loop_item_title');
 
                         // Remove the filter immediately
-                        remove_filter('post_type_link', function ($link, $post) use ($offer_id) {
-                            if ($post->post_type === 'product') {
-                                return add_query_arg('from_offer', $offer_id, $link);
-                            }
-                            return $link;
-                        }, 10, 2);
+                        remove_filter('post_type_link', $flash_special_offer_link_filter, 10);
                         ?>
                     </a>
 
@@ -144,28 +156,28 @@ function display_special_offer_products($atts)
     });
     ?>
     <script>
-        jQuery(document).ready(function($) {
+        jQuery(document).ready(function ($) {
             // Redirect fixes
-            $(document).on('click', '.flash-special-offer-product .add_to_cart_button', function(e) {
+            $(document).on('click', '.flash-special-offer-product .add_to_cart_button', function (e) {
                 var url = $(this).attr('href');
                 if (url.indexOf('from_offer=') === -1) {
                     e.preventDefault();
-                    window.location.href = url + '&from_offer=<?php echo $offer_id; ?>';
+                    window.location.href = url + '&from_offer=<?php echo (int) $offer_id; ?>';
                 }
             });
 
-            $(document).on('click', '.flash-special-offer-product a.woocommerce-LoopProduct-link', function(e) {
+            $(document).on('click', '.flash-special-offer-product a.woocommerce-LoopProduct-link', function (e) {
                 var url = $(this).attr('href');
                 if (url.indexOf('from_offer=') === -1) {
                     e.preventDefault();
-                    window.location.href = url + '?from_offer=<?php echo $offer_id; ?>';
+                    window.location.href = url + '?from_offer=<?php echo (int) $offer_id; ?>';
                 }
             });
 
             // Auto slider if more than 3 products
             if ($('.flash-special-offer-container.flash-offer-slider-enabled').length) {
                 $('.flash-special-offer-container ul.products').slick({
-                    slidesToShow: <?php echo (int)$atts['columns']; ?>,
+                    slidesToShow: <?php echo (int) $atts['columns']; ?>,
                     slidesToScroll: 1,
                     autoplay: true,
                     autoplaySpeed: 1500,
@@ -173,24 +185,24 @@ function display_special_offer_products($atts)
                     dots: false,
                     infinite: true,
                     responsive: [{
-                            breakpoint: 768,
-                            settings: {
-                                slidesToShow: 2
-                            }
-                        },
-                        {
-                            breakpoint: 480,
-                            settings: {
-                                slidesToShow: 1
-                            }
+                        breakpoint: 768,
+                        settings: {
+                            slidesToShow: 2
                         }
+                    },
+                    {
+                        breakpoint: 480,
+                        settings: {
+                            slidesToShow: 1
+                        }
+                    }
                     ]
                 });
             }
         });
     </script>
 
-<?php
+    <?php
     wp_reset_postdata();
     return ob_get_clean();
 }

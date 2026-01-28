@@ -1,7 +1,11 @@
 <?php
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 // Display BOGO offer on single product page
-add_action('woocommerce_single_product_summary', 'display_bogo_offer_on_product_page', 20);
-function display_bogo_offer_on_product_page()
+add_action('woocommerce_single_product_summary', 'flashoffers_display_bogo_offer_on_product_page', 20);
+function flashoffers_display_bogo_offer_on_product_page()
 {
     if (!is_single()) {
         return;
@@ -13,11 +17,11 @@ function display_bogo_offer_on_product_page()
     global $product, $wpdb;
 
     $product_id = $product->get_id();
-    $table_name = $wpdb->prefix . 'bogo_offers';
     $current_date = current_time('mysql');
 
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
     $bogo_offers = $wpdb->get_results($wpdb->prepare(
-        "SELECT * FROM $table_name
+        "SELECT * FROM {$wpdb->prefix}bogo_offers
          WHERE (buy_product_id = %d OR get_product_id = %d)
          AND start_date <= %s
          AND end_date >= %s",
@@ -54,18 +58,22 @@ function display_bogo_offer_on_product_page()
             do_action('flash_offers_before_bogo_offer_notice', $offer, $buy_product, $get_product);
 
             echo '<div class="bogo-offer-notice">';
-            echo '<h3>' . __('Special BOGO Offer!', 'flash-offers') . '</h3>';
+            echo '<h3>' . esc_html__('Special BOGO Offer!', 'advanced-offers-for-woocommerce') . '</h3>';
 
             $offer_type = $offer->offer_type;
             $discount_text = $offer->discount > 0 ? $offer->discount . '%' : '100%';
-            echo '<p>' . sprintf(
-                __('Buy %d %s and get %d %s with %s discount!', 'flash-offers'),
-                $offer->buy_quantity,
-                $buy_product->get_name(),
-                $offer->get_quantity,
-                $get_product->get_name(),
-                $discount_text
-            ) . '</p>';
+
+            /* translators: 1: Buy quantity 2: Buy product name 3: Get quantity 4: Get product name 5: Discount percentage */
+            $msg_fmt = esc_html__('Buy %1$d %2$s and get %3$d %4$s with %5$s discount!', 'advanced-offers-for-woocommerce');
+            $message = sprintf(
+                $msg_fmt,
+                intval($offer->buy_quantity),
+                esc_html($buy_product->get_name()),
+                intval($offer->get_quantity),
+                esc_html($get_product->get_name()),
+                esc_html($discount_text)
+            );
+            echo '<p>' . wp_kses_post($message) . '</p>';
 
             do_action('flash_offers_before_bogo_offer_box', $offer, $buy_product, $get_product);
 
@@ -75,7 +83,7 @@ function display_bogo_offer_on_product_page()
                     data-get-product-id="' . esc_attr($offer->get_product_id) . '"
                     data-get-quantity="' . esc_attr($offer->get_quantity) . '"
                     data-offer-type="' . esc_attr($offer->offer_type) . '"
-                    data-discount="' . esc_attr($offer->discount) . '">' . __('Add BOGO Offer to Cart', 'flash-offers') . '</button>';
+                    data-discount="' . esc_attr($offer->discount) . '">' . esc_html__('Add BOGO Offer to Cart', 'advanced-offers-for-woocommerce') . '</button>';
 
             do_action('flash_offers_after_bogo_offer_box', $offer, $buy_product, $get_product);
 
@@ -87,20 +95,20 @@ function display_bogo_offer_on_product_page()
 }
 
 // Custom display for BOGO products in table format
-function bogo_custom_display_variable_product($product_type = '')
+function flashoffers_bogo_custom_display_variable_product($product_type = '')
 {
-    global $product, $bogo_data;
+    global $product, $flashoffers_bogo_data;
 
 
-    if (!isset($bogo_data)) {
-        $bogo_data = array();
+    if (!isset($flashoffers_bogo_data)) {
+        $flashoffers_bogo_data = array();
     }
     $bogo_get_attrs = '';
     if ($product_type === 'get' && isset($GLOBALS['bogo_offer_id']) && isset($GLOBALS['bogo_discount'])) {
         $bogo_get_attrs = ' data-is-bogo-get="1" data-bogo-offer-id="' . esc_attr($GLOBALS['bogo_offer_id']) . '" data-bogo-discount="' . esc_attr($GLOBALS['bogo_discount']) . '"';
     }
 
-    $offer_data = bogoffers_get_offer_data($product);
+    $offer_data = flashoffers_get_bogo_offer_data($product);
 
     if ($product->is_type('simple')) {
         $product_id = $product->get_ID();
@@ -109,10 +117,10 @@ function bogo_custom_display_variable_product($product_type = '')
         $regular_price = (float) $product->get_regular_price();
         $sale_price = (float) $product->get_sale_price();
         // $price_per_piece = $price; // assuming 1 piece
-        $offer_type = $GLOBALS['bogo_data']['offer_type'];
-        $buy_product_id = $GLOBALS['bogo_data']['buy_product_id'];
-        $buy_quantity = $GLOBALS['bogo_data']['buy_quantity'];
-        $get_quantity = $GLOBALS['bogo_data']['get_quantity'];
+        $offer_type = $GLOBALS['flashoffers_bogo_data']['offer_type'];
+        $buy_product_id = $GLOBALS['flashoffers_bogo_data']['buy_product_id'];
+        $buy_quantity = $GLOBALS['flashoffers_bogo_data']['buy_quantity'];
+        $get_quantity = $GLOBALS['flashoffers_bogo_data']['get_quantity'];
 
         echo '<table class="variable-product-table bogo-' . esc_attr($product_type) . '-table">
         <thead>
@@ -129,13 +137,13 @@ function bogo_custom_display_variable_product($product_type = '')
         echo '<td>' . esc_html($product->get_name()) . '</td>';
         if ($price_override_type == 'regular') {
             // ✅ Always show regular price
-            echo '<td class="price">' . wc_price($regular_price) . '</td>';
+            echo '<td class="price">' . wp_kses_post(wc_price($regular_price)) . '</td>';
         } else {
             // ✅ Default behavior (sale if exists and valid)
             if ($sale_price && $sale_price < $regular_price) {
-                echo '<td class="price"><del>' . wc_price($regular_price) . '</del> <ins>' . wc_price($sale_price) . '</ins></td>';
+                echo '<td class="price"><del>' . wp_kses_post(wc_price($regular_price)) . '</del> <ins>' . wp_kses_post(wc_price($sale_price)) . '</ins></td>';
             } else {
-                echo '<td class="price">' . wc_price($regular_price) . '</td>';
+                echo '<td class="price">' . wp_kses_post(wc_price($regular_price)) . '</td>';
             }
         }
 
@@ -144,23 +152,35 @@ function bogo_custom_display_variable_product($product_type = '')
         } else {
             $price_per_piece = ($sale_price && $sale_price < $regular_price) ? $sale_price : $regular_price;
         }
-        echo '<td class="price-unit">' . wc_price($price_per_piece) . ' /Piece</td>';
+        echo '<td class="price-unit">' . wp_kses_post(wc_price($price_per_piece)) . ' /Piece</td>';
         if ($offer_type == 'buy_one_get_one') {
-            echo '<td class="list-quantity"><input type="number" value="2" min="1" class="qty" id="qty_' . $product->get_ID() . '" name="quantity_' . $product->get_ID() . '"></td>';
+            echo '<td class="list-quantity"><input type="number" value="2" min="1" class="qty" id="qty_' . esc_attr($product->get_ID()) . '" name="quantity_' . esc_attr($product->get_ID()) . '"></td>';
         }
         if ($offer_type == 'buy_x_get_y') {
 
             if ($product_id === $buy_product_id) {
-                echo '<td class="list-quantity"><input type="number" value="' . $buy_quantity . '" min="1" class="qty" id="qty_' . $product->get_ID() . '" name="quantity_' . $product->get_ID() . '"></td>';
+                echo '<td class="list-quantity"><input type="number" value="' . esc_attr($buy_quantity) . '" min="1" class="qty" id="qty_' . esc_attr($product->get_ID()) . '" name="quantity_' . esc_attr($product->get_ID()) . '"></td>';
             } else {
-                echo '<td class="list-quantity"><input type="number" value="' . $get_quantity . '" min="1" class="qty" id="qty_' . $product->get_ID() . '" name="quantity_' . $product->get_ID() . '"></td>';
+                echo '<td class="list-quantity"><input type="number" value="' . esc_attr($get_quantity) . '" min="1" class="qty" id="qty_' . esc_attr($product->get_ID()) . '" name="quantity_' . esc_attr($product->get_ID()) . '"></td>';
             }
         }
         echo '<td class="add-bogo">';
         $offer_id = $GLOBALS['bogo_offer_id'] ?? 0;
-        $offer_data = bogoffers_get_offer_data($product);
+        $offer_data = flashoffers_get_bogo_offer_data($product);
         $price_override_type = $offer_data['bogo_override_type'] ?? 'sale';
-        echo '<button type="button" class="button alt bogo-add-to-cart" data-product-id="' . esc_attr($product->get_ID()) . '" data-variation-id="0" data-product-type="' . esc_attr($product_type) . '" data-offer-id="' . esc_attr($offer_id) . '" data-price-override-type="' . esc_attr($price_override_type) . '"' . $bogo_get_attrs . '><span>Add ' . ucfirst($product_type) . ' Product</span></button>';
+
+        // $bogo_get_attrs contains HTML attributes, we use printf to output it safely alongside other attributes
+        printf(
+            '<button type="button" class="button alt bogo-add-to-cart" data-product-id="%s" data-variation-id="0" data-product-type="%s" data-offer-id="%s" data-price-override-type="%s" %s><span>Add %s Product</span></button>',
+            esc_attr($product->get_ID()),
+            esc_attr($product_type),
+            esc_attr($offer_id),
+            esc_attr($price_override_type),
+            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+            $bogo_get_attrs, // Contains already escaped attributes
+            esc_html(ucfirst($product_type))
+        );
+
         echo '</td>';
         echo '</tr>';
         echo "</tbody>";
@@ -190,12 +210,12 @@ function bogo_custom_display_variable_product($product_type = '')
             $sale_price = (float) $variation_obj->get_sale_price();
 
             $attributes = $variation['attributes'];
-            $buy_quantity = $GLOBALS['bogo_data']['buy_quantity'];
-            $get_quantity = $GLOBALS['bogo_data']['get_quantity'];
-            $buy_product_id = $GLOBALS['bogo_data']['buy_product_id'];
+            $buy_quantity = $GLOBALS['flashoffers_bogo_data']['buy_quantity'];
+            $get_quantity = $GLOBALS['flashoffers_bogo_data']['get_quantity'];
+            $buy_product_id = $GLOBALS['flashoffers_bogo_data']['buy_product_id'];
             $parent_id = $variation_obj->get_parent_id();
             $is_in_stock = $variation_obj && $variation_obj->is_in_stock();
-            $offer_type = $GLOBALS['bogo_data']['offer_type'];
+            $offer_type = $GLOBALS['flashoffers_bogo_data']['offer_type'];
             $pack_size = $attributes['attribute_pa_pack-size'];
 
             // ✅ Decide which price to use
@@ -227,29 +247,40 @@ function bogo_custom_display_variable_product($product_type = '')
             }
 
             // ✅ Price cell
-            echo '<td class="price">' . $price_display_html . '</td>';
+            echo '<td class="price">' . wp_kses_post($price_display_html) . '</td>';
 
             // ✅ Price per unit cell
-            echo '<td class="price-unit">' . ($price_per_piece !== '-' ? wc_price($price_per_piece) . ' /Piece' : '-') . '</td>';
+            echo '<td class="price-unit">' . ($price_per_piece !== '-' ? wp_kses_post(wc_price($price_per_piece)) . ' /Piece' : '-') . '</td>';
 
             // ✅ Quantity logic
             if ($offer_type == 'buy_one_get_one') {
-                echo '<td class="list-quantity"><input type="number" value="2" min="1" class="qty" id="qty_' . $variation['variation_id'] . '" name="quantity_' . $variation['variation_id'] . '"></td>';
+                echo '<td class="list-quantity"><input type="number" value="2" min="1" class="qty" id="qty_' . esc_attr($variation['variation_id']) . '" name="quantity_' . esc_attr($variation['variation_id']) . '"></td>';
             }
             if ($offer_type == 'buy_x_get_y') {
                 if ($parent_id == $buy_product_id) {
-                    echo '<td class="list-quantity"><input type="number" value="' . $buy_quantity . '" min="1" class="qty" id="qty_' . $variation['variation_id'] . '" name="quantity_' . $variation['variation_id'] . '"></td>';
+                    echo '<td class="list-quantity"><input type="number" value="' . esc_attr($buy_quantity) . '" min="1" class="qty" id="qty_' . esc_attr($variation['variation_id']) . '" name="quantity_' . esc_attr($variation['variation_id']) . '"></td>';
                 } else {
-                    echo '<td class="list-quantity"><input type="number" value="' . $get_quantity . '" min="1" class="qty" id="qty_' . $variation['variation_id'] . '" name="quantity_' . $variation['variation_id'] . '"></td>';
+                    echo '<td class="list-quantity"><input type="number" value="' . esc_attr($get_quantity) . '" min="1" class="qty" id="qty_' . esc_attr($variation['variation_id']) . '" name="quantity_' . esc_attr($variation['variation_id']) . '"></td>';
                 }
             }
 
             // ✅ Add to cart button
             echo '<td>';
             $offer_id = $GLOBALS['bogo_offer_id'] ?? 0;
-            $offer_data = bogoffers_get_offer_data($product);
+            $offer_data = flashoffers_get_bogo_offer_data($product);
             $price_override_type = $offer_data['bogo_override_type'] ?? 'sale';
-            echo '<button type="button" class="button alt bogo-add-to-cart" data-product-id="' . esc_attr($product->get_id()) . '" data-variation-id="' . esc_attr($variation['variation_id']) . '" data-product-type="' . esc_attr($product_type) . '" data-offer-id="' . esc_attr($offer_id) . '" data-price-override-type="' . esc_attr($price_override_type) . '" ' . (!$is_in_stock ? 'disabled' : '') . '><span>Add ' . ucfirst($product_type) . ' Product</span></button>';
+
+            printf(
+                '<button type="button" class="button alt bogo-add-to-cart" data-product-id="%s" data-variation-id="%s" data-product-type="%s" data-offer-id="%s" data-price-override-type="%s" %s><span>Add %s Product</span></button>',
+                esc_attr($product->get_id()),
+                esc_attr($variation['variation_id']),
+                esc_attr($product_type),
+                esc_attr($offer_id),
+                esc_attr($price_override_type),
+                (!$is_in_stock ? 'disabled' : ''),
+                esc_html(ucfirst($product_type))
+            );
+
             echo '</td>';
 
             echo '</tr>';
@@ -261,7 +292,7 @@ function bogo_custom_display_variable_product($product_type = '')
 }
 
 // Display the BOGO product form (table or default Woo)
-function display_bogo_product_form($product, $type_label = '', $show_price = false, $product_type = '')
+function flashoffers_display_bogo_product_form($product, $type_label = '', $show_price = false, $product_type = '')
 {
     $options = get_option('flash_offers_options');
     $bogo_format = $options['bogo_format'] ?? 'default';
@@ -269,16 +300,16 @@ function display_bogo_product_form($product, $type_label = '', $show_price = fal
     // Allow theme or plugin to override BOGO product form display
     $override = apply_filters('flash_offers_override_bogo_product_form', false, $product, $type_label, $show_price, $product_type);
     if ($override) {
-        echo $override;
+        echo wp_kses_post($override);
         return;
     }
 
     if ($bogo_format === 'table') {
-        bogo_custom_display_variable_product($product_type);
+        flashoffers_bogo_custom_display_variable_product($product_type);
     } else {
         // Set global $product to ensure WooCommerce functions work properly
         global $product;
-        $product = $product;
+        // $product = $product; // Removed redundant assignment
 
         // Enqueue WooCommerce variation script if product is variable
         if ($product->is_type('variable')) {
@@ -286,6 +317,7 @@ function display_bogo_product_form($product, $type_label = '', $show_price = fal
         }
 
         // Use WooCommerce default add to cart action for proper dropdown support
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
         do_action('woocommerce_' . $product->get_type() . '_add_to_cart');
     }
 }
@@ -293,7 +325,7 @@ function display_bogo_product_form($product, $type_label = '', $show_price = fal
 
 
 // Function to get BOGO offer data for a product
-function bogoffers_get_offer_data($product)
+function flashoffers_get_bogo_offer_data($product)
 {
     global $wpdb;
 
@@ -306,11 +338,11 @@ function bogoffers_get_offer_data($product)
         $product_id = $product->get_parent_id();
     }
 
-    $table_name = $wpdb->prefix . 'bogo_offers';
     $current_date = current_time('mysql');
 
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
     $offer = $wpdb->get_row($wpdb->prepare(
-        "SELECT * FROM $table_name
+        "SELECT * FROM {$wpdb->prefix}bogo_offers
          WHERE (buy_product_id = %d OR get_product_id = %d)
          AND start_date <= %s
          AND end_date >= %s
@@ -360,16 +392,16 @@ function bogoffers_get_offer_data($product)
 
 
 // Hook display function to WooCommerce actions
-add_action('woocommerce_before_shop_loop_item_title', 'display_bogo_offer_badge', 9);
-add_action('woocommerce_single_product_summary', 'display_bogo_offer_badge', 8);
-add_action('display_bogo_offer_badge', 'display_bogo_offer_badge');
-function display_bogo_offer_badge()
+add_action('woocommerce_before_shop_loop_item_title', 'flashoffers_display_bogo_offer_badge', 9);
+add_action('woocommerce_single_product_summary', 'flashoffers_display_bogo_offer_badge', 8);
+add_action('flashoffers_display_bogo_offer_badge', 'flashoffers_display_bogo_offer_badge');
+function flashoffers_display_bogo_offer_badge()
 {
     global $product;
     if (!$product)
         return;
 
-    $offer_data = bogoffers_get_offer_data($product);
+    $offer_data = flashoffers_get_bogo_offer_data($product);
 
     if (!$offer_data || empty($offer_data['badge_text']))
         return;
@@ -384,48 +416,48 @@ function display_bogo_offer_badge()
     $badge_color = $options['badge_bg_color'] ?? '#00a99d';
 
     if ($show_on_shop || $show_on_category || $show_on_home || $is_other_location || $show_on_single) {
-        echo '<span class="flash-offer-badge ' . esc_attr($offer_data['status']) . '" style="width: fit-content;; background-color:' . esc_attr($badge_color) . ';">' . esc_html($offer_data['badge_text']) . '</span>';
+        echo '<span class="flash-offer-badge ' . esc_attr($offer_data['status']) . '" style="background-color:' . esc_attr($badge_color) . ';">' . esc_html($offer_data['badge_text']) . '</span>';
     }
 }
 
 
-add_action('woocommerce_before_shop_loop_item', 'remove_bogo_sale_badge_css');
-add_action('woocommerce_before_single_product_summary', 'remove_bogo_sale_badge_css');
+add_action('woocommerce_before_shop_loop_item', 'flashoffers_remove_bogo_sale_badge_css');
+add_action('woocommerce_before_single_product_summary', 'flashoffers_remove_bogo_sale_badge_css');
 
-function remove_bogo_sale_badge_css()
+function flashoffers_remove_bogo_sale_badge_css()
 {
     global $product;
     if (!$product)
         return;
 
     // Get BOGO data
-    $offer_data = bogoffers_get_offer_data($product);
+    $offer_data = flashoffers_get_bogo_offer_data($product);
 
     // If variation has no offer, check parent
     if (empty($offer_data['offer']) && $product->is_type('variation')) {
         $parent = wc_get_product($product->get_parent_id());
         if ($parent) {
-            $offer_data = bogoffers_get_offer_data($parent);
+            $offer_data = flashoffers_get_bogo_offer_data($parent);
         }
     }
 
     // ✅ Only if this product has an offer → hide badge for THIS product only
     if (!empty($offer_data['offer'])) {
-        echo '<style>.post-' . $product->get_id() . ' .onsale { display: none !important; }</style>';
+        echo '<style>.post-' . esc_attr($product->get_id()) . ' .onsale { display: none !important; }</style>';
     }
 }
 
 
 // Hook countdown display for BOGO offers
-add_action('woocommerce_before_shop_loop_item_title', 'display_bogoffers_countdown', 9);
-add_action('woocommerce_single_product_summary', 'display_bogoffers_countdown', 8);
-function display_bogoffers_countdown()
+add_action('woocommerce_before_shop_loop_item_title', 'flashoffers_display_bogoffers_countdown', 9);
+add_action('woocommerce_single_product_summary', 'flashoffers_display_bogoffers_countdown', 8);
+function flashoffers_display_bogoffers_countdown()
 {
     global $product;
     if (!$product)
         return;
 
-    $offer_data = bogoffers_get_offer_data($product);
+    $offer_data = flashoffers_get_bogo_offer_data($product);
     if (!$offer_data)
         return;
 
@@ -456,11 +488,11 @@ function display_bogoffers_countdown()
 
 
 // Filter the price HTML to override based on BOGO settings
-add_filter('woocommerce_get_price_html', 'bogo_offers_price_html_override', 100, 2);
-function bogo_offers_price_html_override($price_html, $product)
+add_filter('woocommerce_get_price_html', 'flashoffers_bogo_offers_price_html_override', 100, 2);
+function flashoffers_bogo_offers_price_html_override($price_html, $product)
 {
     // Get BOGO offer data for the product
-    $offer_data = bogoffers_get_offer_data($product);
+    $offer_data = flashoffers_get_bogo_offer_data($product);
 
     // If no active BOGO offer, return the default price HTML
     if (!$offer_data || $offer_data['status'] !== 'active') {
@@ -519,10 +551,10 @@ function bogo_offers_price_html_override($price_html, $product)
 
 
 // Filter the variation data to override the price HTML based on BOGO settings.
-add_filter('woocommerce_available_variation', 'bogo_offers_variation_price_html_override', 100, 3);
-function bogo_offers_variation_price_html_override($variation_data, $product, $variation)
+add_filter('woocommerce_available_variation', 'flashoffers_bogo_offers_variation_price_html_override', 100, 3);
+function flashoffers_bogo_offers_variation_price_html_override($variation_data, $product, $variation)
 {
-    $offer_data = bogoffers_get_offer_data($product);
+    $offer_data = flashoffers_get_bogo_offer_data($product);
     if ($offer_data && ($offer_data['bogo_override_type'] ?? 'sale') === 'regular') {
         $variation_data['price_html'] = '<span class="price">' . wc_price($variation->get_regular_price()) . '</span>';
     }

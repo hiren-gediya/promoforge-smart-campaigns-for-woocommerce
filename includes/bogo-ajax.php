@@ -1,88 +1,94 @@
 <?php
-// Handle AJAX request to add BOGO product to cart
-add_action('wp_ajax_bogo_add_to_cart', 'handle_bogo_ajax_add_to_cart');
-add_action('wp_ajax_nopriv_bogo_add_to_cart', 'handle_bogo_ajax_add_to_cart');
+if (!defined('ABSPATH')) {
+    exit;
+}
 
-function handle_bogo_ajax_add_to_cart()
+// Handle AJAX request to add BOGO product to cart
+add_action('wp_ajax_bogo_add_to_cart', 'flashoffers_handle_bogo_ajax_add_to_cart');
+add_action('wp_ajax_nopriv_bogo_add_to_cart', 'flashoffers_handle_bogo_ajax_add_to_cart');
+
+function flashoffers_handle_bogo_ajax_add_to_cart()
 {
     check_ajax_referer('bogo_add_nonce', 'nonce');
 
-    $product_id = intval($_POST['product_id']);
-    $variation_id = intval($_POST['variation_id']);
-    $quantity = intval($_POST['quantity']);
+    $product_id = isset($_POST['product_id']) ? intval($_POST['product_id']) : 0;
+    $variation_id = isset($_POST['variation_id']) ? intval($_POST['variation_id']) : 0;
+    $quantity = isset($_POST['quantity']) ? intval($_POST['quantity']) : 0;
 
     if (!$product_id) {
-        wp_send_json_error(['message' => 'Invalid product ID.']);
+        wp_send_json_error(['message' => esc_html__('Invalid product ID.', 'advanced-offers-for-woocommerce')]);
     }
 
     $product = wc_get_product($product_id);
 
     if (!$product) {
-        wp_send_json_error(['message' => 'Invalid product.']);
+        wp_send_json_error(['message' => esc_html__('Invalid product.', 'advanced-offers-for-woocommerce')]);
     }
 
     // Validate variation if provided
     if ($variation_id && !wc_get_product($variation_id)) {
-        wp_send_json_error(['message' => 'Invalid variation.']);
+        wp_send_json_error(['message' => esc_html__('Invalid variation.', 'advanced-offers-for-woocommerce')]);
     }
 
     // Add product/variation to cart
     $added = WC()->cart->add_to_cart($product_id, $quantity, $variation_id);
 
     if ($added) {
-        wp_send_json_success(['message' => 'Product added to cart successfully!']);
+        wp_send_json_success(['message' => esc_html__('Product added to cart successfully!', 'advanced-offers-for-woocommerce')]);
     } else {
-        wp_send_json_error(['message' => 'Could not add product to cart.']);
+        wp_send_json_error(['message' => esc_html__('Could not add product to cart.', 'advanced-offers-for-woocommerce')]);
     }
 }
 
 // Handle AJAX request to load BOGO product form
-add_action('wp_ajax_load_bogo_product_form', 'load_bogo_product_form');
-add_action('wp_ajax_nopriv_load_bogo_product_form', 'load_bogo_product_form');
-function load_bogo_product_form()
+add_action('wp_ajax_load_bogo_product_form', 'flashoffers_load_bogo_product_form');
+add_action('wp_ajax_nopriv_load_bogo_product_form', 'flashoffers_load_bogo_product_form');
+function flashoffers_load_bogo_product_form()
 {
+    check_ajax_referer('bogo_add_nonce', 'nonce');
+
     if (!isset($_POST['buy_product_id']) || !isset($_POST['get_product_id'])) {
-        wp_send_json_error(['message' => 'Missing offer data']);
+        wp_send_json_error(['message' => esc_html__('Missing offer data', 'advanced-offers-for-woocommerce')]);
     }
 
     $buy_product_id = intval($_POST['buy_product_id']);
     $get_product_id = intval($_POST['get_product_id']);
     $buy_quantity = intval($_POST['buy_quantity'] ?? 1);
     $get_quantity = intval($_POST['get_quantity'] ?? 1);
-    $offer_type = sanitize_text_field($_POST['offer_type'] ?? 'buy_x_get_y');
+    $offer_type = sanitize_text_field(wp_unslash($_POST['offer_type'] ?? 'buy_x_get_y'));
     $discount = floatval($_POST['discount'] ?? 0);
 
     $buy_product = wc_get_product($buy_product_id);
     $get_product = wc_get_product($get_product_id);
 
     if (!$buy_product || !$get_product) {
-        wp_send_json_error(['message' => 'Invalid products']);
+        wp_send_json_error(['message' => esc_html__('Invalid products', 'advanced-offers-for-woocommerce')]);
     }
 
     // Query the full offer record from database for different products offers
     if ($offer_type === 'buy_x_get_y') {
         global $wpdb;
-        $table_name = $wpdb->prefix . 'bogo_offers';
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $offer_record = $wpdb->get_row($wpdb->prepare(
-            "SELECT * FROM $table_name WHERE buy_product_id = %d AND get_product_id = %d",
+            "SELECT * FROM {$wpdb->prefix}bogo_offers WHERE buy_product_id = %d AND get_product_id = %d",
             $buy_product_id,
             $get_product_id
         ));
 
         if (!$offer_record) {
-            wp_send_json_error(['message' => 'Offer not found in database']);
+            wp_send_json_error(['message' => esc_html__('Offer not found in database', 'advanced-offers-for-woocommerce')]);
         }
 
         // Use database values for accuracy
         $discount = $offer_record->discount;
-        $GLOBALS['bogo_offer_id'] = (int) $offer_record->id;
-        $GLOBALS['bogo_discount'] = $discount;
+        $GLOBALS['flashoffers_bogo_offer_id'] = (int) $offer_record->id;
+        $GLOBALS['flashoffers_bogo_discount'] = $discount;
     }
 
 
 
     // Set global BOGO data for custom_display_variable_product
-    $GLOBALS['bogo_data'] = array(
+    $GLOBALS['flashoffers_bogo_data'] = array(
         'buy_product_id' => $buy_product_id,
         'get_product_id' => $get_product_id,
         'buy_quantity' => $buy_quantity,
@@ -99,15 +105,19 @@ function load_bogo_product_form()
     // ✅ OFFER TITLE
     // ========================
     if ($offer_type == 'buy_one_get_one') {
-        echo '<h3>Buy One Get One: ' . esc_html($buy_product->get_name()) . '</h3>';
+        /* translators: %s: Product Name */
+        echo '<h3>' . esc_html(sprintf(__('Buy One Get One: %s', 'advanced-offers-for-woocommerce'), $buy_product->get_name())) . '</h3>';
     } else {
-        echo '<h3>Buy ' . esc_html($buy_quantity) . ': ' . esc_html($buy_product->get_name()) . '</h3>';
+        /* translators: 1: Quantity, 2: Product Name */
+        echo '<h3>' . esc_html(sprintf(__('Buy %1$d: %2$s', 'advanced-offers-for-woocommerce'), $buy_quantity, $buy_product->get_name())) . '</h3>';
     }
 
     // ========================
     // ✅ BUY PRODUCT FORM
     // ========================
+    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
     global $product, $post;
+    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
     $product = $buy_product; // set global
 
     $buy_post = get_post($buy_product_id);
@@ -124,17 +134,17 @@ function load_bogo_product_form()
             if ($product->is_on_sale()) {
                 // Show regular (strikethrough) and sale price
                 echo '<td class="price">
-                <del>' . wc_price($product->get_regular_price()) . '</del> 
-                <ins>' . wc_price($product->get_sale_price()) . '</ins>
+                <del>' . wp_kses_post(wc_price($product->get_regular_price())) . '</del> 
+                <ins>' . wp_kses_post(wc_price($product->get_sale_price())) . '</ins>
               </td>';
             } else {
                 // Show normal price
-                echo '<td class="price">' . wc_price($price) . '</td>';
+                echo '<td class="price">' . wp_kses_post(wc_price($price)) . '</td>';
             }
         }
     }
     ob_start();
-    display_bogo_product_form($product, true, 'buy');
+    flashoffers_display_bogo_product_form($product, true, 'buy');
     $buy_html = ob_get_clean();
     $buy_html = str_replace('<form class="', '<form class="bogo-buy-form ', $buy_html);
 
@@ -149,7 +159,7 @@ function load_bogo_product_form()
     // Append variations data inside the form if variable
     if ($buy_product->is_type('variable')) {
         $variations_json = wp_json_encode($buy_product->get_available_variations());
-        $attributes      = $buy_product->get_variation_attributes();
+        $attributes = $buy_product->get_variation_attributes();
 
         $variations_script = '<div class="variations_form" data-product_id="' . esc_attr($buy_product->get_id()) . '">';
         $variations_script .= '<script type="application/json" class="wc-variations">' . $variations_json . '</script>';
@@ -159,14 +169,16 @@ function load_bogo_product_form()
     }
 
 
-    echo $buy_html;
+    echo $buy_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
     // ========================
     // ✅ GET PRODUCT (only if not BOGO 1+1)
     // ========================
     if ($offer_type !== 'buy_one_get_one') {
-        echo '<h3>Get ' . esc_html($get_quantity) . ' at ' . esc_html(round($discount)) . '% Off: ' . esc_html($get_product->get_name()) . '</h3>';
+        /* translators: 1: Quantity, 2: Discount, 3: Product Name */
+        echo '<h3>' . esc_html(sprintf(__('Get %1$d at %2$s%% Off: %3$s', 'advanced-offers-for-woocommerce'), $get_quantity, round($discount), $get_product->get_name())) . '</h3>';
 
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
         $product = $get_product; // set global
 
         $get_post = get_post($get_product_id);
@@ -175,7 +187,7 @@ function load_bogo_product_form()
             setup_postdata($get_post);
         }
         $price = $product->get_sale_price() ?: $product->get_regular_price();
-       
+
         $options = get_option('flash_offers_options');
         $bogo_format = $options['bogo_format'] ?? 'default';
 
@@ -185,18 +197,18 @@ function load_bogo_product_form()
                 if ($product->is_on_sale()) {
                     // Show regular (strikethrough) and sale price
                     echo '<td class="price">
-                <del>' . wc_price($product->get_regular_price()) . '</del> 
-                <ins>' . wc_price($product->get_sale_price()) . '</ins>
+                <del>' . wp_kses_post(wc_price($product->get_regular_price())) . '</del> 
+                <ins>' . wp_kses_post(wc_price($product->get_sale_price())) . '</ins>
               </td>';
                 } else {
                     // Show normal price
-                    echo '<td class="price">' . wc_price($price) . '</td>';
+                    echo '<td class="price">' . wp_kses_post(wc_price($price)) . '</td>';
                 }
             }
         }
 
         ob_start();
-        display_bogo_product_form($product, true, 'get');
+        flashoffers_display_bogo_product_form($product, true, 'get');
         $get_html = ob_get_clean();
         $get_html = str_replace('<form class="', '<form class="bogo-get-form ', $get_html);
         // Remove id attributes from select tags and for attributes from labels to avoid duplicates
@@ -214,7 +226,7 @@ function load_bogo_product_form()
         // Append variations data inside the form if variable
         if ($get_product->is_type('variable')) {
             $variations_json = wp_json_encode($get_product->get_available_variations());
-            $attributes      = $get_product->get_variation_attributes();
+            $attributes = $get_product->get_variation_attributes();
 
             $variations_script = '<div class="variations_form" data-product_id="' . esc_attr($get_product->get_id()) . '">';
             $variations_script .= '<script type="application/json" class="wc-variations">' . $variations_json . '</script>';
@@ -224,7 +236,7 @@ function load_bogo_product_form()
         }
 
 
-        echo $get_html;
+        echo $get_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
     }
 
     wp_reset_postdata();
