@@ -11,14 +11,15 @@
     width: 120px;
     text-align: center;
     background: #fff;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
     position: relative;
     transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .product-select-list .product-box:hover {
-    border-color: #0073aa; /* WooCommerce blue */
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    border-color: #0073aa;
+    /* WooCommerce blue */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .product-select-list .product-box input[type="checkbox"] {
@@ -39,4 +40,3 @@
     margin-top: 5px;
     font-size: 0.9em;
 }
-

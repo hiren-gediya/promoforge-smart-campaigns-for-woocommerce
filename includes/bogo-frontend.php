@@ -1,11 +1,15 @@
 <?php
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 // Include separated BOGO frontend files
 require_once plugin_dir_path(__FILE__) . 'bogo-display.php';
 require_once plugin_dir_path(__FILE__) . 'bogo-ajax.php';
 require_once plugin_dir_path(__FILE__) . 'bogo-cart.php';
 
-add_action('wp_enqueue_scripts', 'enqueue_bogo_frontend_assets');
-function enqueue_bogo_frontend_assets()
+add_action('wp_enqueue_scripts', 'flashoffers_enqueue_bogo_frontend_assets');
+function flashoffers_enqueue_bogo_frontend_assets()
 {
     // Enqueue CSS
     wp_enqueue_style('bogo-frontend-css', plugin_dir_url(__FILE__) . '../assets/css/bogo-frontend.css', array(), '1.0');
