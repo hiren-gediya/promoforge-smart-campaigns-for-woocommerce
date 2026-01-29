@@ -138,29 +138,21 @@ add_filter('woocommerce_add_to_cart_redirect', function ($url) {
 });
 
 // 7. Add JavaScript to handle single product page add-to-cart
-add_action('wp_footer', function () {
+// 7. Pass special offer data to frontend JS
+add_action('wp_enqueue_scripts', function () {
     if (!is_product())
         return;
     // phpcs:ignore WordPress.Security.NonceVerification.Recommended
     if (!isset($_GET['from_offer']))
         return;
-    ?>
-    <script>
-        jQuery(document).ready(function ($) {
-            <?php
-            // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-            $offer_id_js = (int) $_GET['from_offer'];
-            ?>
-            // Add hidden field to maintain offer parameter
-            $('form.cart').append('<input type="hidden" name="from_offer" value="<?php echo esc_attr($offer_id_js); ?>">');
 
-            // Handle AJAX add-to-cart
-            $(document).on('added_to_cart', function () {
-                window.location.href = '<?php echo esc_js(esc_url(add_query_arg('from_offer', $offer_id_js, wc_get_cart_url()))); ?>';
-            });
-        });
-    </script>
-    <?php
+    // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+    $offer_id = (int) $_GET['from_offer'];
+
+    wp_localize_script('flashoffers-frontend', 'wao_special_offer_params', [
+        'offer_id' => $offer_id,
+        'cart_redirect_url' => add_query_arg('from_offer', $offer_id, wc_get_cart_url())
+    ]);
 });
 
 

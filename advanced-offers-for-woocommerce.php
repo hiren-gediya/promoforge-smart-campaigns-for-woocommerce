@@ -58,6 +58,13 @@ add_action('wp_enqueue_scripts', function () {
         '1.8.1',
         true
     );
+    wp_enqueue_script(
+        'flashoffers-frontend',
+        plugin_dir_url(__FILE__) . 'assets/js/wao-frontend.js',
+        ['jquery', 'slick-js'],
+        '1.1',
+        true
+    );
 });
 
 
@@ -65,7 +72,7 @@ add_action('wp_enqueue_scripts', function () {
 add_action('admin_enqueue_scripts', function ($hook) {
     if ($hook === 'post-new.php' || $hook === 'post.php') {
         global $post;
-        if ($post && $post->post_type === 'flash_offer') {
+        if ($post && ($post->post_type === 'flash_offer' || $post->post_type === 'bogo_offer')) {
             wp_enqueue_script('flashoffers-admin', plugin_dir_url(__FILE__) . 'assets/js/admin.js', ['jquery'], '1.1', true);
         }
     }

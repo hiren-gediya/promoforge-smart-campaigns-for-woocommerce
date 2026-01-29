@@ -70,7 +70,7 @@ function flashoffers_offer_details_callback($post)
     <div class="flash-offer-admin">
         <p>
             <label for="offer_type"><?php esc_html_e('Offer Type:', 'advanced-offers-for-woocommerce'); ?></label><br>
-            <select name="offer_type" id="offer_type" style="width:200px;">
+            <select name="offer_type" id="offer_type" class="wao-admin-select-200">
                 <option value="flash" <?php selected($offer_type, 'flash'); ?>>
                     <?php esc_html_e('Flash Offer', 'advanced-offers-for-woocommerce'); ?>
                 </option>
@@ -83,12 +83,13 @@ function flashoffers_offer_details_callback($post)
             </select>
         </p>
 
-        <p class="flash_offer_start_fields" style="display:<?php echo ($offer_type === 'flash') ? 'none' : 'block'; ?>">
+        <p
+            class="flash_offer_start_fields <?php echo ($offer_type === 'flash') ? 'wao-display-none' : 'wao-display-block'; ?>">
             <label
                 for="flash_offer_start"><?php esc_html_e('Start Date & Time:', 'advanced-offers-for-woocommerce'); ?></label><br>
             <input type="datetime-local" name="flash_offer_start"
                 value="<?php echo esc_attr($start ? str_replace(' ', 'T', substr($start, 0, 16)) : ''); ?>"
-                style="width:200px;">
+                class="wao-admin-input-200">
         </p>
 
         <p>
@@ -96,20 +97,20 @@ function flashoffers_offer_details_callback($post)
                 for="flash_offer_end"><?php esc_html_e('End Date & Time:', 'advanced-offers-for-woocommerce'); ?></label><br>
             <input type="datetime-local" name="flash_offer_end"
                 value="<?php echo esc_attr($end ? str_replace(' ', 'T', substr($end, 0, 16)) : ''); ?>"
-                style="width:200px;">
+                class="wao-admin-input-200">
         </p>
 
         <p>
             <label
                 for="flash_offer_discount"><?php esc_html_e('Discount (%):', 'advanced-offers-for-woocommerce'); ?></label><br>
             <input type="number" name="flash_offer_discount" value="<?php echo esc_attr($discount); ?>" min="1" max="100"
-                style="width:200px;">
+                class="wao-admin-input-200">
         </p>
         <p>
             <label
                 for="flash_offer_use_offers"><?php esc_html_e('How Many Time User Can Use This Offers:', 'advanced-offers-for-woocommerce'); ?></label><br>
             <input type="number" name="flash_offer_use_offers" value="<?php echo esc_attr($use_offers); ?>" min="1"
-                max="100" style="width:200px;">
+                max="100" class="wao-admin-input-200">
         </p>
 
 
@@ -117,7 +118,7 @@ function flashoffers_offer_details_callback($post)
             <p>
                 <label><?php esc_html_e('Assign to Categories:', 'advanced-offers-for-woocommerce'); ?></label><br>
                 <select id="flash_offer_category_selector" name="flash_offer_offer_categories[]" multiple="multiple"
-                    style="width:400px;" class="flash_offer_wc-enhanced-select">
+                    class="flash_offer_wc-enhanced-select wao-admin-width-400">
                     <?php foreach ($categories_list as $category): ?>
                         <option value="<?php echo esc_attr($category->term_id); ?>" <?php selected(in_array($category->term_id, $categories)); ?>>
                             <?php echo esc_html($category->name); ?>
@@ -126,7 +127,7 @@ function flashoffers_offer_details_callback($post)
                 </select>
             </p>
 
-            <div id="category-product-preview" style="margin-top: 20px;">
+            <div id="category-product-preview" class="wao-mt-20">
                 <?php if (!empty($products)): ?>
                     <div class="product-select-list">
                         <?php foreach ($products as $product_id):
@@ -137,7 +138,7 @@ function flashoffers_offer_details_callback($post)
                             <label class="product-box">
                                 <input type="checkbox" name="offer_products[]" value="<?php echo esc_attr($product_id); ?>"
                                     checked />
-                                <div style="height:100px; display:flex; align-items:center; justify-content:center;">
+                                <div class="wao-product-img-container">
                                     <?php echo wp_kses_post($product->get_image('thumbnail')); ?>
                                 </div>
                                 <strong><?php echo esc_html($product->get_name()); ?></strong>
@@ -151,9 +152,9 @@ function flashoffers_offer_details_callback($post)
             </div>
         </div>
 
-        <div id="selected-product-list" style="margin-top: 30px;">
+        <div id="selected-product-list" class="wao-mt-30">
             <h4><?php esc_html_e('Selected Products:', 'advanced-offers-for-woocommerce'); ?></h4>
-            <div class="selected-product-box" style="display: flex; flex-wrap: wrap; gap: 15px;"></div>
+            <div class="selected-product-box wao-flex-wrap-gap-15"></div>
         </div>
 
         <div id="hidden-offer-products"></div>
@@ -459,9 +460,9 @@ function flashoffers_get_products_by_categories()
 
             echo '<label class="product-box">';
             echo '<input type="checkbox" name="offer_products[]" value="' . esc_attr($product_id) . '" ' . esc_attr($checked) . ' />';
-            echo '<div style="height:100px; display:flex; align-items:center; justify-content:center;">' . wp_kses_post($product->get_image('thumbnail')) . '</div>';
-            echo '<strong style="display:block; margin-top:5px; font-size:0.9em;">' . esc_html($product->get_name()) . '</strong>';
-            echo '<span style="font-size:0.8em;">' . wp_kses_post($product->get_price_html()) . '</span>';
+            echo '<div class="wao-product-img-container">' . wp_kses_post($product->get_image('thumbnail')) . '</div>';
+            echo '<strong class="wao-product-title-small">' . esc_html($product->get_name()) . '</strong>';
+            echo '<span class="wao-price-small">' . wp_kses_post($product->get_price_html()) . '</span>';
             echo '</label>';
         }
 

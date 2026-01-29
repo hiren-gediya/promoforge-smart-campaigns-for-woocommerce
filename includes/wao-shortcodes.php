@@ -69,15 +69,17 @@ function flashoffers_display_special_offer_products($atts)
 
     // Count products
     $product_count = $products->post_count;
-    $slider_class = $product_count > 4 ? 'flash-offer-slider-enabled' : '';
+    // Count products
+    $product_count = $products->post_count;
+    $slider_class = 'flash-offer-slider-enabled';
 
     // Output
     ob_start();
     ?>
 
-    <div class="woocommerce flash-special-offer-container <?php echo esc_attr($slider_class); ?>">
-        <ul class="products columns-<?php //echo esc_attr($atts['columns']); 
-            ?>">
+    <div class="woocommerce flash-special-offer-container <?php echo esc_attr($slider_class); ?>"
+        data-offer-id="<?php echo (int) $offer_id; ?>" data-columns="<?php echo (int) $atts['columns']; ?>">
+        <ul class="products columns-">
             <?php while ($products->have_posts()):
                 $products->the_post(); ?>
                 <?php
@@ -155,52 +157,7 @@ function flashoffers_display_special_offer_products($atts)
     ');
     });
     ?>
-    <script>
-        jQuery(document).ready(function ($) {
-            // Redirect fixes
-            $(document).on('click', '.flash-special-offer-product .add_to_cart_button', function (e) {
-                var url = $(this).attr('href');
-                if (url.indexOf('from_offer=') === -1) {
-                    e.preventDefault();
-                    window.location.href = url + '&from_offer=<?php echo (int) $offer_id; ?>';
-                }
-            });
 
-            $(document).on('click', '.flash-special-offer-product a.woocommerce-LoopProduct-link', function (e) {
-                var url = $(this).attr('href');
-                if (url.indexOf('from_offer=') === -1) {
-                    e.preventDefault();
-                    window.location.href = url + '?from_offer=<?php echo (int) $offer_id; ?>';
-                }
-            });
-
-            // Auto slider if more than 3 products
-            if ($('.flash-special-offer-container.flash-offer-slider-enabled').length) {
-                $('.flash-special-offer-container ul.products').slick({
-                    slidesToShow: <?php echo (int) $atts['columns']; ?>,
-                    slidesToScroll: 1,
-                    autoplay: true,
-                    autoplaySpeed: 1500,
-                    arrows: false,
-                    dots: false,
-                    infinite: true,
-                    responsive: [{
-                        breakpoint: 768,
-                        settings: {
-                            slidesToShow: 2
-                        }
-                    },
-                    {
-                        breakpoint: 480,
-                        settings: {
-                            slidesToShow: 1
-                        }
-                    }
-                    ]
-                });
-            }
-        });
-    </script>
 
     <?php
     wp_reset_postdata();

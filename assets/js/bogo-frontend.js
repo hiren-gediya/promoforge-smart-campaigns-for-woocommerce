@@ -1,7 +1,7 @@
-jQuery(document).ready(function($) {
+jQuery(document).ready(function ($) {
     // Insert BOGO modal HTML into body
     const bogoModalHTML = `
-        <div id="bogo-offer-modal" style="display:none;">
+        <div id="bogo-offer-modal" class="wao-display-none">
             <div class="bogo-modal-content">
                 <span id="bogo-close-modal">✖</span>
                 <div id="bogo-offer-modal-body"></div>
@@ -11,7 +11,7 @@ jQuery(document).ready(function($) {
     $('body').append(bogoModalHTML);
 
     // --- Open BOGO modal ---
-    $(document).on('click', '.bogo-popup-btn', function(e) {
+    $(document).on('click', '.bogo-popup-btn', function (e) {
         e.preventDefault();
 
         var productId = $(this).data('product-id');
@@ -38,13 +38,13 @@ jQuery(document).ready(function($) {
                 discount: discount
             },
             dataType: 'json',
-            success: function(response) {
+            success: function (response) {
                 if (response.success) {
                     $('#bogo-offer-modal-body').html(response.data.html);
                     $('#bogo-offer-modal').fadeIn(300);
 
                     // Initialize variation forms for both buy and get products
-                    $('.bogo-buy-form.variations_form, .bogo-get-form.variations_form').each(function() {
+                    $('.bogo-buy-form.variations_form, .bogo-get-form.variations_form').each(function () {
                         $(this).wc_variation_form();
                     });
 
@@ -67,8 +67,8 @@ jQuery(document).ready(function($) {
                     }
 
                     // Re-initialize variation form after setting quantity to ensure functionality
-                    setTimeout(function() {
-                        $('.bogo-buy-form.variations_form, .bogo-get-form.variations_form').each(function() {
+                    setTimeout(function () {
+                        $('.bogo-buy-form.variations_form, .bogo-get-form.variations_form').each(function () {
                             $(this).wc_variation_form();
                         });
                     }, 100);
@@ -80,20 +80,20 @@ jQuery(document).ready(function($) {
     });
 
     // --- Close modal ---
-    $(document).on('click', '#bogo-close-modal', function() {
+    $(document).on('click', '#bogo-close-modal', function () {
         $('#bogo-offer-modal').addClass('hide');
-        setTimeout(function() {
+        setTimeout(function () {
             $('#bogo-offer-modal').hide().removeClass('hide');
         }, 300);
     });
 
     // Log WooCommerce cart fragments refresh event for debugging
-    $(document.body).on('wc_fragments_refreshed', function() {
+    $(document.body).on('wc_fragments_refreshed', function () {
         console.log('WooCommerce cart fragments refreshed');
     });
 
     // --- Handle add to cart for default WooCommerce forms in modal (both simple and variable) ---
-    $(document).on('submit', '#bogo-offer-modal form', function(e) {
+    $(document).on('submit', '#bogo-offer-modal form', function (e) {
         e.preventDefault();
         e.stopPropagation();
 
@@ -129,7 +129,7 @@ jQuery(document).ready(function($) {
                 quantity: quantity,
                 nonce: bogo_ajax.nonce
             },
-            success: function(response) {
+            success: function (response) {
                 $button.removeClass('loading');
                 if (response.success) {
                     alert('Product added to cart successfully!');
@@ -138,7 +138,7 @@ jQuery(document).ready(function($) {
                     alert(response.data.message || 'Something went wrong');
                 }
             },
-            error: function() {
+            error: function () {
                 $button.removeClass('loading');
                 alert('AJAX error occurred.');
             }
@@ -146,17 +146,17 @@ jQuery(document).ready(function($) {
     });
 
     // Re-initialize variation form when quantity changes to maintain dropdown functionality
-    $(document).on('change', '.bogo-buy-form input[name="quantity"], .bogo-get-form input[name="quantity"]', function() {
+    $(document).on('change', '.bogo-buy-form input[name="quantity"], .bogo-get-form input[name="quantity"]', function () {
         var $form = $(this).closest('form');
         if ($form.hasClass('variations_form')) {
-            setTimeout(function() {
+            setTimeout(function () {
                 $form.wc_variation_form();
             }, 50);
         }
     });
 
     // --- Add to cart button click (for table format) ---
-    $(document).on('click', '.bogo-add-to-cart', function(e) {
+    $(document).on('click', '.bogo-add-to-cart', function (e) {
         e.preventDefault();
         var $button = $(this);
         if ($button.prop('disabled')) return;
@@ -181,21 +181,21 @@ jQuery(document).ready(function($) {
                 quantity: userQty,
                 nonce: bogo_ajax.nonce
             },
-            success: function(response) {
+            success: function (response) {
                 $button.removeClass('loading');
                 if (response.success) {
                     $('#bogo-offer-modal').hide();
                     $(document.body).trigger('wc_fragment_refresh');
                     alert('Product added to cart successfully!');
                     // Removed page reload to prevent shaking
-                    setTimeout(function() {
+                    setTimeout(function () {
                         location.reload();
                     }, 500);
                 } else {
                     alert(response.data.message || 'Something went wrong');
                 }
             },
-            error: function() {
+            error: function () {
                 $button.removeClass('loading');
                 alert('AJAX error occurred.');
             }

@@ -114,10 +114,9 @@ jQuery(document).ready(function ($) {
 
         selectedProducts.forEach((name, productId) => {
             const productDiv = $(`
-                <div class="selected-product" data-product-id="${productId}"
-                     style="border:1px solid #ddd; padding:10px; text-align:left; width:250px; display:flex; justify-content:space-between; align-items:center;">
+                <div class="selected-product wao-selected-product" data-product-id="${productId}">
                     <span>${name}</span>
-                    <a href="#" class="remove-product" data-product-id="${productId}" style="color:#a00; text-decoration:none;">Remove</a>
+                    <a href="#" class="remove-product wao-remove-product-link" data-product-id="${productId}">Remove</a>
                 </div>
             `);
 
@@ -166,4 +165,10 @@ jQuery(document).ready(function ($) {
             });
         });
     }
+
+    // BOGO Offer Type Toggle
+    $('#bogo_offer_type').change(function () {
+        $('.bogo-type-fields').hide();
+        $('#' + $(this).val() + '_fields').show();
+    });
 });
