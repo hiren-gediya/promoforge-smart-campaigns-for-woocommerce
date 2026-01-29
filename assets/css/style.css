@@ -201,157 +201,162 @@
 .wao-display-block {
   display: block;
 }
+
 /* ===============================
    Flash Special Offer Slider Styling
    =============================== */
 
 /* Container */
 .flash-special-offer-container {
-    padding: 20px;
-    position: relative;
-    max-width: 100%;
-    margin: 30px auto;
+  padding: 20px;
+  position: relative;
+  max-width: 100%;
+  margin: 30px auto;
 }
 
 /* Slick Track */
 .flash-special-offer-container .slick-track {
-    display: flex;
-    gap: 20px;
-    padding-bottom: 20px;
+  display: flex;
+  gap: 20px;
+  padding-bottom: 20px;
 }
 
 /* Individual Product Slide */
 .flash-special-offer-container .products .product {
-    text-align: center;
-    background: #fff;
-    border: 1px solid #e5e5e5;
-    border-radius: 8px;
-    padding: 15px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    height: 100%; /* Equal height */
-    box-sizing: border-box;
-    display: flex !important;
-    flex-direction: column;
-    justify-content: space-between;
+  text-align: center;
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  padding: 15px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  height: 100%;
+  /* Equal height */
+  box-sizing: border-box;
+  display: flex !important;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 /* Hover Effect */
 .flash-special-offer-container .products .product:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-    border-color: #0073aa;
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  border-color: #0073aa;
 }
 
 /* Product Image */
 .flash-special-offer-container .products .product img {
-    max-width: 100%;
-    height: auto;
-    object-fit: contain;
-    margin-bottom: 15px;
-    border-radius: 4px;
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+  margin-bottom: 15px;
+  border-radius: 4px;
 }
 
 /* Product Title */
-.flash-special-offer-container .products .product h2, 
+.flash-special-offer-container .products .product h2,
 .flash-special-offer-container .products .product .woocommerce-loop-product__title {
-    font-size: 16px;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 10px;
-    line-height: 1.4;
-    min-height: 44px; /* Ensure alignment */
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 10px;
+  line-height: 1.4;
+  min-height: 44px;
+  /* Ensure alignment */
 }
 
 /* Price */
 .flash-special-offer-container .products .product .price {
-    font-size: 15px;
-    font-weight: 700;
-    color: #0073aa;
-    margin-bottom: 15px;
-    display: block;
+  font-size: 15px;
+  font-weight: 700;
+  color: #0073aa;
+  margin-bottom: 15px;
+  display: block;
 }
 
 .flash-special-offer-container .products .product .price del {
-    color: #999;
-    font-weight: 400;
-    font-size: 13px;
-    margin-right: 5px;
+  color: #999;
+  font-weight: 400;
+  font-size: 13px;
+  margin-right: 5px;
 }
 
 /* Action Buttons Container */
 .flash-special-offer-actions {
-    margin-top: auto; /* Push to bottom */
-    width: 100%;
+  margin-top: auto;
+  /* Push to bottom */
+  width: 100%;
 }
 
 /* Add to Cart Button */
 .flash-special-offer-container .products .product .add_to_cart_button {
-    display: inline-block;
-    padding: 10px 20px;
-    background-color: #0073aa;
-    color: #fff;
-    text-decoration: none;
-    border-radius: 4px;
-    font-weight: 600;
-    font-size: 14px;
-    transition: background-color 0.2s ease;
-    width: 100%; /* Full Width Button */
-    box-sizing: border-box;
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #0073aa;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 14px;
+  transition: background-color 0.2s ease;
+  width: 100%;
+  /* Full Width Button */
+  box-sizing: border-box;
 }
 
 .flash-special-offer-container .products .product .add_to_cart_button:hover {
-    background-color: #005177;
-    color: #fff;
+  background-color: #005177;
+  color: #fff;
 }
 
 .flash-special-offer-container .products .product .add_to_cart_button.loading {
-    opacity: 0.7;
-    cursor: wait;
+  opacity: 0.7;
+  cursor: wait;
 }
 
 .flash-special-offer-container .products .product .add_to_cart_button.added::after {
-    font-family: 'WooCommerce';
-    content: '\e017';
-    margin-left: .5em;
-    vertical-align: bottom;
+  font-family: 'WooCommerce';
+  content: '\e017';
+  margin-left: .5em;
+  vertical-align: bottom;
 }
 
 /* Slider Navigation Arrows (Slick default override if enabled) */
 .flash-special-offer-container .slick-prev,
 .flash-special-offer-container .slick-next {
-    width: 40px;
-    height: 40px;
-    background: #fff;
-    border-radius: 50%;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    z-index: 10;
-    transition: all 0.2s;
+  width: 40px;
+  height: 40px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  transition: all 0.2s;
 }
 
 .flash-special-offer-container .slick-prev:hover,
 .flash-special-offer-container .slick-next:hover {
-    background: #0073aa;
-    color: #fff;
+  background: #0073aa;
+  color: #fff;
 }
 
 .flash-special-offer-container .slick-prev::before,
 .flash-special-offer-container .slick-next::before {
-    color: #333;
-    opacity: 1;
-    font-size: 24px;
+  color: #333;
+  opacity: 1;
+  font-size: 24px;
 }
 
 .flash-special-offer-container .slick-prev:hover::before,
 .flash-special-offer-container .slick-next:hover::before {
-    color: #fff;
+  color: #fff;
 }
 
 .flash-special-offer-container .slick-prev {
-    left: -15px;
+  left: -15px;
 }
 
 .flash-special-offer-container .slick-next {
-    right: -15px;
+  right: -15px;
 }
 
 /* ===============================
@@ -362,199 +367,227 @@
 /* 1. Reset Slick Arrow Text */
 .flash-special-offer-container .slick-prev,
 .flash-special-offer-container .slick-next {
-    font-size: 0;
-    line-height: 0;
-    position: absolute;
-    top: 50%;
-    display: block;
-    width: 35px;
-    height: 35px;
-    padding: 0;
-    transform: translate(0, -50%); /* Vertically center */
-    cursor: pointer;
-    color: transparent;
-    border: none;
-    outline: none;
-    background: #fff;
-    border-radius: 50%;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15); /* Stronger shadow */
-    z-index: 100;
+  font-size: 0;
+  line-height: 0;
+  position: absolute;
+  top: 50%;
+  display: block;
+  width: 35px;
+  height: 35px;
+  padding: 0;
+  transform: translate(0, -50%);
+  /* Vertically center */
+  cursor: pointer;
+  color: transparent;
+  border: none;
+  outline: none;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  /* Stronger shadow */
+  z-index: 100;
 }
 
 /* Icons for Arrows */
 .flash-special-offer-container .slick-prev:before,
 .flash-special-offer-container .slick-next:before {
-    font-family: 'Dashicons'; /* WordPress Dashicons */
-    font-size: 20px;
-    line-height: 35px;
-    opacity: 1;
-    color: #444;
-    -webkit-font-smoothing: antialiased;
-    display: block;
-    text-align: center;
+  font-family: 'Dashicons';
+  /* WordPress Dashicons */
+  font-size: 20px;
+  line-height: 35px;
+  opacity: 1;
+  color: #444;
+  -webkit-font-smoothing: antialiased;
+  display: block;
+  text-align: center;
 }
 
 .flash-special-offer-container .slick-prev:before {
-    content: '\f341'; /* Arrow Left */
+  content: '\f341';
+  /* Arrow Left */
 }
 
 .flash-special-offer-container .slick-next:before {
-    content: '\f345'; /* Arrow Right */
+  content: '\f345';
+  /* Arrow Right */
 }
 
 .flash-special-offer-container .slick-prev:hover,
 .flash-special-offer-container .slick-next:hover {
-    background: #00a99d; /* Teal hover */
+  background: #00a99d;
+  /* Teal hover */
 }
 
 .flash-special-offer-container .slick-prev:hover:before,
 .flash-special-offer-container .slick-next:hover:before {
-    color: #fff;
+  color: #fff;
 }
 
 /* Position Adjustment */
-.flash-special-offer-container .slick-prev { left: -10px; }
-.flash-special-offer-container .slick-next { right: -10px; }
+.flash-special-offer-container .slick-prev {
+  left: -10px;
+}
+
+.flash-special-offer-container .slick-next {
+  right: -10px;
+}
 
 
 /* 2. Product Card Layout */
 .flash-special-offer-container .products .product {
-    background: #fff;
-    border: 1px solid #f1f1f1;
-    border-radius: 12px; /* Smooth corners */
-    padding: 20px;
-    margin: 0 10px; /* Spacing between slides */
-    transition: all 0.3s ease;
-    display: flex !important;
-    flex-direction: column;
-    justify-content: space-between;
-    height: auto;
-    min-height: 420px; /* Taller cards */
-    text-align: center;
-    position: relative;
-    overflow: hidden;
+  background: #fff;
+  border: 1px solid #f1f1f1;
+  border-radius: 12px;
+  /* Smooth corners */
+  padding: 20px;
+  margin: 0 10px;
+  /* Spacing between slides */
+  transition: all 0.3s ease;
+  display: flex !important;
+  flex-direction: column;
+  justify-content: space-between;
+  height: auto;
+  min-height: 420px;
+  /* Taller cards */
+  text-align: center;
+  position: relative;
+  overflow: hidden;
 }
 
 .flash-special-offer-container .products .product:hover {
-    box-shadow: 0 10px 25px rgba(0,0,0,0.08); /* Soft lift */
-    transform: translateY(-5px);
-    border-color: transparent;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  /* Soft lift */
+  transform: translateY(-5px);
+  border-color: transparent;
 }
 
 /* 3. Image Handling */
-.flash-special-offer-container .products .product img, 
+.flash-special-offer-container .products .product img,
 .flash-special-offer-container .products .product .woocommerce-loop-product__link img {
-    height: 180px; /* Fixed height for consistency */
-    width: 100%;
-    object-fit: contain;
-    margin-bottom: 20px;
-    mix-blend-mode: multiply; /* Helps transparent PNGs blend on white if needed */
+  height: 180px;
+  /* Fixed height for consistency */
+  width: 100%;
+  object-fit: contain;
+  margin-bottom: 20px;
+  mix-blend-mode: multiply;
+  /* Helps transparent PNGs blend on white if needed */
 }
 
 /* 4. Title Styling */
 .flash-special-offer-container .products .product .woocommerce-loop-product__title {
-    font-size: 15px;
-    font-weight: 700;
-    color: #2c3e50;
-    margin-bottom: 5px;
-    line-height: 1.4;
-    font-family: inherit;
-    min-height: 42px; /* Force 2 lines height alignment */
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+  font-size: 15px;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 5px;
+  line-height: 1.4;
+  font-family: inherit;
+  min-height: 42px;
+  /* Force 2 lines height alignment */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 /* 5. Price Styling */
 .flash-special-offer-container .products .product .price {
-    font-size: 16px;
-    margin-bottom: 15px;
-    display: block;
-    color: #333;
+  font-size: 16px;
+  margin-bottom: 15px;
+  display: block;
+  color: #333;
 }
 
 .flash-special-offer-container .products .product .price del {
-    color: #999;
-    font-size: 14px;
-    margin-right: 6px;
-    font-weight: normal;
+  color: #999;
+  font-size: 14px;
+  margin-right: 6px;
+  font-weight: normal;
 }
 
 .flash-special-offer-container .products .product .price ins {
-    color: #ff9800; /* Orange/Gold pop */
-    font-weight: 700;
-    text-decoration: none;
+  color: #ff9800;
+  /* Orange/Gold pop */
+  font-weight: 700;
+  text-decoration: none;
 }
 
 /* 6. Button Styling (Teal Green) */
 .flash-special-offer-container .products .product .button,
 .flash-special-offer-container .products .product .add_to_cart_button {
-    background-color: #00a99d; /* Reference Teal */
-    color: #fff !important;
-    border-radius: 50px; /* Pill shape */
-    padding: 10px 25px;
-    font-weight: 600;
-    font-size: 14px;
-    width: 100%; /* Full width */
-    max-width: 80%; /* But not touching edges */
-    margin: 0 auto;
-    text-transform: capitalize;
-    border: none;
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px; /* Space for icon if added */
-    transition: all 0.2s;
+  background-color: #00a99d;
+  /* Reference Teal */
+  color: #fff !important;
+  border-radius: 50px;
+  /* Pill shape */
+  padding: 10px 25px;
+  font-weight: 600;
+  font-size: 14px;
+  width: 100%;
+  /* Full width */
+  max-width: 80%;
+  /* But not touching edges */
+  margin: 0 auto;
+  text-transform: capitalize;
+  border: none;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  /* Space for icon if added */
+  transition: all 0.2s;
 }
 
 .flash-special-offer-container .products .product .button:hover,
 .flash-special-offer-container .products .product .add_to_cart_button:hover {
-    background-color: #008f84;
-    transform: scale(1.02);
+  background-color: #008f84;
+  transform: scale(1.02);
 }
 
 /* Shopping Bag Icon Helper (requires pseudo element if not in HTML) */
 .flash-special-offer-container .products .product .add_to_cart_button::before {
-    content: '\f174'; /* Dashicon cart */
-    font-family: 'Dashicons';
-    font-size: 16px;
-    margin-right: 5px;
+  content: '\f174';
+  /* Dashicon cart */
+  font-family: 'Dashicons';
+  font-size: 16px;
+  margin-right: 5px;
 }
+
 .flash-special-offer-container .products .product .add_to_cart_button.loading {
-    padding-right: 25px;
+  padding-right: 25px;
 }
+
 .flash-special-offer-container .products .product .add_to_cart_button.loading::after {
-    top: auto;
+  top: auto;
 }
 
 /* 7. Badges (Flash/BOGO) */
 /* Force position at top */
 .flash-special-offer-container .products .product .flash-offer-badge,
 .flash-special-offer-container .products .product .onsale {
-    position: absolute;
-    top: 15px;
-    left: 15px;
-    margin: 0;
-    z-index: 5;
-    border-radius: 4px;
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    padding: 4px 10px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    line-height: 1.2;
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  margin: 0;
+  z-index: 5;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  line-height: 1.2;
 }
 
 /* Ensure Countdown is Visible & Styled */
 .flash-special-offer-container .products .product #flash-offer-countdown {
-    background: transparent;
-    color: #00a99d;
-    font-size: 12px;
-    font-weight: 600;
-    margin-bottom: 10px;
-    margin-top: -10px; /* Pull closer to image if needed */
-    display: block;
+  background: transparent;
+  color: #00a99d;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  margin-top: -10px;
+  /* Pull closer to image if needed */
+  display: block;
 }
 
 
@@ -562,39 +595,44 @@
    Grid View (No Slider)
    =============================== */
 .flash-special-offer-container.flash-offer-grid-view .products {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: center; /* or flex-start */
-    padding: 0;
-    margin: 0;
-    list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  /* or flex-start */
+  padding: 0;
+  margin: 0;
+  list-style: none;
 }
 
 .flash-special-offer-container.flash-offer-grid-view .products .product {
-    width: calc(33.333% - 20px); /* 3 columns accounting for gap roughly */
-    margin: 0; /* Override slider margins */
-    flex: 0 0 auto;
+  width: calc(33.333% - 20px);
+  /* 3 columns accounting for gap roughly */
+  margin: 0;
+  /* Override slider margins */
+  flex: 0 0 auto;
 }
 
 @media (max-width: 768px) {
-    .flash-special-offer-container.flash-offer-grid-view .products .product {
-        width: calc(50% - 15px);
-    }
+  .flash-special-offer-container.flash-offer-grid-view .products .product {
+    width: calc(50% - 15px);
+  }
 }
 
 @media (max-width: 480px) {
-    .flash-special-offer-container.flash-offer-grid-view .products .product {
-        width: 100%;
-    }
+  .flash-special-offer-container.flash-offer-grid-view .products .product {
+    width: 100%;
+  }
 }
 
 /* ===============================
    User Requested Spacing Updates
    =============================== */
 .flash-special-offer-container .products .product.slick-slide {
-    margin: 15px !important; /* Visual spacing around the slide */
-    padding: 25px !important; /* Internal breathing room */
+  margin: 15px !important;
+  /* Visual spacing around the slide */
+  padding: 25px !important;
+  /* Internal breathing room */
 }
 
 /* Compensate slick-list for the margin if needed, 
@@ -603,46 +641,54 @@
 
 /* Ensure the hover effect doesn't get cut off by tight margins */
 .flash-special-offer-container .slick-list {
-    margin: 0 -15px; /* Negative margin to counteract slide margin on edges if needed */
-    padding: 20px 0; /* Vertical padding to show full shadows */
+  margin: 0 -15px;
+  /* Negative margin to counteract slide margin on edges if needed */
+  padding: 20px 0;
+  /* Vertical padding to show full shadows */
 }
 
 /* ===============================
    Fix Layout: Position Countdown to Top Right
    =============================== */
 .flash-special-offer-container .products .product #flash-offer-countdown {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    margin: 0;
-    z-index: 5;
-    background: #fff; /* White background to stand out on images if needed */
-    padding: 4px 8px;
-    border-radius: 4px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    font-size: 11px;
-    font-weight: 700;
-    color: #e74c3c; /* Red for urgency, or keep teal */
-    border: 1px solid #eee;
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  margin: 0;
+  z-index: 5;
+  background: #fff;
+  /* White background to stand out on images if needed */
+  padding: 4px 8px;
+  border-radius: 4px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  font-size: 11px;
+  font-weight: 700;
+  color: #e74c3c;
+  /* Red for urgency, or keep teal */
+  border: 1px solid #eee;
 }
 
 /* Ensure image doesn't overlap the absolute elements visually */
 .flash-special-offer-container .products .product img {
-    margin-top: 25px; /* Push image down slightly to clear badges */
+  margin-top: 25px;
+  /* Push image down slightly to clear badges */
 }
 
 /* ===============================
    Fix Grid View Spacing (to match slider)
    =============================== */
 .flash-special-offer-container.flash-offer-grid-view .products .product {
-    margin: 15px !important;    /* Match slider margin */
-    padding: 25px !important;   /* Match slider padding */
-    width: calc(33.333% - 30px) !important; /* Adjust width calculation for margins (30px = 15px * 2) */
+  margin: 15px !important;
+  /* Match slider margin */
+  padding: 25px !important;
+  /* Match slider padding */
+  width: calc(33.333% - 30px) !important;
+  /* Adjust width calculation for margins (30px = 15px * 2) */
 }
 
 /* Ensure centering if fewer items */
 .flash-special-offer-container.flash-offer-grid-view .products {
-    justify-content: center;
+  justify-content: center;
 }
 
 /* ===============================
@@ -650,48 +696,141 @@
    Match exact slider styling but in a flex row.
    =============================== */
 .flash-special-offer-container .products.wao-no-slider {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0; /* Margin handled by products to match slick logic */
-    justify-content: center;
-    padding: 0;
-    margin: 0 -15px; /* Offset the container margins */
-    list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  /* Margin handled by products to match slick logic */
+  justify-content: center;
+  padding: 0;
+  margin: 0 -15px;
+  /* Offset the container margins */
+  list-style: none;
 }
 
 .flash-special-offer-container .products.wao-no-slider .product {
-    margin: 15px !important;
-    padding: 25px !important;
-    /* Width logic: 3 columns default */
-    width: calc(33.333% - 30px) !important; /* Total width minus margins */
-    flex: 0 0 auto;
-    
-    /* Ensure card look is identical */
-    background: #fff;
-    border: 1px solid #f1f1f1;
-    border-radius: 12px;
-    height: auto;
-    min-height: 420px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    text-align: center;
+  margin: 15px !important;
+  padding: 25px !important;
+  /* Width logic: 3 columns default */
+  width: calc(33.333% - 30px) !important;
+  /* Total width minus margins */
+  flex: 0 0 auto;
+
+  /* Ensure card look is identical */
+  background: #fff;
+  border: 1px solid #f1f1f1;
+  border-radius: 12px;
+  height: auto;
+  min-height: 420px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: center;
 }
 
 /* Specific overrides for no-slider to ensure visual parity */
 .flash-special-offer-container .products.wao-no-slider .product img {
-    margin-top: 25px;
+  margin-top: 25px;
 }
 
 /* Responsive for no-slider */
 @media (max-width: 768px) {
-    .flash-special-offer-container .products.wao-no-slider .product {
-        width: calc(50% - 30px) !important;
-    }
+  .flash-special-offer-container .products.wao-no-slider .product {
+    width: calc(50% - 30px) !important;
+  }
 }
 
 @media (max-width: 480px) {
-    .flash-special-offer-container .products.wao-no-slider .product {
-        width: calc(100% - 30px) !important;
-    }
+  .flash-special-offer-container .products.wao-no-slider .product {
+    width: calc(100% - 30px) !important;
+  }
+}
+
+/* ===============================
+/* ===============================
+   Shop Loop Position (Top Left for Badge and Countdown)
+   =============================== */
+.woocommerce ul.products li.product,
+.woocommerce-page ul.products li.product,
+.woocommerce .products .product,
+.woocommerce .related.products .product,
+.woocommerce .up-sells.products .product,
+.woocommerce .cross-sells.products .product,
+.products .product,
+.wc-block-grid__product,
+.wc-block-product {
+  position: relative !important;
+}
+
+/* Position the Badge */
+.woocommerce ul.products li.product .flash-offer-badge,
+.woocommerce-page ul.products li.product .flash-offer-badge,
+.woocommerce .products .product .flash-offer-badge,
+.woocommerce .related.products .product .flash-offer-badge,
+.woocommerce .up-sells.products .product .flash-offer-badge,
+.products .product .flash-offer-badge,
+.wc-block-grid__product .flash-offer-badge,
+.wc-block-product .flash-offer-badge {
+  position: absolute !important;
+  top: 10px !important;
+  left: 10px !important;
+  z-index: 99 !important;
+  /* High z-index */
+  margin: 0 !important;
+  display: inline-block !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Position the Countdown */
+.woocommerce ul.products li.product #flash-offer-countdown,
+.woocommerce ul.products li.product .upcoming-offer,
+.woocommerce .products .product #flash-offer-countdown,
+.woocommerce .products .product .upcoming-offer,
+.woocommerce .related.products .product #flash-offer-countdown,
+.woocommerce .related.products .product .upcoming-offer,
+.products .product #flash-offer-countdown,
+.products .product .upcoming-offer,
+.wc-block-grid__product #flash-offer-countdown,
+.wc-block-product #flash-offer-countdown,
+.wc-block-grid__product .upcoming-offer,
+.wc-block-product .upcoming-offer {
+  position: absolute !important;
+  top: 45px !important;
+  /* Spaced below the badge */
+  left: 10px !important;
+  z-index: 99 !important;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 4px 8px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  font-size: 11px;
+  font-weight: 700;
+  color: #e74c3c;
+  width: fit-content;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Ensure no overlap with "Sale" badge if it exists */
+.woocommerce ul.products li.product .onsale,
+.woocommerce .products .product .onsale,
+.woocommerce .related.products .product .onsale,
+.products .product .onsale,
+.wc-block-grid__product .onsale,
+.wc-block-product .onsale {
+  top: 10px !important;
+  right: 10px !important;
+  /* Move Sale badge to right if we are using left */
+  left: auto !important;
+  margin: 0 !important;
+  position: absolute !important;
+  z-index: 90 !important;
+}
+
+/* Fix for Block Themes Wrapper Spacing */
+.wc-block-product .wao-title-badge-wrapper,
+.wc-block-grid__product .wao-title-badge-wrapper {
+  margin: 0 !important;
+  height: 0 !important;
+  width: 0 !important;
+  overflow: visible !important;
+  display: block !important;
 }

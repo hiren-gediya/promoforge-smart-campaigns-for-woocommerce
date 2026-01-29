@@ -45,12 +45,12 @@
 }
 
 .bogo-offer-box {
-    margin-bottom: 20px;
+    margin: 20px;
 }
 
 .bogo-offer-box h3 {
     color: #26a69a;
-    margin-bottom: 15px;
+    margin: 15px;
     font-size: 18px;
     border-bottom: 2px solid #e0e0e0;
     padding-bottom: 5px;
@@ -67,7 +67,8 @@
 }
 
 .variable-product-table thead th {
-    background: #26a69a; /* Teal/green color from image */
+    background: #26a69a;
+    /* Teal/green color from image */
     color: #fff;
     padding: 12px 8px;
     text-align: left;
@@ -100,7 +101,8 @@
 
 .variable-product-table .add-bogo .button,
 .bogo-add-to-cart {
-    background-color: #26a69a !important; /* Teal/green button color */
+    background-color: #26a69a !important;
+    /* Teal/green button color */
     color: #fff;
     border: none;
     padding: 8px 16px;
@@ -132,8 +134,9 @@
     color: #26a69a;
 }
 
-.woocommerce .bogo-popup-btn  {
+.woocommerce .bogo-popup-btn {
     background-color: #26a69a !important;
+    color: #fff;
 }
 
 .bogo-discount {
@@ -157,7 +160,8 @@
 
 /* Style the number input */
 .bogo-buy-form .quantity input[type=number] {
-    -moz-appearance: textfield; /* remove Firefox inner arrows */
+    -moz-appearance: textfield;
+    /* remove Firefox inner arrows */
     appearance: textfield;
     width: 70px;
     padding: 6px 10px;
@@ -200,7 +204,8 @@
 }
 
 .bogo-simple-product-inline .price {
-    color: #f58220; /* orange color as in second image */
+    color: #f58220;
+    /* orange color as in second image */
     font-weight: 600;
     white-space: nowrap;
 }

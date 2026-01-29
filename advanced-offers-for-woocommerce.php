@@ -15,6 +15,15 @@ License: GPLv2 or later
 if (!defined('ABSPATH'))
     exit;
 
+// Prevent activation if WooCommerce is not active
+register_activation_hook(__FILE__, function () {
+    // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
+    if (!in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')))) {
+        deactivate_plugins(plugin_basename(__FILE__));
+        wp_die(esc_html__('Advanced Offers for WooCommerce requires WooCommerce to be installed and active.', 'advanced-offers-for-woocommerce'));
+    }
+});
+
 // Check if WooCommerce is active
 // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 if (!in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')))) {

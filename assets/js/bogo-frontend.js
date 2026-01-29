@@ -1,82 +1,103 @@
 jQuery(document).ready(function ($) {
+    console.log('BOGO Frontend script loaded.');
+
     // Insert BOGO modal HTML into body
-    const bogoModalHTML = `
-        <div id="bogo-offer-modal" class="wao-display-none">
-            <div class="bogo-modal-content">
-                <span id="bogo-close-modal">✖</span>
-                <div id="bogo-offer-modal-body"></div>
+    if ($('#bogo-offer-modal').length === 0) {
+        const bogoModalHTML = `
+            <div id="bogo-offer-modal" class="wao-display-none">
+                <div class="bogo-modal-content">
+                    <span id="bogo-close-modal">✖</span>
+                    <div id="bogo-offer-modal-body"></div>
+                </div>
             </div>
-        </div>
-    `;
-    $('body').append(bogoModalHTML);
+        `;
+        $('body').append(bogoModalHTML);
+    }
 
     // --- Open BOGO modal ---
     $(document).on('click', '.bogo-popup-btn', function (e) {
         e.preventDefault();
+        console.log('BOGO Button Clicked');
 
-        var productId = $(this).data('product-id');
-        var quantity = $(this).data('quantity') || 1;
-        var buyProductId = $(this).data('buy-product-id');
-        var buyQuantity = $(this).data('buy-quantity');
-        var getProductId = $(this).data('get-product-id');
-        var getQuantity = $(this).data('get-quantity');
-        var offerType = $(this).data('offer-type');
-        var discount = $(this).data('discount');
+        try {
+            if (typeof bogo_ajax === 'undefined') {
+                console.error('bogo_ajax is undefined. Script localization failed.');
+                return;
+            }
 
-        $.ajax({
-            url: bogo_ajax.ajax_url,
-            type: 'POST',
-            data: {
+            var productId = $(this).data('product-id');
+            var quantity = $(this).data('quantity') || 1;
+            var buyProductId = $(this).data('buy-product-id');
+            var buyQuantity = $(this).data('buy-quantity');
+            var getProductId = $(this).data('get-product-id');
+            var getQuantity = $(this).data('get-quantity');
+            var offerType = $(this).data('offer-type');
+            var discount = $(this).data('discount');
+
+            console.log('Sending AJAX request:', {
                 action: 'load_bogo_product_form',
-                product_id: productId,
-                quantity: quantity,
                 buy_product_id: buyProductId,
-                buy_quantity: buyQuantity,
-                get_product_id: getProductId,
-                get_quantity: getQuantity,
-                offer_type: offerType,
-                discount: discount
-            },
-            dataType: 'json',
-            success: function (response) {
-                if (response.success) {
-                    $('#bogo-offer-modal-body').html(response.data.html);
-                    $('#bogo-offer-modal').fadeIn(300);
+                get_product_id: getProductId
+            });
 
-                    // Initialize variation forms for both buy and get products
-                    $('.bogo-buy-form.variations_form, .bogo-get-form.variations_form').each(function () {
-                        $(this).wc_variation_form();
-                    });
+            $.ajax({
+                url: bogo_ajax.ajax_url,
+                type: 'POST',
+                data: {
+                    action: 'load_bogo_product_form',
+                    product_id: productId,
+                    quantity: quantity,
+                    buy_product_id: buyProductId,
+                    buy_quantity: buyQuantity,
+                    get_product_id: getProductId,
+                    get_quantity: getQuantity,
+                    offer_type: offerType,
+                    discount: discount,
+                    nonce: bogo_ajax.nonce || ''
+                },
+                dataType: 'json',
+                success: function (response) {
+                    if (response.success) {
+                        $('#bogo-offer-modal-body').html(response.data.html);
+                        $('#bogo-offer-modal').fadeIn(300);
 
-                    // Set offer-specific quantity manually using response data (visible for user adjustment)
-                    var buyQtyInput = $('.bogo-buy-form input[name="quantity"]');
-                    var getQtyInput = $('.bogo-get-form input[name="quantity"]');
-                    var offerType = response.data.offer_type;
-                    var buyQuantity = response.data.buy_quantity;
-                    var getQuantity = response.data.get_quantity;
-
-                    if (offerType === 'buy_one_get_one') {
-                        // For BOGO 1+1, set buy form quantity to 2 (buy 1 + get 1)
-                        buyQtyInput.val(2);
-                    } else {
-                        // For buy x get y, set buy and get quantities accordingly
-                        buyQtyInput.val(buyQuantity);
-                        if (getQtyInput.length) {
-                            getQtyInput.val(getQuantity);
-                        }
-                    }
-
-                    // Re-initialize variation form after setting quantity to ensure functionality
-                    setTimeout(function () {
+                        // Initialize variation forms for both buy and get products
                         $('.bogo-buy-form.variations_form, .bogo-get-form.variations_form').each(function () {
                             $(this).wc_variation_form();
                         });
-                    }, 100);
-                } else {
-                    alert(response.data?.message || 'Failed to load BOGO product.');
+
+                        // Set offer-specific quantity manually using response data (visible for user adjustment)
+                        var buyQtyInput = $('.bogo-buy-form input[name="quantity"]');
+                        var getQtyInput = $('.bogo-get-form input[name="quantity"]');
+                        var offerType = response.data.offer_type;
+                        var buyQuantity = response.data.buy_quantity;
+                        var getQuantity = response.data.get_quantity;
+
+                        if (offerType === 'buy_one_get_one') {
+                            // For BOGO 1+1, set buy form quantity to 2 (buy 1 + get 1)
+                            buyQtyInput.val(2);
+                        } else {
+                            // For buy x get y, set buy and get quantities accordingly
+                            buyQtyInput.val(buyQuantity);
+                            if (getQtyInput.length) {
+                                getQtyInput.val(getQuantity);
+                            }
+                        }
+
+                        // Re-initialize variation form after setting quantity to ensure functionality
+                        setTimeout(function () {
+                            $('.bogo-buy-form.variations_form, .bogo-get-form.variations_form').each(function () {
+                                $(this).wc_variation_form();
+                            });
+                        }, 100);
+                    } else {
+                        alert(response.data?.message || 'Failed to load BOGO product.');
+                    }
                 }
-            }
-        });
+            });
+        } catch (error) {
+            console.error('BOGO Error:', error);
+        }
     });
 
     // --- Close modal ---
