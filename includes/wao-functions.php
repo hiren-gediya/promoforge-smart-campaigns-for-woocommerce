@@ -453,14 +453,6 @@ add_action('admin_init', function () {
     );
 
     add_settings_field(
-        'bogo_offer_variation_type',
-        esc_html__('BOGO Offer Modal Format Type', 'advanced-offers-for-woocommerce'),
-        'flashoffers_bogo_offer_variation_type_callback',
-        'flash-offers-settings',
-        'flash_offers_main_section'
-    );
-
-    add_settings_field(
         'bogo_offer_badge',
         esc_html__('BOGO Offer Badge Text', 'advanced-offers-for-woocommerce'),
         'flashoffers_bogo_offer_badge_callback',

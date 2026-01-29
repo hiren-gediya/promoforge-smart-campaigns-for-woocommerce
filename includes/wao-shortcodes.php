@@ -69,8 +69,6 @@ function flashoffers_display_special_offer_products($atts)
 
     // Count products
     $product_count = $products->post_count;
-    // Count products
-    $product_count = $products->post_count;
     $slider_class = 'flash-offer-slider-enabled';
 
     // Output
@@ -103,6 +101,15 @@ function flashoffers_display_special_offer_products($atts)
                         // Display product content
                         // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
                         do_action('woocommerce_before_shop_loop_item');
+
+                        // Manually call plugin functions for Special Offers since hooks might be disabled globally
+                        if (function_exists('flashoffers_display_flash_offer_badge')) {
+                            flashoffers_display_flash_offer_badge();
+                        }
+                        if (function_exists('flashoffers_show_countdown')) {
+                            flashoffers_show_countdown();
+                        }
+
                         // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
                         do_action('woocommerce_before_shop_loop_item_title');
                         // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
@@ -161,6 +168,7 @@ function flashoffers_display_special_offer_products($atts)
 
     <?php
     wp_reset_postdata();
+    unset($_GET['from_offer']);
     return ob_get_clean();
 }
 

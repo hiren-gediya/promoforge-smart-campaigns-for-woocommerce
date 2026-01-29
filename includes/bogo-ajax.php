@@ -126,23 +126,9 @@ function flashoffers_load_bogo_product_form()
         setup_postdata($buy_post);
     }
     $price = $product->get_sale_price() ?: $product->get_regular_price();
-    $options = get_option('flash_offers_options');
-    $bogo_format = $options['bogo_format'] ?? 'default';
 
-    if ($bogo_format === 'default') {
-        if ($buy_product->is_type('simple') || $get_product->is_type('simple')) {
-            if ($product->is_on_sale()) {
-                // Show regular (strikethrough) and sale price
-                echo '<td class="price">
-                <del>' . wp_kses_post(wc_price($product->get_regular_price())) . '</del> 
-                <ins>' . wp_kses_post(wc_price($product->get_sale_price())) . '</ins>
-              </td>';
-            } else {
-                // Show normal price
-                echo '<td class="price">' . wp_kses_post(wc_price($price)) . '</td>';
-            }
-        }
-    }
+    // Default format logic removed, forcing table display via flashoffers_display_bogo_product_form
+
     ob_start();
     flashoffers_display_bogo_product_form($product, true, 'buy');
     $buy_html = ob_get_clean();
@@ -188,26 +174,10 @@ function flashoffers_load_bogo_product_form()
         }
         $price = $product->get_sale_price() ?: $product->get_regular_price();
 
-        $options = get_option('flash_offers_options');
-        $bogo_format = $options['bogo_format'] ?? 'default';
-
-        if ($bogo_format === 'default') {
-            if ($get_product->is_type('simple') || $get_product->is_type('simple')) {
-
-                if ($product->is_on_sale()) {
-                    // Show regular (strikethrough) and sale price
-                    echo '<td class="price">
-                <del>' . wp_kses_post(wc_price($product->get_regular_price())) . '</del> 
-                <ins>' . wp_kses_post(wc_price($product->get_sale_price())) . '</ins>
-              </td>';
-                } else {
-                    // Show normal price
-                    echo '<td class="price">' . wp_kses_post(wc_price($price)) . '</td>';
-                }
-            }
-        }
+        // Default format logic removed for GET product as well
 
         ob_start();
+
         flashoffers_display_bogo_product_form($product, true, 'get');
         $get_html = ob_get_clean();
         $get_html = str_replace('<form class="', '<form class="bogo-get-form ', $get_html);

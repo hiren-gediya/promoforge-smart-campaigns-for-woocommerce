@@ -304,22 +304,8 @@ function flashoffers_display_bogo_product_form($product, $type_label = '', $show
         return;
     }
 
-    if ($bogo_format === 'table') {
-        flashoffers_bogo_custom_display_variable_product($product_type);
-    } else {
-        // Set global $product to ensure WooCommerce functions work properly
-        global $product;
-        // $product = $product; // Removed redundant assignment
-
-        // Enqueue WooCommerce variation script if product is variable
-        if ($product->is_type('variable')) {
-            wp_enqueue_script('wc-add-to-cart-variation');
-        }
-
-        // Use WooCommerce default add to cart action for proper dropdown support
-        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
-        do_action('woocommerce_' . $product->get_type() . '_add_to_cart');
-    }
+    // Force table format
+    flashoffers_bogo_custom_display_variable_product($product_type);
 }
 
 
@@ -401,10 +387,38 @@ function flashoffers_display_bogo_offer_badge()
     if (!$product)
         return;
 
+    $product_id = $product->get_id();
+    // Check if already rendered via block filter
+    if (!empty($GLOBALS['flashoffers_badge_rendered_' . $product_id])) {
+        return;
+    }
+
     $offer_data = flashoffers_get_bogo_offer_data($product);
 
     if (!$offer_data || empty($offer_data['badge_text']))
         return;
+
+    // Check if offer is already in cart
+    if (!empty($offer_data['offer'])) {
+        $offer = $offer_data['offer'];
+        $buy_in_cart = false;
+        $get_in_cart = false;
+
+        if (WC()->cart) {
+            foreach (WC()->cart->get_cart() as $cart_item) {
+                if (intval($cart_item['product_id']) === intval($offer->buy_product_id)) {
+                    $buy_in_cart = true;
+                }
+                if (intval($cart_item['product_id']) === intval($offer->get_product_id)) {
+                    $get_in_cart = true;
+                }
+            }
+        }
+
+        if ($buy_in_cart && $get_in_cart) {
+            return;
+        }
+    }
 
     $locations = $offer_data['locations'];
     $show_on_shop = is_shop() && !empty($locations['shop_loop']);
@@ -416,6 +430,15 @@ function flashoffers_display_bogo_offer_badge()
     $badge_color = $options['badge_bg_color'] ?? '#00a99d';
 
     if ($show_on_shop || $show_on_category || $show_on_home || $is_other_location || $show_on_single) {
+        // Inject CSS to hide default sale badge when custom BOGO badge is shown
+        echo '<style>
+        .post-' . esc_attr($product_id) . ' .onsale,
+        .post-' . esc_attr($product_id) . ' .wc-block-components-product-sale-badge,
+        .wc-block-product.post-' . esc_attr($product_id) . ' .wc-block-components-product-sale-badge { 
+            display: none !important; 
+        }
+        </style>';
+
         echo '<span class="flash-offer-badge ' . esc_attr($offer_data['status']) . '" style="background-color:' . esc_attr($badge_color) . ';">' . esc_html($offer_data['badge_text']) . '</span>';
     }
 }
@@ -441,15 +464,43 @@ function flashoffers_remove_bogo_sale_badge_css()
         }
     }
 
+    // Check if offer is already in cart (same logic as badge)
+    if (!empty($offer_data['offer'])) {
+        $offer = $offer_data['offer'];
+        $buy_in_cart = false;
+        $get_in_cart = false;
+
+        if (WC()->cart) {
+            foreach (WC()->cart->get_cart() as $cart_item) {
+                if (intval($cart_item['product_id']) === intval($offer->buy_product_id)) {
+                    $buy_in_cart = true;
+                }
+                if (intval($cart_item['product_id']) === intval($offer->get_product_id)) {
+                    $get_in_cart = true;
+                }
+            }
+        }
+
+        if ($buy_in_cart && $get_in_cart) {
+            return;
+        }
+    }
+
     // ✅ Only if this product has an offer → hide badge for THIS product only
     if (!empty($offer_data['offer'])) {
-        echo '<style>.post-' . esc_attr($product->get_id()) . ' .onsale { display: none !important; }</style>';
+        echo '<style>
+        .post-' . esc_attr($product->get_id()) . ' .onsale,
+        .post-' . esc_attr($product->get_id()) . ' .wc-block-components-product-sale-badge,
+        .wc-block-product.post-' . esc_attr($product->get_id()) . ' .wc-block-components-product-sale-badge { 
+            display: none !important; 
+        }
+        </style>';
     }
 }
 
 
 // Hook countdown display for BOGO offers
-add_action('woocommerce_before_shop_loop_item_title', 'flashoffers_display_bogoffers_countdown', 9);
+add_action('woocommerce_before_shop_loop_item_title', 'flashoffers_display_bogoffers_countdown', 5);
 add_action('woocommerce_single_product_summary', 'flashoffers_display_bogoffers_countdown', 8);
 function flashoffers_display_bogoffers_countdown()
 {
@@ -457,9 +508,37 @@ function flashoffers_display_bogoffers_countdown()
     if (!$product)
         return;
 
+    $product_id = $product->get_id();
+    // Check if already rendered via block filter
+    if (!empty($GLOBALS['flashoffers_badge_rendered_' . $product_id])) {
+        return;
+    }
+
     $offer_data = flashoffers_get_bogo_offer_data($product);
     if (!$offer_data)
         return;
+
+    // Check if offer is already in cart
+    if (!empty($offer_data['offer'])) {
+        $offer = $offer_data['offer'];
+        $buy_in_cart = false;
+        $get_in_cart = false;
+
+        if (WC()->cart) {
+            foreach (WC()->cart->get_cart() as $cart_item) {
+                if (intval($cart_item['product_id']) === intval($offer->buy_product_id)) {
+                    $buy_in_cart = true;
+                }
+                if (intval($cart_item['product_id']) === intval($offer->get_product_id)) {
+                    $get_in_cart = true;
+                }
+            }
+        }
+
+        if ($buy_in_cart && $get_in_cart) {
+            return;
+        }
+    }
 
     $locations = $offer_data['countdown_locations'];
     $show_on_shop = is_shop() && !empty($locations['shop_loop']);
@@ -485,6 +564,7 @@ function flashoffers_display_bogoffers_countdown()
         }
     }
 }
+
 
 
 // Filter the price HTML to override based on BOGO settings

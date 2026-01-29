@@ -20,9 +20,9 @@ function flashoffers_message_field_callback()
 function flashoffers_locations_field_callback()
 {
     $options = get_option('flash_offers_options');
-    $shop_loop = isset($options['locations']['shop_loop']) ? 1 : 0;
-    $product_page = isset($options['locations']['product_page']) ? 1 : 0;
-    $category_page = isset($options['locations']['category_page']) ? 1 : 0;
+    $shop_loop = isset($options['locations']['shop_loop']) ? 1 : 1;
+    $product_page = isset($options['locations']['product_page']) ? 1 : 1;
+    $category_page = isset($options['locations']['category_page']) ? 1 : 1;
     $home_page = isset($options['locations']['home_page']) ? 1 : 0;
     $other_page = isset($options['locations']['other_page']) ? 1 : 0;
     ?>
@@ -54,9 +54,9 @@ function flashoffers_countdown_locations_field_callback()
 {
     $options = get_option('flash_offers_options');
 
-    $shop_loop = isset($options['countdown_locations']['shop_loop']) ? 1 : 0;
-    $product_page = isset($options['countdown_locations']['product_page']) ? 1 : 0;
-    $category_page = isset($options['countdown_locations']['category_page']) ? 1 : 0;
+    $shop_loop = isset($options['countdown_locations']['shop_loop']) ? 1 : 1;
+    $product_page = isset($options['countdown_locations']['product_page']) ? 1 : 1;
+    $category_page = isset($options['countdown_locations']['category_page']) ? 1 : 1;
     $home_page = isset($options['countdown_locations']['home_page']) ? 1 : 0;
     $other_page = isset($options['countdown_locations']['other_page']) ? 1 : 0;
     ?>
@@ -134,8 +134,9 @@ function flashoffers_special_badge_text_callback()
 function flashoffers_render_price_type_field()
 {
     $options = get_option('flash_offers_options');
-    $value = $options['flash_override_type']; ?>
+    $value = $options['flash_override_type'] ?? 'regular'; ?>
     <select name="flash_offers_options[flash_override_type]">
+        <option value="select"><?php esc_html_e('Select', 'advanced-offers-for-woocommerce'); ?></option>
         <option value="sale" <?php selected($value, 'sale'); ?>><?php esc_html_e('Sale Price', 'advanced-offers-for-woocommerce'); ?></option>
         <option value="regular" <?php selected($value, 'regular'); ?>><?php esc_html_e('Regular Price', 'advanced-offers-for-woocommerce'); ?></option>
     </select>
@@ -149,8 +150,9 @@ function flashoffers_render_price_type_field()
 function flashoffers_bogo_offer_render_price_type_field()
 {
     $options = get_option('flash_offers_options');
-    $value = $options['bogo_override_type']; ?>
+    $value = $options['bogo_override_type'] ?? 'regular'; ?>
     <select name="flash_offers_options[bogo_override_type]">
+        <option value="select"><?php esc_html_e('Select', 'advanced-offers-for-woocommerce'); ?></option>
         <option value="sale" <?php selected($value, 'sale'); ?>><?php esc_html_e('Sale Price', 'advanced-offers-for-woocommerce'); ?></option>
         <option value="regular" <?php selected($value, 'regular'); ?>><?php esc_html_e('Regular Price', 'advanced-offers-for-woocommerce'); ?></option>
     </select>
@@ -176,21 +178,7 @@ function flashoffers_countdown_format_field_callback()
     <?php
 }
 
-// Callback: Countdown Format Selection
-function flashoffers_bogo_offer_variation_type_callback()
-{
-    $options = get_option('flash_offers_options');
-    $format = $options['bogo_format'] ?? 'default';
-    ?>
-    <select name="flash_offers_options[bogo_format]">
-        <option value="default" <?php selected($format, 'default'); ?>><?php esc_html_e('Default', 'advanced-offers-for-woocommerce'); ?></option>
-        <option value="table" <?php selected($format, 'table'); ?>><?php esc_html_e('Table', 'advanced-offers-for-woocommerce'); ?></option>
-    </select>
-    <p class="description">
-        <?php esc_html_e('Choose how the Product Price should be displayed.', 'advanced-offers-for-woocommerce'); ?>
-    </p>
-    <?php
-}
+
 
 function flashoffers_get_cart_product_qty($product_id)
 {
@@ -210,11 +198,99 @@ function flashoffers_get_cart_product_qty($product_id)
     return $qty;
 }
 
+// Support for WooCommerce Blocks (e.g. Block Themes, Post Title, Product Image)
+add_filter('render_block', 'flashoffers_block_render_badge', 10, 2);
+
+function flashoffers_block_render_badge($block_content, $block)
+{
+    if (empty(trim($block_content))) {
+        return $block_content;
+    }
+
+    $is_product_page = is_product();
+    $target_blocks = ['core/post-title', 'woocommerce/product-title', 'woocommerce/product-image', 'core/post-thumbnail'];
+    
+    if (in_array($block['blockName'], $target_blocks, true)) {
+        global $product;
+        
+        // Ensure we have a product object
+        if (!$product || !is_a($product, 'WC_Product')) {
+            $post_id = get_the_ID();
+            if ($post_id && get_post_type($post_id) === 'product') {
+                $product = wc_get_product($post_id);
+            }
+        }
+
+        if ($product && is_a($product, 'WC_Product')) {
+            $product_id = $product->get_id();
+            
+            // Check if already rendered for this product to avoid duplicates within the same render cycle
+            // BUT: for loop items, we might hit multiple times for different blocks. 
+            // We want primarily:
+            // - On Single Product: Before Title
+            // - On Loops: Before Image
+            
+            $should_render = false;
+            if ($is_product_page && strpos($block['blockName'], 'title') !== false) {
+                 $should_render = true;
+            } elseif (!$is_product_page && (strpos($block['blockName'], 'image') !== false || strpos($block['blockName'], 'thumbnail') !== false)) {
+                 $should_render = true;
+            }
+
+            if ($should_render) {
+                 // Check if already rendered via global flag (to prevent double rendering if multiple blocks match)
+                 if (!empty($GLOBALS['flashoffers_badge_rendered_' . $product_id])) {
+                     return $block_content;
+                 }
+
+                // Capture Flash Offer Badge
+                ob_start();
+                flashoffers_display_flash_offer_badge();
+                $badge_html = ob_get_clean();
+
+                // Capture Flash Countdown
+                ob_start();
+                flashoffers_show_countdown();
+                $countdown_html = ob_get_clean();
+
+                // Capture BOGO Offer Badge
+                ob_start();
+                if (function_exists('flashoffers_display_bogo_offer_badge')) {
+                    flashoffers_display_bogo_offer_badge();
+                }
+                $bogo_badge_html = ob_get_clean();
+                
+                // Capture BOGO Countdown
+                ob_start();
+                if (function_exists('flashoffers_display_bogoffers_countdown')) {
+                    flashoffers_display_bogoffers_countdown();
+                }
+                $bogo_countdown_html = ob_get_clean();
+
+                if ($badge_html || $bogo_badge_html || $countdown_html || $bogo_countdown_html) {
+                     // Set global flag to prevent duplicate rendering in hooks
+                     $GLOBALS['flashoffers_badge_rendered_' . $product_id] = true;
+                     
+                     $wrapper_class = $is_product_page ? 'wao-title-badge-wrapper' : 'wao-loop-badge-wrapper';
+                     $style = 'margin-bottom: 10px; display: block;';
+                     
+                     return '<div class="' . $wrapper_class . '" style="' . $style . '">' . 
+                            $badge_html . $bogo_badge_html . 
+                            $countdown_html . $bogo_countdown_html . 
+                            '</div>' . $block_content;
+                }
+            }
+        }
+    }
+    
+    return $block_content;
+}
+
 /**
  * Register the action hook for flash offer badge
  */
-add_action('woocommerce_before_shop_loop_item_title', 'flashoffers_display_flash_offer_badge', 9);
-add_action('woocommerce_single_product_summary', 'flashoffers_display_flash_offer_badge', 8);
+add_action('woocommerce_before_shop_loop_item', 'flashoffers_display_flash_offer_badge', 5); // Raised priority to show before image
+add_action('woocommerce_single_product_summary', 'flashoffers_display_flash_offer_badge', 4);
 
 function flashoffers_display_flash_offer_badge()
 {
@@ -227,6 +303,14 @@ function flashoffers_display_flash_offer_badge()
         return;
 
     $product_id = $product->get_id();
+    
+    // Check if valid product ID
+    if (!$product_id) return;
+    
+    // Check if already rendered via block filter
+    if (!empty($GLOBALS['flashoffers_badge_rendered_' . $product_id])) {
+        return;
+    }
     $user_id = get_current_user_id();
 
     // Get active offers
@@ -293,10 +377,20 @@ function flashoffers_display_flash_offer_badge()
         (is_shop() && !empty($locations['shop_loop'])) ||
         (is_front_page() && !empty($locations['home_page'])) ||
         (is_product_category() && !empty($locations['category_page'])) ||
-        (is_product() && !empty($locations['product_page']));
+        (is_product() && !empty($locations['product_page'])) ||
+        !empty($GLOBALS['flashoffers_special_offer_context']); // Force show for special offer shortcode
 
     if (!$show)
         return;
+
+    // Inject CSS to hide default sale badge when custom badge is shown
+    echo '<style>
+    .post-' . esc_attr($product_id) . ' .onsale,
+    .post-' . esc_attr($product_id) . ' .wc-block-components-product-sale-badge,
+    .wc-block-product.post-' . esc_attr($product_id) . ' .wc-block-components-product-sale-badge { 
+        display: none !important; 
+    }
+    </style>';
 
     echo '<span class="flash-offer-badge active"
         style="background:' . esc_attr($offer_data['background_color']) . '">
@@ -307,13 +401,22 @@ function flashoffers_display_flash_offer_badge()
 
 
 // Helper function to show countdown
-add_action('woocommerce_before_shop_loop_item_title', 'flashoffers_show_countdown', 9);
-add_action('woocommerce_single_product_summary', 'flashoffers_show_countdown', 8);
+add_action('woocommerce_before_shop_loop_item_title', 'flashoffers_show_countdown', 5); // Raised priority
+add_action('woocommerce_single_product_summary', 'flashoffers_show_countdown', 4);
 function flashoffers_show_countdown()
 {
     // Removed is_user_logged_in check
 
     global $product;
+    if (!$product) {
+        return;
+    }
+    
+    // Check if already rendered via block filter
+    if (!empty($GLOBALS['flashoffers_badge_rendered_' . $product->get_id()])) {
+        return;
+    }
+
     $offer_data = flashoffers_get_offer_data($product);
 
     // phpcs:ignore WordPress.Security.NonceVerification.Recommended
@@ -382,7 +485,13 @@ function flashoffers_remove_flash_sale_badge_css()
 
     // ✅ Only if this product has an offer → hide badge for THIS product only
     if (!empty($offer_data)) {
-        echo '<style>.post-' . esc_attr($product->get_id()) . ' .onsale { display: none !important; }</style>';
+        echo '<style>
+        .post-' . esc_attr($product->get_id()) . ' .onsale,
+        .post-' . esc_attr($product->get_id()) . ' .wc-block-components-product-sale-badge,
+        .wc-block-product.post-' . esc_attr($product->get_id()) . ' .wc-block-components-product-sale-badge { 
+            display: none !important; 
+        }
+        </style>';
     }
 }
 // Color picker field callback function
