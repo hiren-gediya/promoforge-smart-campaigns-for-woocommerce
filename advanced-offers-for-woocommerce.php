@@ -14,6 +14,21 @@ License: GPLv2 or later
 
 if (!defined('ABSPATH'))
     exit;
+
+// Check if WooCommerce is active
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
+if (!in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')))) {
+    add_action('admin_notices', function () {
+        ?>
+        <div class="notice notice-error">
+            <p><?php esc_html_e('Advanced Offers for WooCommerce requires WooCommerce to be installed and active.', 'advanced-offers-for-woocommerce'); ?>
+            </p>
+        </div>
+        <?php
+    });
+    return;
+}
+
 define('FLASHOFFERS_PATH', plugin_dir_path(__FILE__));
 
 require_once FLASHOFFERS_PATH . 'includes/wao-functions.php';
