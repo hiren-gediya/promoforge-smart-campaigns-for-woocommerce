@@ -217,6 +217,7 @@ function flashoffers_block_render_badge($block_content, $block)
         if (!$product || !is_a($product, 'WC_Product')) {
             $post_id = get_the_ID();
             if ($post_id && get_post_type($post_id) === 'product') {
+                // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
                 $product = wc_get_product($post_id);
             }
         }
