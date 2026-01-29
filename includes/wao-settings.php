@@ -136,8 +136,8 @@ function flashoffers_render_price_type_field()
     $options = get_option('flash_offers_options');
     $value = $options['flash_override_type']; ?>
     <select name="flash_offers_options[flash_override_type]">
-        <option value="sale" <?php selected($value, 'sale'); ?>>Sale Price</option>
-        <option value="regular" <?php selected($value, 'regular'); ?>>Regular Price</option>
+        <option value="sale" <?php selected($value, 'sale'); ?>><?php esc_html_e('Sale Price', 'advanced-offers-for-woocommerce'); ?></option>
+        <option value="regular" <?php selected($value, 'regular'); ?>><?php esc_html_e('Regular Price', 'advanced-offers-for-woocommerce'); ?></option>
     </select>
     <p class="description">
         <?php esc_html_e('Choose which price the offer should override.', 'advanced-offers-for-woocommerce'); ?>
@@ -151,8 +151,8 @@ function flashoffers_bogo_offer_render_price_type_field()
     $options = get_option('flash_offers_options');
     $value = $options['bogo_override_type']; ?>
     <select name="flash_offers_options[bogo_override_type]">
-        <option value="sale" <?php selected($value, 'sale'); ?>>Sale Price</option>
-        <option value="regular" <?php selected($value, 'regular'); ?>>Regular Price</option>
+        <option value="sale" <?php selected($value, 'sale'); ?>><?php esc_html_e('Sale Price', 'advanced-offers-for-woocommerce'); ?></option>
+        <option value="regular" <?php selected($value, 'regular'); ?>><?php esc_html_e('Regular Price', 'advanced-offers-for-woocommerce'); ?></option>
     </select>
     <p class="description">
         <?php esc_html_e('Choose which price the offer should override.', 'advanced-offers-for-woocommerce'); ?>
@@ -166,9 +166,9 @@ function flashoffers_countdown_format_field_callback()
     $format = $options['countdown_format'] ?? 'format1';
     ?>
     <select name="flash_offers_options[countdown_format]">
-        <option value="format1" <?php selected($format, 'format1'); ?>>d h m s</option>
-        <option value="format2" <?php selected($format, 'format2'); ?>>Day Hours Minutes Seconds</option>
-        <option value="format3" <?php selected($format, 'format3'); ?>>00:00:00:00</option>
+        <option value="format1" <?php selected($format, 'format1'); ?>><?php esc_html_e('d h m s', 'advanced-offers-for-woocommerce'); ?></option>
+        <option value="format2" <?php selected($format, 'format2'); ?>><?php esc_html_e('Day Hours Minutes Seconds', 'advanced-offers-for-woocommerce'); ?></option>
+        <option value="format3" <?php selected($format, 'format3'); ?>><?php esc_html_e('00:00:00:00', 'advanced-offers-for-woocommerce'); ?></option>
     </select>
     <p class="description">
         <?php esc_html_e('Choose how the countdown timer should be displayed.', 'advanced-offers-for-woocommerce'); ?>
@@ -183,8 +183,8 @@ function flashoffers_bogo_offer_variation_type_callback()
     $format = $options['bogo_format'] ?? 'default';
     ?>
     <select name="flash_offers_options[bogo_format]">
-        <option value="default" <?php selected($format, 'default'); ?>>default</option>
-        <option value="table" <?php selected($format, 'table'); ?>>Tabel</option>
+        <option value="default" <?php selected($format, 'default'); ?>><?php esc_html_e('Default', 'advanced-offers-for-woocommerce'); ?></option>
+        <option value="table" <?php selected($format, 'table'); ?>><?php esc_html_e('Table', 'advanced-offers-for-woocommerce'); ?></option>
     </select>
     <p class="description">
         <?php esc_html_e('Choose how the Product Price should be displayed.', 'advanced-offers-for-woocommerce'); ?>
@@ -413,14 +413,14 @@ add_action('admin_menu', function () {
 function flashoffers_settings_page()
 {
     ?>
-    <div class="wrap">
+    <div class="wrap flash-offers-settings-wrap">
         <h1><?php esc_html_e('Flash Offers Settings', 'advanced-offers-for-woocommerce'); ?></h1>
         <?php settings_errors(); ?>
         <form method="post" action="options.php">
             <?php
             settings_fields('flash_offers_settings_group');
             do_settings_sections('flash-offers-settings');
-            submit_button();
+            submit_button('Apply');
             ?>
         </form>
     </div>

@@ -89,7 +89,7 @@ function flashoffers_bogo_products_box_callback($post)
         <p>
             <label
                 for="bogo_offer_type"><strong><?php esc_html_e('BOGO Offer Type:', 'advanced-offers-for-woocommerce'); ?></strong></label><br>
-            <select name="bogo_offer_type" id="bogo_offer_type" style="width:300px;">
+            <select name="bogo_offer_type" id="bogo_offer_type" class="wao-admin-select-300">
                 <option value="buy_x_get_y" <?php selected($offer_type, 'buy_x_get_y'); ?>>
                     <?php esc_html_e('Buy X Get Y (Different Products)', 'advanced-offers-for-woocommerce'); ?>
                 </option>
@@ -99,12 +99,12 @@ function flashoffers_bogo_products_box_callback($post)
             </select>
         </p>
 
-        <div id="buy_x_get_y_fields" class="bogo-type-fields"
-            style="display:<?php echo ($offer_type === 'buy_one_get_one') ? 'none' : 'block'; ?>">
+        <div id="buy_x_get_y_fields"
+            class="bogo-type-fields <?php echo ($offer_type === 'buy_one_get_one') ? 'wao-display-none' : 'wao-display-block'; ?>">
             <p>
                 <label
                     for="bogo_buy_product"><strong><?php esc_html_e('Buy Product:', 'advanced-offers-for-woocommerce'); ?></strong></label><br>
-                <select name="bogo_buy_product" style="width: 100%">
+                <select name="bogo_buy_product" class="wao-width-full">
                     <option value=""><?php esc_html_e('Select Buy Product', 'advanced-offers-for-woocommerce'); ?></option>
                     <?php foreach ($products as $product): ?>
                         <option value="<?php echo esc_attr($product->ID); ?>" <?php selected($buy_product_id, $product->ID); ?>>
@@ -118,13 +118,13 @@ function flashoffers_bogo_products_box_callback($post)
                 <label
                     for="bogo_buy_quantity"><strong><?php esc_html_e('Buy Quantity:', 'advanced-offers-for-woocommerce'); ?></strong></label><br>
                 <input type="number" name="bogo_buy_quantity" value="<?php echo esc_attr($buy_quantity); ?>" min="1"
-                    style="width:200px;" />
+                    class="wao-admin-input-200" />
             </p>
 
             <p>
                 <label
                     for="bogo_get_product"><strong><?php esc_html_e('Get Product:', 'advanced-offers-for-woocommerce'); ?></strong></label><br>
-                <select name="bogo_get_product" style="width: 100%;">
+                <select name="bogo_get_product" class="wao-width-full">
                     <option value=""><?php esc_html_e('Select Get Product', 'advanced-offers-for-woocommerce'); ?></option>
                     <?php foreach ($products as $product): ?>
                         <option value="<?php echo esc_attr($product->ID); ?>" <?php selected($get_product_id, $product->ID); ?>>
@@ -138,24 +138,24 @@ function flashoffers_bogo_products_box_callback($post)
                 <label
                     for="bogo_get_quantity"><strong><?php esc_html_e('Get Quantity:', 'advanced-offers-for-woocommerce'); ?></strong></label><br>
                 <input type="number" name="bogo_get_quantity" value="<?php echo esc_attr($get_quantity); ?>" min="1"
-                    style="width:200px;" />
+                    class="wao-admin-input-200" />
             </p>
 
             <p>
                 <label
                     for="bogo_discount"><strong><?php esc_html_e('Discount (%):', 'advanced-offers-for-woocommerce'); ?></strong></label><br>
                 <input type="number" name="bogo_discount" value="<?php echo esc_attr($discount); ?>" min="0" max="100"
-                    style="width:200px;" />
+                    class="wao-admin-input-200" />
                 <em><?php esc_html_e('Set to 100 for free product, 0 for no discount', 'advanced-offers-for-woocommerce'); ?></em>
             </p>
         </div>
 
-        <div id="buy_one_get_one_fields" class="bogo-type-fields"
-            style="display:<?php echo ($offer_type === 'buy_one_get_one') ? 'block' : 'none'; ?>">
+        <div id="buy_one_get_one_fields"
+            class="bogo-type-fields <?php echo ($offer_type === 'buy_one_get_one') ? 'wao-display-block' : 'wao-display-none'; ?>">
             <p>
                 <label
                     for="bogo_bogo_product"><strong><?php esc_html_e('Product:', 'advanced-offers-for-woocommerce'); ?></strong></label><br>
-                <select name="bogo_bogo_product" style="width:200px;">
+                <select name="bogo_bogo_product" class="wao-admin-select-200">
                     <option value=""><?php esc_html_e('Select Product', 'advanced-offers-for-woocommerce'); ?></option>
                     <?php foreach ($products as $product): ?>
                         <option value="<?php echo esc_attr($product->ID); ?>" <?php selected($buy_product_id, $product->ID); ?>>
@@ -174,25 +174,18 @@ function flashoffers_bogo_products_box_callback($post)
             <label
                 for="bogo_start_date"><strong><?php esc_html_e('Start Date:', 'advanced-offers-for-woocommerce'); ?></strong></label><br>
             <input type="datetime-local" name="bogo_start_date" value="<?php echo esc_attr($start_date); ?>"
-                style="width:200px;" />
+                class="wao-admin-input-200" />
         </p>
 
         <p>
             <label
                 for="bogo_end_date"><strong><?php esc_html_e('End Date:', 'advanced-offers-for-woocommerce'); ?></strong></label><br>
             <input type="datetime-local" name="bogo_end_date" value="<?php echo esc_attr($end_date); ?>"
-                style="width:200px;" />
+                class="wao-admin-input-200" />
         </p>
     </div>
 
-    <script>
-        jQuery(document).ready(function ($) {
-            $('#bogo_offer_type').change(function () {
-                $('.bogo-type-fields').hide();
-                $('#' + $(this).val() + '_fields').show();
-            });
-        });
-    </script>
+
     <?php
 }
 
