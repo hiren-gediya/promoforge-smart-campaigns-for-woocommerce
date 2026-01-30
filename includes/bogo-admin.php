@@ -289,3 +289,195 @@ add_action('before_delete_post', function ($post_id) {
         ['%d']
     );
 });
+
+// --- Admin Columns for BOGO Offers ---
+
+// 1. Add Columns
+add_filter('manage_bogo_offer_posts_columns', 'flashoffers_add_bogo_admin_columns');
+function flashoffers_add_bogo_admin_columns($columns)
+{
+    $new_columns = [];
+    $new_columns['cb'] = $columns['cb'];
+    $new_columns['title'] = $columns['title'];
+
+    // Add new columns
+    $new_columns['offer_type'] = esc_html__('Offer Type', 'advanced-offers-for-woocommerce');
+    $new_columns['buy_product'] = esc_html__('Buy Product', 'advanced-offers-for-woocommerce');
+    $new_columns['get_product'] = esc_html__('Get Product', 'advanced-offers-for-woocommerce');
+    $new_columns['start_date'] = esc_html__('Start Date', 'advanced-offers-for-woocommerce');
+    $new_columns['end_date'] = esc_html__('End Date', 'advanced-offers-for-woocommerce');
+    $new_columns['discount'] = esc_html__('Discount', 'advanced-offers-for-woocommerce');
+
+    $new_columns['date'] = $columns['date'];
+    return $new_columns;
+}
+
+// 2. Populate Columns
+add_action('manage_bogo_offer_posts_custom_column', 'flashoffers_populate_bogo_admin_columns', 10, 2);
+function flashoffers_populate_bogo_admin_columns($column, $post_id)
+{
+    global $wpdb;
+
+    // Fetch data from custom table
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+    $offer = $wpdb->get_row($wpdb->prepare(
+        "SELECT * FROM {$wpdb->prefix}bogo_offers WHERE post_id = %d",
+        $post_id
+    ));
+
+    if (!$offer) {
+        if (in_array($column, ['offer_type', 'buy_product', 'get_product', 'start_date', 'end_date', 'discount'])) {
+            echo '-';
+        }
+        return;
+    }
+
+    switch ($column) {
+        case 'offer_type':
+            $types = [
+                'buy_x_get_y' => esc_html__('Buy X Get Y', 'advanced-offers-for-woocommerce'),
+                'buy_one_get_one' => esc_html__('Buy One Get One', 'advanced-offers-for-woocommerce'),
+            ];
+            echo esc_html($types[$offer->offer_type] ?? ucfirst(str_replace('_', ' ', $offer->offer_type)));
+            break;
+
+        case 'buy_product':
+            if ($offer->buy_product_id) {
+                $product = wc_get_product($offer->buy_product_id);
+                echo $product ? esc_html($product->get_name()) . ' (x' . $offer->buy_quantity . ')' : esc_html__('Unknown Product', 'advanced-offers-for-woocommerce');
+            } else {
+                echo '-';
+            }
+            break;
+
+        case 'get_product':
+            if ($offer->get_product_id) {
+                $product = wc_get_product($offer->get_product_id);
+                echo $product ? esc_html($product->get_name()) . ' (x' . $offer->get_quantity . ')' : esc_html__('Unknown Product', 'advanced-offers-for-woocommerce');
+            } else {
+                echo '-';
+            }
+            break;
+
+        case 'start_date':
+            if (!empty($offer->start_date) && $offer->start_date !== '0000-00-00 00:00:00') {
+                echo esc_html(get_date_from_gmt($offer->start_date, 'M j, Y g:i a'));
+            } else {
+                echo '-';
+            }
+            break;
+
+        case 'end_date':
+            if (!empty($offer->end_date) && $offer->end_date !== '0000-00-00 00:00:00') {
+                echo esc_html(get_date_from_gmt($offer->end_date, 'M j, Y g:i a'));
+            } else {
+                echo '-';
+            }
+            break;
+
+        case 'discount':
+            echo esc_html($offer->discount . '%');
+            break;
+    }
+}
+
+// 3. Make Columns Sortable
+add_filter('manage_edit-bogo_offer_sortable_columns', 'flashoffers_sortable_bogo_admin_columns');
+function flashoffers_sortable_bogo_admin_columns($columns)
+{
+    $columns['offer_type'] = 'offer_type';
+    $columns['start_date'] = 'start_date';
+    $columns['end_date'] = 'end_date';
+    $columns['discount'] = 'discount';
+    return $columns;
+}
+
+// 4. Handle Sorting
+add_action('pre_get_posts', 'flashoffers_handle_bogo_admin_sorting');
+function flashoffers_handle_bogo_admin_sorting($query)
+{
+    if (!is_admin() || !$query->is_main_query() || $query->get('post_type') !== 'bogo_offer') {
+        return;
+    }
+
+    $orderby = $query->get('orderby');
+    if (in_array($orderby, ['offer_type', 'start_date', 'end_date', 'discount'])) {
+        add_filter('posts_join', 'flashoffers_bogo_admin_join_table');
+        add_filter('posts_orderby', 'flashoffers_bogo_admin_orderby_table');
+    }
+}
+
+function flashoffers_bogo_admin_join_table($join)
+{
+    global $wpdb;
+    if (strpos($join, $wpdb->prefix . 'bogo_offers') === false) {
+        $join .= " LEFT JOIN {$wpdb->prefix}bogo_offers ON {$wpdb->posts}.ID = {$wpdb->prefix}bogo_offers.post_id ";
+    }
+    return $join;
+}
+
+function flashoffers_bogo_admin_orderby_table($orderby)
+{
+    global $wpdb, $wp_query;
+    $sort_col = $wp_query->get('orderby');
+    $order = $wp_query->get('order') ? $wp_query->get('order') : 'ASC';
+
+    $allowed_cols = ['offer_type', 'start_date', 'end_date', 'discount'];
+
+    if (in_array($sort_col, $allowed_cols)) {
+        return "{$wpdb->prefix}bogo_offers.{$sort_col} {$order}";
+    }
+
+    return $orderby;
+}
+
+// 5. Handle Search
+add_action('pre_get_posts', 'flashoffers_handle_bogo_admin_search');
+function flashoffers_handle_bogo_admin_search($query)
+{
+    if (!is_admin() || !$query->is_main_query() || $query->get('post_type') !== 'bogo_offer' || !$query->is_search()) {
+        return;
+    }
+
+    $term = $query->get('s');
+    if (empty($term))
+        return;
+
+    global $wpdb;
+
+    // 1. Search in Custom Table
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+    $custom_ids = $wpdb->get_col($wpdb->prepare(
+        "SELECT post_id FROM {$wpdb->prefix}bogo_offers 
+         WHERE offer_type LIKE %s 
+         OR discount LIKE %s 
+         OR start_date LIKE %s 
+         OR end_date LIKE %s",
+        '%' . $wpdb->esc_like($term) . '%',
+        '%' . $wpdb->esc_like($term) . '%',
+        '%' . $wpdb->esc_like($term) . '%',
+        '%' . $wpdb->esc_like($term) . '%'
+    ));
+
+    // 2. Search in Post Title
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+    $title_ids = $wpdb->get_col($wpdb->prepare(
+        "SELECT ID FROM {$wpdb->posts} 
+         WHERE post_title LIKE %s 
+         AND post_type = 'bogo_offer' 
+         AND post_status != 'trash'",
+        '%' . $wpdb->esc_like($term) . '%'
+    ));
+
+    // 3. Merge IDs
+    $merged_ids = array_unique(array_merge($custom_ids, $title_ids));
+
+    if (empty($merged_ids)) {
+        $merged_ids = [0];
+    }
+
+    // 4. Modify Query
+    $query->set('post__in', $merged_ids);
+    $query->set('s', ''); // Clear search term
+    $query->set('compare', 'IN');
+}

@@ -467,6 +467,14 @@ add_action('admin_init', function () {
         'flash_offers_main_section'
     );
 
+    add_settings_field(
+        'flash_offer_variable_product_display',
+        esc_html__('Product Details Display', 'advanced-offers-for-woocommerce'),
+        'flashoffers_variable_product_display_callback',
+        'flash-offers-settings',
+        'flash_offers_main_section'
+    );
+
 });
 
 function flashoffers_sanitize_options($input)
@@ -931,3 +939,258 @@ function flashoffers_validate_add_to_cart_login($passed, $product_id, $quantity)
     return $passed;
 }
 
+
+function remove_woocommerce_variations_form()
+{
+  // Variable
+  remove_action('woocommerce_variable_add_to_cart', 'woocommerce_variable_add_to_cart', 30);
+  // Simple
+  remove_action('woocommerce_simple_add_to_cart', 'woocommerce_simple_add_to_cart', 30);
+  // Grouped
+  remove_action('woocommerce_grouped_add_to_cart', 'woocommerce_grouped_add_to_cart', 30);
+  // External
+  remove_action('woocommerce_external_add_to_cart', 'woocommerce_external_add_to_cart', 30);
+  
+  // Common
+  remove_action('woocommerce_single_product_summary', 'woocommerce_template_single_price', 10);
+  remove_action('woocommerce_single_product_summary', 'woocommerce_template_single_meta', 40);
+}
+
+function flashoffers_should_use_table_display() {
+    $options = get_option('flash_offers_options');
+    return isset($options['variable_product_display']) && $options['variable_product_display'] === 'table';
+}
+
+add_action('wp', 'flashoffers_maybe_remove_variations_form');
+function flashoffers_maybe_remove_variations_form() {
+    if (flashoffers_should_use_table_display()) {
+        remove_woocommerce_variations_form();
+    }
+}
+
+add_action('woocommerce_single_product_summary', 'flashoffers_maybe_add_custom_display', 25);
+function flashoffers_maybe_add_custom_display() {
+    if (flashoffers_should_use_table_display()) {
+        custom_display_variable_product();
+    }
+}
+function custom_display_variable_product()
+{
+  global $product;
+
+  // 1. VARIABLE PRODUCT
+  if ($product->is_type('variable')) {
+    echo '<table class="variable-product-table">
+      <thead>
+        <tr>
+          <th>Variation</th>
+          <th>Price</th>
+          <th>Price/Unit</th>
+          <th>Quantity</th>
+          <th>Add to Cart</th>
+        </tr>
+      </thead>
+      <tbody>';
+
+    $available_variations = $product->get_available_variations();
+    foreach ($available_variations as $variation) {
+      $variation_obj = wc_get_product($variation['variation_id']);
+      $price = $variation_obj->get_price();
+      $attributes = $variation['attributes'];
+
+      $is_in_stock = $variation_obj && $variation_obj->is_in_stock();
+      
+      // Calculate Price Per Unit (only if pa_pack-size exists)
+      $pack_size_val = $attributes['attribute_pa_pack-size'] ?? '';
+      
+      // Sanitize pack size to get numeric part (e.g. "100 Tablets" -> 100)
+      $pack_qty = (int) preg_replace('/[^0-9]/', '', $pack_size_val);
+      $price_per_piece = ($pack_qty > 0) ? number_format($price / $pack_qty, 2) : '';
+
+      // Generate Variation Description (e.g. "Color: Blue, Size: Large")
+      $variation_specs = [];
+      foreach ($attributes as $attr_name => $attr_value) {
+          // Attribute names usually come as 'attribute_pa_color' or 'attribute_color'
+          // Remove prefix to get slug
+          $taxonomy = str_replace('attribute_', '', $attr_name);
+          
+          // Try to get proper label name from taxonomy
+          $label = wc_attribute_label($taxonomy, $product);
+          
+          // Try to get proper term name
+          $value = $attr_value;
+          if (taxonomy_exists($taxonomy)) {
+              $term = get_term_by('slug', $attr_value, $taxonomy);
+              if ($term) {
+                  $value = $term->name;
+              }
+          }
+          
+          if (!empty($value)) {
+             $variation_specs[] = '<strong>' . esc_html($label) . ':</strong> ' . esc_html($value);
+          }
+      }
+      $variation_html = implode(', ', $variation_specs);
+
+      echo '<tr>';
+      echo '<td>' . ((!empty($variation_html)) ? $variation_html : esc_html__('Default', 'woocommerce')) . '</td>';
+      echo '<td class="price">' . wc_price($price) . '</td>';
+      
+      echo '<td class="price-unit">';
+      if (is_numeric($price_per_piece)) {
+          echo wc_price($price_per_piece) . ' /Piece';
+      } else {
+          echo wc_price($price) . ' /Piece';
+      }
+      echo '</td>';
+      
+      echo '<td class="list-quantity"><input type="number" value="1" min="1" class="qty" id="qty_' . $variation['variation_id'] . '" name="quantity_' . $variation['variation_id'] . '"></td>';
+      echo '<td>';
+      ?>
+      <form class="cart" action="<?php echo esc_url($product->get_permalink()); ?>" method="post">
+        <input type="hidden" name="add-to-cart" value="<?php echo esc_attr($product->get_id()); ?>" />
+        <input type="hidden" name="variation_id" value="<?php echo esc_attr($variation['variation_id']); ?>" />
+        <?php
+        foreach ($variation['attributes'] as $attribute_name => $attribute_value) {
+          echo '<input type="hidden" name="attribute_' . esc_attr(str_replace('attribute_', '', $attribute_name)) . '" value="' . esc_attr($attribute_value) . '" />';
+        }
+        ?>
+        <input type="hidden" name="quantity" id="quantity_<?php echo $variation['variation_id']; ?>" value="1" />
+        <button type="submit" class="single_add_to_cart_button button" <?php echo !$is_in_stock ? "disabled" : ""; ?>       <?php echo $is_in_stock ? 'onclick="updateQuantity(' . esc_js($variation['variation_id']) . ')"' : ''; ?>>
+            <?php echo $is_in_stock ? esc_html($product->single_add_to_cart_text()) : esc_html__('Out of stock', 'woocommerce'); ?>
+        </button>
+      </form>
+      <?php
+      echo '</td>';
+      echo '</tr>';
+    }
+    echo '</tbody></table>';
+  } 
+  // 2. SIMPLE PRODUCT
+  elseif ($product->is_type('simple')) {
+      echo '<table class="variable-product-table">
+      <thead>
+        <tr>
+          <th>Price</th>
+          <th>Price/Unit</th>
+          <th>Quantity</th>
+          <th>Add to Cart</th>
+        </tr>
+      </thead>
+      <tbody>';
+
+      $price = $product->get_price();
+      $is_in_stock = $product->is_in_stock();
+      $pack_size_val = $product->get_attribute('pa_pack-size'); 
+
+      echo '<tr>';
+      echo '<td class="price">' . wc_price($price) . '</td>';
+      
+      echo '<td class="price-unit">';
+      if (is_numeric($price)) {
+          echo wc_price($price) . ' /Piece';
+      } 
+      echo '</td>';
+      
+      echo '<td class="list-quantity"><input type="number" value="1" min="1" class="qty" id="qty_' . $product->get_id() . '" name="quantity"></td>';
+      echo '<td>';
+      ?>
+      <form class="cart" action="<?php echo esc_url($product->get_permalink()); ?>" method="post">
+        <input type="hidden" name="add-to-cart" value="<?php echo esc_attr($product->get_id()); ?>" />
+        <input type="hidden" name="quantity" id="quantity_<?php echo $product->get_id(); ?>" value="1" />
+        <button type="submit" class="single_add_to_cart_button button" <?php echo !$is_in_stock ? "disabled" : ""; ?> <?php echo $is_in_stock ? 'onclick="updateQuantity(' . esc_js($product->get_id()) . ')"' : ''; ?>>
+            <?php echo $is_in_stock ? esc_html($product->single_add_to_cart_text()) : esc_html__('Out of stock', 'woocommerce'); ?>
+        </button>
+      </form>
+      <?php
+      echo '</td></tr>';
+      echo '</tbody></table>';
+  }
+  // 3. GROUPED PRODUCT
+  elseif ($product->is_type('grouped')) {
+      echo '<table class="variable-product-table">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Price</th>
+          <th>Price/Unit</th>
+          <th>Quantity</th>
+          <th>Add to Cart</th>
+        </tr>
+      </thead>
+      <tbody>';
+
+      $children = $product->get_children();
+      foreach($children as $child_id) {
+          $child = wc_get_product($child_id);
+          if(!$child) continue;
+          
+          $price = $child->get_price();
+          $is_in_stock = $child->is_in_stock();
+          $pack_size_val = $child->get_attribute('pa_pack-size');
+          
+          // Sanitize pack size to get numeric part
+          $pack_qty = (int) preg_replace('/[^0-9]/', '', $pack_size_val);
+          $price_per_piece = ($pack_qty > 0) ? number_format($price / $pack_qty, 2) : '-';
+
+          echo '<tr>';
+          echo '<td>' . esc_html($child->get_name()) . ' <small>(' . esc_html($pack_size_val) . ')</small></td>';
+          echo '<td class="price">' . wc_price($price) . '</td>';
+          
+          echo '<td class="price-unit">';
+          if (is_numeric($price_per_piece)) {
+              echo wc_price($price_per_piece) . ' /Piece';
+          } else {
+              echo '-';
+          }
+          echo '</td>';
+          
+          echo '<td class="list-quantity"><input type="number" value="1" min="1" class="qty" name="quantity[' . $child_id . ']"></td>';
+          echo '<td>';
+          // Grouped adds to cart via main form usually, but individual adds work too
+          echo '<a href="' . $child->add_to_cart_url() . '" class="button single_add_to_cart_button">' . $child->add_to_cart_text() . '</a>'; 
+          echo '</td></tr>';
+      }
+      echo '</tbody></table>';
+  }
+  // 4. EXTERNAL PRODUCT
+  elseif ($product->is_type('external')) {
+      echo '<table class="variable-product-table">
+      <thead>
+        <tr>
+          <th>Description</th>
+          <th>Price</th>
+          <th>Price/Unit</th>
+          <th>Quantity</th>
+          <th>Add to Cart</th>
+        </tr>
+      </thead>
+      <tbody>';
+
+      $price = $product->get_price();
+      $pack_size_val = $product->get_attribute('pa_pack-size');
+      
+      echo '<tr>';
+      echo '<td>' . esc_html($pack_size_val) . '</td>';
+      echo '<td class="price">' . wc_price($price) . '</td>';
+      echo '<td class="price-unit">-</td>';
+      echo '<td class="list-quantity">-</td>';
+      echo '<td>';
+      echo '<a href="' . esc_url($product->get_product_url()) . '" rel="nofollow" class="single_add_to_cart_button button">' . esc_html($product->get_button_text()) . '</a>';
+      echo '</td></tr>';
+      echo '</tbody></table>';
+  }
+
+  // No closing bracket for the function-wide table since we closed individual tables
+  ?>
+  <script>
+    function updateQuantity(id) {
+        var qtyInput = document.getElementById('qty_' + id);
+        var hiddenInput = document.getElementById('quantity_' + id);
+        if(qtyInput && hiddenInput) {
+            hiddenInput.value = qtyInput.value;
+        }
+    }
+  </script>
+  <?php
+}

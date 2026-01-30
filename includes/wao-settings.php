@@ -161,6 +161,22 @@ function flashoffers_bogo_offer_render_price_type_field()
     </p>
     <?php
 }
+// Callback: Variable Product Display Selection
+function flashoffers_variable_product_display_callback()
+{
+    $options = get_option('flash_offers_options');
+    $display = $options['variable_product_display'] ?? 'default';
+    ?>
+    <select name="flash_offers_options[variable_product_display]">
+        <option value="default" <?php selected($display, 'default'); ?>><?php esc_html_e('Default WooCommerce', 'advanced-offers-for-woocommerce'); ?></option>
+        <option value="table" <?php selected($display, 'table'); ?>><?php esc_html_e('Table View', 'advanced-offers-for-woocommerce'); ?></option>
+    </select>
+    <p class="description">
+        <?php esc_html_e('Choose how all products are displayed on single product pages.', 'advanced-offers-for-woocommerce'); ?>
+    </p>
+    <?php
+}
+
 // Callback: Countdown Format Selection
 function flashoffers_countdown_format_field_callback()
 {

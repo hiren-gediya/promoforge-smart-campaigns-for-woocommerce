@@ -520,3 +520,183 @@ add_action('before_delete_post', function ($post_id) {
         );
     }
 });
+
+// --- Admin Columns for Flash Offers ---
+
+// 1. Add Columns
+add_filter('manage_flash_offer_posts_columns', 'flashoffers_add_admin_columns');
+function flashoffers_add_admin_columns($columns)
+{
+    $new_columns = [];
+    $new_columns['cb'] = $columns['cb'];
+    $new_columns['title'] = $columns['title'];
+
+    // Add new columns
+    $new_columns['offer_type'] = esc_html__('Offer Type', 'advanced-offers-for-woocommerce');
+    $new_columns['start_date'] = esc_html__('Start Date', 'advanced-offers-for-woocommerce');
+    $new_columns['end_date'] = esc_html__('End Date', 'advanced-offers-for-woocommerce');
+    $new_columns['discount'] = esc_html__('Discount', 'advanced-offers-for-woocommerce');
+
+    // Retain Date column if needed, or remove. Usually Date is publish date which is less useful here.
+    // User requested "title show ho raha hai uske sath show krna hai" (show with title).
+    // Default date column is fine to keep at end.
+    $new_columns['date'] = $columns['date'];
+    return $new_columns;
+}
+
+// 2. Populate Columns
+add_action('manage_flash_offer_posts_custom_column', 'flashoffers_populate_admin_columns', 10, 2);
+function flashoffers_populate_admin_columns($column, $post_id)
+{
+    global $wpdb;
+
+    // Fetch data from custom table
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+    $offer = $wpdb->get_row($wpdb->prepare(
+        "SELECT * FROM {$wpdb->prefix}flash_offers WHERE post_id = %d",
+        $post_id
+    ));
+
+    if (!$offer) {
+        if (in_array($column, ['offer_type', 'start_date', 'end_date', 'discount'])) {
+            echo '-';
+        }
+        return;
+    }
+
+    switch ($column) {
+        case 'offer_type':
+            $types = [
+                'flash' => esc_html__('Flash Offer', 'advanced-offers-for-woocommerce'),
+                'upcoming' => esc_html__('Upcoming Offer', 'advanced-offers-for-woocommerce'),
+                'special' => esc_html__('Special Offer', 'advanced-offers-for-woocommerce'),
+            ];
+            echo esc_html($types[$offer->offer_type] ?? ucfirst($offer->offer_type));
+            break;
+
+        case 'start_date':
+            // Format logic: If valid date, format it.
+            if (!empty($offer->start_date) && $offer->start_date !== '0000-00-00 00:00:00') {
+                echo esc_html(get_date_from_gmt($offer->start_date, 'M j, Y g:i a'));
+            } else {
+                echo '-';
+            }
+            break;
+
+        case 'end_date':
+            if (!empty($offer->end_date) && $offer->end_date !== '0000-00-00 00:00:00') {
+                echo esc_html(get_date_from_gmt($offer->end_date, 'M j, Y g:i a'));
+            } else {
+                echo '-';
+            }
+            break;
+
+        case 'discount':
+            echo esc_html($offer->discount . '%');
+            break;
+    }
+}
+
+// 3. Make Columns Sortable
+add_filter('manage_edit-flash_offer_sortable_columns', 'flashoffers_sortable_admin_columns');
+function flashoffers_sortable_admin_columns($columns)
+{
+    $columns['offer_type'] = 'offer_type';
+    $columns['start_date'] = 'start_date';
+    $columns['end_date'] = 'end_date';
+    $columns['discount'] = 'discount';
+    return $columns;
+}
+
+// 4. Handle Sorting
+add_action('pre_get_posts', 'flashoffers_handle_admin_sorting');
+function flashoffers_handle_admin_sorting($query)
+{
+    if (!is_admin() || !$query->is_main_query() || $query->get('post_type') !== 'flash_offer') {
+        return;
+    }
+
+    $orderby = $query->get('orderby');
+    if (in_array($orderby, ['offer_type', 'start_date', 'end_date', 'discount'])) {
+        add_filter('posts_join', 'flashoffers_admin_join_table');
+        add_filter('posts_orderby', 'flashoffers_admin_orderby_table');
+    }
+}
+
+function flashoffers_admin_join_table($join)
+{
+    global $wpdb;
+    // Check if not already joined to avoid errors if triggered multiple times
+    if (strpos($join, $wpdb->prefix . 'flash_offers') === false) {
+        $join .= " LEFT JOIN {$wpdb->prefix}flash_offers ON {$wpdb->posts}.ID = {$wpdb->prefix}flash_offers.post_id ";
+    }
+    return $join;
+}
+
+function flashoffers_admin_orderby_table($orderby)
+{
+    global $wpdb, $wp_query;
+    $sort_col = $wp_query->get('orderby');
+    $order = $wp_query->get('order') ? $wp_query->get('order') : 'ASC';
+
+    // Map standard sort keys to table columns
+    $allowed_cols = ['offer_type', 'start_date', 'end_date', 'discount'];
+
+    if (in_array($sort_col, $allowed_cols)) {
+        return "{$wpdb->prefix}flash_offers.{$sort_col} {$order}";
+    }
+
+    return $orderby;
+}
+
+// 5. Handle Search
+add_action('pre_get_posts', 'flashoffers_handle_admin_search');
+function flashoffers_handle_admin_search($query)
+{
+    if (!is_admin() || !$query->is_main_query() || $query->get('post_type') !== 'flash_offer' || !$query->is_search()) {
+        return;
+    }
+
+    $term = $query->get('s');
+    if (empty($term))
+        return;
+
+    global $wpdb;
+
+    // 1. Search in Custom Table
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+    $custom_ids = $wpdb->get_col($wpdb->prepare(
+        "SELECT post_id FROM {$wpdb->prefix}flash_offers 
+         WHERE offer_type LIKE %s 
+         OR discount LIKE %s 
+         OR start_date LIKE %s 
+         OR end_date LIKE %s",
+        '%' . $wpdb->esc_like($term) . '%',
+        '%' . $wpdb->esc_like($term) . '%',
+        '%' . $wpdb->esc_like($term) . '%',
+        '%' . $wpdb->esc_like($term) . '%'
+    ));
+
+    // 2. Search in Post Title (Default WP behavior, but since we are overriding, we must do it manually)
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+    $title_ids = $wpdb->get_col($wpdb->prepare(
+        "SELECT ID FROM {$wpdb->posts} 
+         WHERE post_title LIKE %s 
+         AND post_type = 'flash_offer' 
+         AND post_status != 'trash'",
+        '%' . $wpdb->esc_like($term) . '%'
+    ));
+
+    // 3. Merge IDs
+    $merged_ids = array_unique(array_merge($custom_ids, $title_ids));
+
+    // If no results, force empty result
+    if (empty($merged_ids)) {
+        $merged_ids = [0];
+    }
+
+    // 4. Modify Query
+    $query->set('post__in', $merged_ids);
+    $query->set('s', ''); // Clear search term to prevent default WP search from restricting results further
+    $query->set('compare', 'IN');
+}
