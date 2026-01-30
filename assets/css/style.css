@@ -9,14 +9,11 @@
   margin-bottom: 5px;
 }
 
-/* Position differently on shop vs single product */
 .woocommerce-loop-product__title+.flash-offer-badge {
   margin-top: 5px;
   display: block;
 }
 
-
-/* Special Offers */
 .flash-special-offer-container {
   margin: 20px 0;
 }
@@ -82,10 +79,6 @@
   flex: 1;
 }
 
-
-/* ===============================
-   Variable Product Table Styling
-   =============================== */
 .variable-product-table {
   width: 100%;
   border-collapse: collapse;
@@ -100,7 +93,6 @@
 
 .variable-product-table thead {
   background: #00a79d;
-  /* Teal Header */
   color: #fff;
 }
 
@@ -125,25 +117,21 @@
   vertical-align: middle;
 }
 
-/* Pack size column */
 .variable-product-table td:first-child {
   font-weight: bold;
   text-align: left;
 }
 
-/* Price column */
 .variable-product-table td.price {
   font-weight: bold;
   color: #00a79d;
 }
 
-/* Price per unit column */
 .variable-product-table td.price-unit {
   font-size: 13px;
   color: #666;
 }
 
-/* Quantity input */
 .variable-product-table input.qty {
   width: 55px;
   text-align: center;
@@ -155,14 +143,12 @@
   display: block;
 }
 
-/* Cart form cell */
 .variable-product-table td form {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-/* Add to Cart button */
 .variable-product-table .single_add_to_cart_button {
   background: #00a79d;
   color: #fff;
@@ -178,22 +164,17 @@
   background: #00897b;
 }
 
-/* Disabled button */
 .variable-product-table .single_add_to_cart_button:disabled {
   background: #ccc;
   cursor: not-allowed;
 }
 
-/* Modal optimization (scrollable if table is long) */
 .modal .variable-product-table-wrapper {
   max-height: 400px;
   overflow-y: auto;
   padding: 10px;
 }
 
-/* ===============================
-   Moved Inline Styles
-   =============================== */
 .wao-display-none {
   display: none;
 }
@@ -202,11 +183,6 @@
   display: block;
 }
 
-/* ===============================
-   Flash Special Offer Slider Styling
-   =============================== */
-
-/* Container */
 .flash-special-offer-container {
   padding: 20px;
   position: relative;
@@ -214,15 +190,13 @@
   margin: 30px auto;
 }
 
-/* Slick Track */
 .flash-special-offer-container .slick-track {
   display: flex;
-  gap: 20px;
+
   padding-bottom: 20px;
 }
 
-/* Individual Product Slide */
-.flash-special-offer-container .products .product {
+.flash-special-offer-container .wao-products .wao-product {
   text-align: center;
   background: #fff;
   border: 1px solid #e5e5e5;
@@ -230,22 +204,19 @@
   padding: 15px;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   height: 100%;
-  /* Equal height */
   box-sizing: border-box;
   display: flex !important;
   flex-direction: column;
   justify-content: space-between;
 }
 
-/* Hover Effect */
-.flash-special-offer-container .products .product:hover {
+.flash-special-offer-container .wao-products .wao-product:hover {
   transform: translateY(-5px);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
   border-color: #0073aa;
 }
 
-/* Product Image */
-.flash-special-offer-container .products .product img {
+.flash-special-offer-container .wao-products .wao-product img {
   max-width: 100%;
   height: auto;
   object-fit: contain;
@@ -253,20 +224,17 @@
   border-radius: 4px;
 }
 
-/* Product Title */
-.flash-special-offer-container .products .product h2,
-.flash-special-offer-container .products .product .woocommerce-loop-product__title {
+.flash-special-offer-container .wao-products .wao-product h2,
+.flash-special-offer-container .wao-products .wao-product .woocommerce-loop-product__title {
   font-size: 16px;
   font-weight: 600;
   color: #333;
   margin-bottom: 10px;
   line-height: 1.4;
   min-height: 44px;
-  /* Ensure alignment */
 }
 
-/* Price */
-.flash-special-offer-container .products .product .price {
+.flash-special-offer-container .wao-products .wao-product .price {
   font-size: 15px;
   font-weight: 700;
   color: #0073aa;
@@ -274,22 +242,19 @@
   display: block;
 }
 
-.flash-special-offer-container .products .product .price del {
+.flash-special-offer-container .wao-products .wao-product .price del {
   color: #999;
   font-weight: 400;
   font-size: 13px;
   margin-right: 5px;
 }
 
-/* Action Buttons Container */
 .flash-special-offer-actions {
   margin-top: auto;
-  /* Push to bottom */
   width: 100%;
 }
 
-/* Add to Cart Button */
-.flash-special-offer-container .products .product .add_to_cart_button {
+.flash-special-offer-container .wao-products .wao-product .add_to_cart_button {
   display: inline-block;
   padding: 10px 20px;
   background-color: #0073aa;
@@ -300,28 +265,26 @@
   font-size: 14px;
   transition: background-color 0.2s ease;
   width: 100%;
-  /* Full Width Button */
   box-sizing: border-box;
 }
 
-.flash-special-offer-container .products .product .add_to_cart_button:hover {
+.flash-special-offer-container .wao-products .wao-product .add_to_cart_button:hover {
   background-color: #005177;
   color: #fff;
 }
 
-.flash-special-offer-container .products .product .add_to_cart_button.loading {
+.flash-special-offer-container .wao-products .wao-product .add_to_cart_button.loading {
   opacity: 0.7;
   cursor: wait;
 }
 
-.flash-special-offer-container .products .product .add_to_cart_button.added::after {
+.flash-special-offer-container .wao-products .wao-product .add_to_cart_button.added::after {
   font-family: 'WooCommerce';
   content: '\e017';
   margin-left: .5em;
   vertical-align: bottom;
 }
 
-/* Slider Navigation Arrows (Slick default override if enabled) */
 .flash-special-offer-container .slick-prev,
 .flash-special-offer-container .slick-next {
   width: 40px;
@@ -359,12 +322,6 @@
   right: -15px;
 }
 
-/* ===============================
-   Refined Slider & Card Styling
-   (Matching the desired visual reference)
-   =============================== */
-
-/* 1. Reset Slick Arrow Text */
 .flash-special-offer-container .slick-prev,
 .flash-special-offer-container .slick-next {
   font-size: 0;
@@ -376,7 +333,6 @@
   height: 35px;
   padding: 0;
   transform: translate(0, -50%);
-  /* Vertically center */
   cursor: pointer;
   color: transparent;
   border: none;
@@ -384,15 +340,12 @@
   background: #fff;
   border-radius: 50%;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-  /* Stronger shadow */
   z-index: 100;
 }
 
-/* Icons for Arrows */
 .flash-special-offer-container .slick-prev:before,
 .flash-special-offer-container .slick-next:before {
   font-family: 'Dashicons';
-  /* WordPress Dashicons */
   font-size: 20px;
   line-height: 35px;
   opacity: 1;
@@ -404,18 +357,15 @@
 
 .flash-special-offer-container .slick-prev:before {
   content: '\f341';
-  /* Arrow Left */
 }
 
 .flash-special-offer-container .slick-next:before {
   content: '\f345';
-  /* Arrow Right */
 }
 
 .flash-special-offer-container .slick-prev:hover,
 .flash-special-offer-container .slick-next:hover {
   background: #00a99d;
-  /* Teal hover */
 }
 
 .flash-special-offer-container .slick-prev:hover:before,
@@ -423,7 +373,6 @@
   color: #fff;
 }
 
-/* Position Adjustment */
 .flash-special-offer-container .slick-prev {
   left: -10px;
 }
@@ -432,49 +381,39 @@
   right: -10px;
 }
 
-
-/* 2. Product Card Layout */
-.flash-special-offer-container .products .product {
+.flash-special-offer-container .wao-products .wao-product {
   background: #fff;
   border: 1px solid #f1f1f1;
   border-radius: 12px;
-  /* Smooth corners */
   padding: 20px;
   margin: 0 10px;
-  /* Spacing between slides */
   transition: all 0.3s ease;
   display: flex !important;
   flex-direction: column;
   justify-content: space-between;
   height: auto;
   min-height: 420px;
-  /* Taller cards */
   text-align: center;
   position: relative;
   overflow: hidden;
 }
 
-.flash-special-offer-container .products .product:hover {
+.flash-special-offer-container .wao-products .wao-product:hover {
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-  /* Soft lift */
   transform: translateY(-5px);
   border-color: transparent;
 }
 
-/* 3. Image Handling */
-.flash-special-offer-container .products .product img,
-.flash-special-offer-container .products .product .woocommerce-loop-product__link img {
+.flash-special-offer-container .wao-products .wao-product img,
+.flash-special-offer-container .wao-products .wao-product .woocommerce-loop-product__link img {
   height: 180px;
-  /* Fixed height for consistency */
   width: 100%;
   object-fit: contain;
   margin-bottom: 20px;
   mix-blend-mode: multiply;
-  /* Helps transparent PNGs blend on white if needed */
 }
 
-/* 4. Title Styling */
-.flash-special-offer-container .products .product .woocommerce-loop-product__title {
+.flash-special-offer-container .wao-products .wao-product .woocommerce-loop-product__title {
   font-size: 15px;
   font-weight: 700;
   color: #2c3e50;
@@ -482,7 +421,6 @@
   line-height: 1.4;
   font-family: inherit;
   min-height: 42px;
-  /* Force 2 lines height alignment */
   display: -webkit-box;
   -webkit-line-clamp: 2;
   line-clamp: 2;
@@ -490,43 +428,36 @@
   overflow: hidden;
 }
 
-/* 5. Price Styling */
-.flash-special-offer-container .products .product .price {
+.flash-special-offer-container .wao-products .wao-product .price {
   font-size: 16px;
   margin-bottom: 15px;
   display: block;
   color: #333;
 }
 
-.flash-special-offer-container .products .product .price del {
+.flash-special-offer-container .wao-products .wao-product .price del {
   color: #999;
   font-size: 14px;
   margin-right: 6px;
   font-weight: normal;
 }
 
-.flash-special-offer-container .products .product .price ins {
+.flash-special-offer-container .wao-products .wao-product .price ins {
   color: #ff9800;
-  /* Orange/Gold pop */
   font-weight: 700;
   text-decoration: none;
 }
 
-/* 6. Button Styling (Teal Green) */
-.flash-special-offer-container .products .product .button,
-.flash-special-offer-container .products .product .add_to_cart_button {
+.flash-special-offer-container .wao-products .wao-product .button,
+.flash-special-offer-container .wao-products .wao-product .add_to_cart_button {
   background-color: #00a99d;
-  /* Reference Teal */
   color: #fff !important;
   border-radius: 50px;
-  /* Pill shape */
   padding: 10px 25px;
   font-weight: 600;
   font-size: 14px;
   width: 100%;
-  /* Full width */
   max-width: 80%;
-  /* But not touching edges */
   margin: 0 auto;
   text-transform: capitalize;
   border: none;
@@ -534,37 +465,32 @@
   justify-content: center;
   align-items: center;
   gap: 8px;
-  /* Space for icon if added */
   transition: all 0.2s;
 }
 
-.flash-special-offer-container .products .product .button:hover,
-.flash-special-offer-container .products .product .add_to_cart_button:hover {
+.flash-special-offer-container .wao-products .wao-product .button:hover,
+.flash-special-offer-container .wao-products .wao-product .add_to_cart_button:hover {
   background-color: #008f84;
   transform: scale(1.02);
 }
 
-/* Shopping Bag Icon Helper (requires pseudo element if not in HTML) */
-.flash-special-offer-container .products .product .add_to_cart_button::before {
+.flash-special-offer-container .wao-products .wao-product .add_to_cart_button::before {
   content: '\f174';
-  /* Dashicon cart */
   font-family: 'Dashicons';
   font-size: 16px;
   margin-right: 5px;
 }
 
-.flash-special-offer-container .products .product .add_to_cart_button.loading {
+.flash-special-offer-container .wao-products .wao-product .add_to_cart_button.loading {
   padding-right: 25px;
 }
 
-.flash-special-offer-container .products .product .add_to_cart_button.loading::after {
+.flash-special-offer-container .wao-products .wao-product .add_to_cart_button.loading::after {
   top: auto;
 }
 
-/* 7. Badges (Flash/BOGO) */
-/* Force position at top */
-.flash-special-offer-container .products .product .flash-offer-badge,
-.flash-special-offer-container .products .product .onsale {
+.flash-special-offer-container .wao-products .wao-product .flash-offer-badge,
+.flash-special-offer-container .wao-products .wao-product .onsale {
   position: absolute;
   top: 15px;
   left: 15px;
@@ -574,121 +500,113 @@
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
-  padding: 4px 10px;
+  padding: 6px 12px;
+  /* Match the visual weight of correct badges */
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   line-height: 1.2;
 }
 
-/* Ensure Countdown is Visible & Styled */
-.flash-special-offer-container .products .product #flash-offer-countdown {
-  background: transparent;
-  color: #00a99d;
-  font-size: 12px;
-  font-weight: 600;
-  margin-bottom: 10px;
-  margin-top: -10px;
-  /* Pull closer to image if needed */
-  display: block;
-}
 
 
-/* ===============================
-   Grid View (No Slider)
-   =============================== */
-.flash-special-offer-container.flash-offer-grid-view .products {
+.flash-special-offer-container.flash-offer-grid-view .wao-products {
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
   justify-content: center;
-  /* or flex-start */
   padding: 0;
   margin: 0;
   list-style: none;
 }
 
-.flash-special-offer-container.flash-offer-grid-view .products .product {
+.flash-special-offer-container.flash-offer-grid-view .wao-products .wao-product {
   width: calc(33.333% - 20px);
-  /* 3 columns accounting for gap roughly */
   margin: 0;
-  /* Override slider margins */
   flex: 0 0 auto;
 }
 
 @media (max-width: 768px) {
-  .flash-special-offer-container.flash-offer-grid-view .products .product {
+  .flash-special-offer-container.flash-offer-grid-view .wao-products .wao-product {
     width: calc(50% - 15px);
   }
 }
 
 @media (max-width: 480px) {
-  .flash-special-offer-container.flash-offer-grid-view .products .product {
+  .flash-special-offer-container.flash-offer-grid-view .wao-products .wao-product {
     width: 100%;
   }
 }
 
-/* ===============================
-   User Requested Spacing Updates
-   =============================== */
-.flash-special-offer-container .products .product.slick-slide {
+.flash-special-offer-container.flash-offer-slider-enabled .wao-products.slick-slider .wao-product.slick-slide {
   margin: 15px !important;
-  /* Visual spacing around the slide */
   padding: 25px !important;
-  /* Internal breathing room */
 }
 
-/* Compensate slick-list for the margin if needed, 
-   but slick usually handles margins on slides if they are set before initialization or handled via box-sizing.
-   Since strictly modifying the slide class was requested: */
-
-/* Ensure the hover effect doesn't get cut off by tight margins */
 .flash-special-offer-container .slick-list {
   margin: 0 -15px;
-  /* Negative margin to counteract slide margin on edges if needed */
   padding: 20px 0;
-  /* Vertical padding to show full shadows */
 }
 
-/* ===============================
-   Fix Layout: Position Countdown to Top Right
-   =============================== */
-.flash-special-offer-container .products .product #flash-offer-countdown {
+.flash-special-offer-container .wao-products .wao-product .flash-offer-countdown-timer {
   position: absolute;
   top: 15px;
   right: 15px;
   margin: 0;
   z-index: 5;
   background: #fff;
-  /* White background to stand out on images if needed */
   padding: 4px 8px;
   border-radius: 4px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
   font-size: 11px;
   font-weight: 700;
   color: #e74c3c;
-  /* Red for urgency, or keep teal */
   border: 1px solid #eee;
 }
 
-/* Ensure image doesn't overlap the absolute elements visually */
-.flash-special-offer-container .products .product img {
+.flash-special-offer-container .wao-products .wao-product img {
   margin-top: 25px;
-  /* Push image down slightly to clear badges */
 }
 
-/* ===============================
-   Fix Grid View Spacing (to match slider)
-   =============================== */
-.flash-special-offer-container.flash-offer-grid-view .products .product {
+.flash-special-offer-container.flash-offer-slider-enabled .wao-products.slick-slider .wao-product {
+  float: none;
+  margin: 0 !important;
+  flex: 0 0 auto;
+}
+
+.flash-special-offer-container .wao-products .wao-product {
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.flash-special-offer-container .wao-products {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: block;
+}
+
+.flash-special-offer-container.flash-offer-slider-enabled .wao-products.slick-slider {
+  display: block;
+}
+
+.flash-special-offer-container .wao-product img {
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  display: block;
+  margin: 0 auto 15px;
+}
+
+.wao-products .flash-special-offer-product .product {
+  width: auto !important;
+}
+
+.flash-special-offer-container.flash-offer-grid-view .wao-products .wao-product {
   margin: 15px !important;
-  /* Match slider margin */
   padding: 25px !important;
-  /* Match slider padding */
   width: calc(33.333% - 30px) !important;
-  /* Adjust width calculation for margins (30px = 15px * 2) */
 }
 
-/* Ensure centering if fewer items */
-.flash-special-offer-container.flash-offer-grid-view .products {
+.flash-special-offer-container.flash-offer-grid-view .wao-products {
   justify-content: center;
 }
 
@@ -696,27 +614,21 @@
    WAO No Slider View (Fallback for <5 items)
    Match exact slider styling but in a flex row.
    =============================== */
-.flash-special-offer-container .products.wao-no-slider {
+.flash-special-offer-container .wao-products.wao-no-slider {
   display: flex;
   flex-wrap: wrap;
   gap: 0;
-  /* Margin handled by products to match slick logic */
   justify-content: center;
   padding: 0;
   margin: 0 -15px;
-  /* Offset the container margins */
   list-style: none;
 }
 
-.flash-special-offer-container .products.wao-no-slider .product {
+.flash-special-offer-container .wao-products.wao-no-slider .wao-product {
   margin: 15px !important;
   padding: 25px !important;
-  /* Width logic: 3 columns default */
   width: calc(33.333% - 30px) !important;
-  /* Total width minus margins */
   flex: 0 0 auto;
-
-  /* Ensure card look is identical */
   background: #fff;
   border: 1px solid #f1f1f1;
   border-radius: 12px;
@@ -728,20 +640,19 @@
   text-align: center;
 }
 
-/* Specific overrides for no-slider to ensure visual parity */
-.flash-special-offer-container .products.wao-no-slider .product img {
+.flash-special-offer-container .wao-products.wao-no-slider .wao-product img {
   margin-top: 25px;
 }
 
 /* Responsive for no-slider */
 @media (max-width: 768px) {
-  .flash-special-offer-container .products.wao-no-slider .product {
+  .flash-special-offer-container .wao-products.wao-no-slider .wao-product {
     width: calc(50% - 30px) !important;
   }
 }
 
 @media (max-width: 480px) {
-  .flash-special-offer-container .products.wao-no-slider .product {
+  .flash-special-offer-container .wao-products.wao-no-slider .wao-product {
     width: calc(100% - 30px) !important;
   }
 }
@@ -762,7 +673,6 @@
   position: relative !important;
 }
 
-/* Position the Badge */
 .woocommerce ul.products li.product .flash-offer-badge,
 .woocommerce-page ul.products li.product .flash-offer-badge,
 .woocommerce .products .product .flash-offer-badge,
@@ -775,28 +685,25 @@
   top: 10px !important;
   left: 10px !important;
   z-index: 99 !important;
-  /* High z-index */
   margin: 0 !important;
   display: inline-block !important;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-/* Position the Countdown */
-.woocommerce ul.products li.product #flash-offer-countdown,
+.woocommerce ul.products li.product .flash-offer-countdown-timer,
 .woocommerce ul.products li.product .upcoming-offer,
-.woocommerce .products .product #flash-offer-countdown,
+.woocommerce .products .product .flash-offer-countdown-timer,
 .woocommerce .products .product .upcoming-offer,
-.woocommerce .related.products .product #flash-offer-countdown,
+.woocommerce .related.products .product .flash-offer-countdown-timer,
 .woocommerce .related.products .product .upcoming-offer,
-.products .product #flash-offer-countdown,
+.products .product .flash-offer-countdown-timer,
 .products .product .upcoming-offer,
-.wc-block-grid__product #flash-offer-countdown,
-.wc-block-product #flash-offer-countdown,
+.wc-block-grid__product .flash-offer-countdown-timer,
+.wc-block-product .flash-offer-countdown-timer,
 .wc-block-grid__product .upcoming-offer,
 .wc-block-product .upcoming-offer {
   position: absolute !important;
-  top: 45px !important;
-  /* Spaced below the badge */
+  top: 40px !important;
   left: 10px !important;
   z-index: 99 !important;
   background: rgba(255, 255, 255, 0.95);
@@ -808,9 +715,145 @@
   color: #e74c3c;
   width: fit-content;
   border: 1px solid rgba(0, 0, 0, 0.05);
+  margin: 0 !important;
+  line-height: 1.2;
 }
 
-/* Ensure no overlap with "Sale" badge if it exists */
+/* ===============================
+   Single Product Page Styling
+   =============================== */
+.woocommerce div.product .product_title {
+  clear: both;
+}
+
+.woocommerce div.product .wao-title-badge-wrapper {
+  margin-bottom: 15px !important;
+  display: flex !important;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+}
+
+.woocommerce div.product .wao-title-badge-wrapper .flash-offer-badge,
+.woocommerce div.product .wao-title-badge-wrapper .flash-offer-countdown-timer {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  margin: 0 0 8px 0 !important;
+  display: inline-block !important;
+}
+
+.woocommerce div.product .wao-title-badge-wrapper .flash-offer-badge {
+  box-shadow: none !important;
+}
+
+.woocommerce div.product .flash-offer-countdown-timer {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(0, 0, 0, 0.05) !important;
+  padding: 6px 12px !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  color: #e74c3c !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15) !important;
+  border-radius: 4px !important;
+  width: fit-content !important;
+  margin-bottom: 10px !important;
+  display: inline-block !important;
+}
+
+.woocommerce .related.products ul.products li.product,
+.woocommerce .up-sells.products ul.products li.product {
+  position: relative !important;
+  overflow: visible !important;
+  display: flex !important;
+  flex-direction: column;
+  padding: 10px;
+}
+
+.woocommerce .related.products ul.products li.product img,
+.woocommerce .up-sells.products ul.products li.product img {
+  margin-bottom: 15px !important;
+}
+
+/* Force absolute positioning for badges specifically in related/upsells */
+.woocommerce .related.products ul.products li.product .flash-offer-badge,
+.woocommerce .related.products ul.products li.product .flash-offer-countdown-timer,
+.woocommerce .up-sells.products ul.products li.product .flash-offer-badge,
+.woocommerce .up-sells.products ul.products li.product .flash-offer-countdown-timer {
+  position: absolute !important;
+  left: 10px !important;
+  z-index: 100 !important;
+  width: auto !important;
+}
+
+.woocommerce .related.products ul.products li.product .flash-offer-badge,
+.woocommerce .up-sells.products ul.products li.product .flash-offer-badge {
+  top: 10px !important;
+}
+
+.woocommerce .related.products ul.products li.product .flash-offer-countdown-timer,
+.woocommerce .up-sells.products ul.products li.product .flash-offer-countdown-timer {
+  top: 45px !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  padding: 4px 8px !important;
+  border-radius: 4px !important;
+  font-size: 11px !important;
+  color: #e74c3c !important;
+  border: 1px solid rgba(0, 0, 0, 0.05) !important;
+  margin: 0 !important;
+}
+
+/* Fix for Block-based Related/Upsell Products (Product Collection Block) */
+.wp-block-woocommerce-product-collection .wc-block-product,
+.wc-block-product-template .wc-block-product {
+  position: relative !important;
+  display: flex !important;
+  flex-direction: column;
+  overflow: visible !important;
+}
+
+/* Lift the wrapper entirely out of the flow */
+.wp-block-woocommerce-product-collection .wc-block-product .wao-title-badge-wrapper,
+.wc-block-product-template .wc-block-product .wao-title-badge-wrapper {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  z-index: 20 !important;
+  display: block !important;
+}
+
+/* Position items inside the lifted wrapper */
+.wp-block-woocommerce-product-collection .wc-block-product .wao-title-badge-wrapper .flash-offer-badge,
+.wc-block-product-template .wc-block-product .wao-title-badge-wrapper .flash-offer-badge {
+  position: absolute !important;
+  top: 10px !important;
+  left: 10px !important;
+  margin: 0 !important;
+  width: auto !important;
+}
+
+.wp-block-woocommerce-product-collection .wc-block-product .wao-title-badge-wrapper .flash-offer-countdown-timer,
+.wc-block-product-template .wc-block-product .wao-title-badge-wrapper .flash-offer-countdown-timer {
+  position: absolute !important;
+  top: 45px !important;
+  left: 10px !important;
+  margin: 0 !important;
+  width: fit-content !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  padding: 4px 8px !important;
+  border-radius: 4px !important;
+  font-size: 11px !important;
+  color: #e74c3c !important;
+  border: 1px solid rgba(0, 0, 0, 0.05) !important;
+}
+
+
+
 .woocommerce ul.products li.product .onsale,
 .woocommerce .products .product .onsale,
 .woocommerce .related.products .product .onsale,
@@ -819,14 +862,12 @@
 .wc-block-product .onsale {
   top: 10px !important;
   right: 10px !important;
-  /* Move Sale badge to right if we are using left */
   left: auto !important;
   margin: 0 !important;
   position: absolute !important;
   z-index: 90 !important;
 }
 
-/* Fix for Block Themes Wrapper Spacing */
 .wc-block-product .wao-title-badge-wrapper,
 .wc-block-grid__product .wao-title-badge-wrapper {
   margin: 0 !important;
@@ -834,4 +875,24 @@
   width: 0 !important;
   overflow: visible !important;
   display: block !important;
+}
+
+/* ===============================
+   Single Product Image Badge Fix
+   =============================== */
+.woocommerce div.product div.images,
+.woocommerce-product-gallery {
+  overflow: visible !important;
+}
+
+.woocommerce div.product div.images .flash-offer-badge {
+  position: absolute !important;
+  top: 20px !important;
+  left: 20px !important;
+  z-index: 20 !important;
+  margin: 0 !important;
+  padding: 6px 12px !important;
+  /* MAtch slider style */
+  font-size: 13px !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
 }
