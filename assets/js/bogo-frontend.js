@@ -100,12 +100,16 @@ jQuery(document).ready(function ($) {
         }
     });
 
-    // --- Close modal ---
-    $(document).on('click', '#bogo-close-modal', function () {
-        $('#bogo-offer-modal').addClass('hide');
-        setTimeout(function () {
-            $('#bogo-offer-modal').hide().removeClass('hide');
-        }, 300);
+
+
+    // --- Close modal (click on close button or outside content) ---
+    $(document).on('click', function (e) {
+        if ($(e.target).is('#bogo-offer-modal') || $(e.target).is('#bogo-close-modal')) {
+            $('#bogo-offer-modal').addClass('hide');
+            setTimeout(function () {
+                $('#bogo-offer-modal').hide().removeClass('hide');
+            }, 300);
+        }
     });
 
     // Log WooCommerce cart fragments refresh event for debugging
