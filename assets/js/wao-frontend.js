@@ -21,7 +21,7 @@ jQuery(document).ready(function ($) {
 
     // Auto slider for Special Offers
     if ($('.flash-special-offer-container.flash-offer-slider-enabled').length) {
-        $('.flash-special-offer-container.flash-offer-slider-enabled .products').each(function () {
+        $('.flash-special-offer-container.flash-offer-slider-enabled .wao-products').each(function () {
             var $container = $(this).closest('.flash-special-offer-container');
             var columns = $container.data('columns') || 3;
             var productCount = $(this).children().length;

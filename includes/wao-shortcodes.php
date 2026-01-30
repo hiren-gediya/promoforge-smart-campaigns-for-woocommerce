@@ -77,50 +77,32 @@ function flashoffers_display_special_offer_products($atts)
 
     <div class="woocommerce flash-special-offer-container <?php echo esc_attr($slider_class); ?>"
         data-offer-id="<?php echo (int) $offer_id; ?>" data-columns="<?php echo (int) $atts['columns']; ?>">
-        <ul class="products columns-">
-            <?php while ($products->have_posts()):
+        <div class="wao-products">
+            <?php
+            $GLOBALS['flashoffers_special_offer_context'] = true;
+            while ($products->have_posts()):
                 $products->the_post(); ?>
                 <?php
                 global $product;
                 $product_url = add_query_arg('from_offer', $offer_id, get_permalink($product->get_id()));
                 ?>
 
-                <li class="product flash-special-offer-product">
+                <div class="wao-product flash-special-offer-product product">
                     <a href="<?php echo esc_url($product_url); ?>" class="woocommerce-LoopProduct-link">
-                        <?php
-                        // Temporarily modify the product link using a variable for the closure so it can be removed
-                        $flash_special_offer_link_filter = function ($link, $post) use ($offer_id) {
-                            if ($post->post_type === 'product') {
-                                return add_query_arg('from_offer', $offer_id, $link);
-                            }
-                            return $link;
-                        };
-
-                        add_filter('post_type_link', $flash_special_offer_link_filter, 10, 2);
-
-                        // Display product content
-                        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
-                        do_action('woocommerce_before_shop_loop_item');
-
-                        // Manually call plugin functions for Special Offers since hooks might be disabled globally
-                        if (function_exists('flashoffers_display_flash_offer_badge')) {
-                            flashoffers_display_flash_offer_badge();
-                        }
-                        if (function_exists('flashoffers_show_countdown')) {
-                            flashoffers_show_countdown();
-                        }
-
-                        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
-                        do_action('woocommerce_before_shop_loop_item_title');
-                        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
-                        do_action('woocommerce_shop_loop_item_title');
-                        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
-                        do_action('woocommerce_after_shop_loop_item_title');
-
-                        // Remove the filter immediately
-                        remove_filter('post_type_link', $flash_special_offer_link_filter, 10);
-                        ?>
+                        <?php echo $product->get_image('woocommerce_thumbnail'); ?>
                     </a>
+
+                    <?php
+                    // Explicitly call badge and countdown functions since we removed the hooks
+                    flashoffers_display_flash_offer_badge();
+                    flashoffers_show_countdown();
+                    ?>
+
+                    <h2 class="woocommerce-loop-product__title">
+                        <a href="<?php echo esc_url($product_url); ?>"><?php echo get_the_title(); ?></a>
+                    </h2>
+
+                    <span class="price"><?php echo $product->get_price_html(); ?></span>
 
                     <div class="flash-special-offer-actions">
                         <?php
@@ -136,35 +118,12 @@ function flashoffers_display_special_offer_products($atts)
                         );
                         ?>
                     </div>
-                </li>
-            <?php endwhile; ?>
-        </ul>
+                </div>
+            <?php endwhile;
+            unset($GLOBALS['flashoffers_special_offer_context']);
+            ?>
+        </div>
     </div>
-
-    <?php
-    add_action('wp_enqueue_scripts', function () {
-        wp_add_inline_style('slick-css', '
-        .flash-special-offer-container.flash-offer-slider-enabled ul.products.slick-slider {
-            display: flex !important;
-            gap: 20px;
-            justify-content: start;
-        }
-
-        .flash-special-offer-container.flash-offer-slider-enabled ul.products.slick-slider li.product {
-            float: none;
-            margin: 0 !important;
-            width: 100% !important;
-            flex: 0 0 auto;
-        }
-
-        .flash-special-offer-container ul.products li.product {
-            padding: 10px;
-            box-sizing: border-box;
-        }
-    ');
-    });
-    ?>
-
 
     <?php
     wp_reset_postdata();

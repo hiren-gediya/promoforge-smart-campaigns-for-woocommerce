@@ -552,13 +552,13 @@ function flashoffers_display_bogoffers_countdown()
         if ($offer_data['status'] === 'upcoming' && !empty($offer_data['start'])) {
             $start = new DateTime($offer_data['start'], $wp_timezone);
             $start->setTimezone(new DateTimeZone('UTC'));
-            echo '<div id="flash-offer-countdown" class="upcoming-offer"
+            echo '<div class="flash-offer-countdown-timer upcoming-offer"
                   data-start="' . esc_attr($start->format('Y-m-d\TH:i:s\Z')) . '"
                   data-product-id="' . esc_attr($product->get_id()) . '">Starts soon</div>';
         } elseif (!empty($offer_data['end'])) {
             $end = new DateTime($offer_data['end'], $wp_timezone);
             $end->setTimezone(new DateTimeZone('UTC'));
-            echo '<div id="flash-offer-countdown"
+            echo '<div class="flash-offer-countdown-timer"
                   data-end="' . esc_attr($end->format('Y-m-d\TH:i:s\Z')) . '"
                   data-product-id="' . esc_attr($product->get_id()) . '">Ending soon</div>';
         }
