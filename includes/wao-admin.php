@@ -697,6 +697,70 @@ function flashoffers_handle_admin_search($query)
 
     // 4. Modify Query
     $query->set('post__in', $merged_ids);
-    $query->set('s', ''); // Clear search term to prevent default WP search from restricting results further
-    $query->set('compare', 'IN');
+    // $query->set('s', ''); // We keep 's' for UI, but suppress its SQL effect via filter
+    add_filter('posts_search', 'flashoffers_suppress_default_search', 10, 2);
+}
+
+function flashoffers_suppress_default_search($search, $query)
+{
+    if (!is_admin() || !$query->is_main_query() || !$query->is_search()) {
+        return $search;
+    }
+
+    $post_type = $query->get('post_type');
+    if ($post_type === 'flash_offer' || $post_type === 'bogo_offer') {
+        if ($query->get('post__in')) {
+            return ''; // Return empty to disable default title/content LIKE clauses
+        }
+    }
+
+    return $search;
+}
+
+// 6. Add Filter Dropdown
+add_action('restrict_manage_posts', 'flashoffers_render_offer_type_filter');
+function flashoffers_render_offer_type_filter($post_type) {
+    if ($post_type !== 'flash_offer') return;
+
+    $options = [
+        'flash' => esc_html__('Flash Offer', 'advanced-offers-for-woocommerce'),
+        'upcoming' => esc_html__('Upcoming Offer', 'advanced-offers-for-woocommerce'),
+        'special' => esc_html__('Special Offer', 'advanced-offers-for-woocommerce'),
+    ];
+
+    $current = isset($_GET['filter_offer_type']) ? sanitize_text_field($_GET['filter_offer_type']) : '';
+
+    echo '<select name="filter_offer_type" id="filter_offer_type">';
+    echo '<option value="">' . esc_html__('All Offer Types', 'advanced-offers-for-woocommerce') . '</option>';
+    foreach ($options as $key => $label) {
+        printf(
+            '<option value="%s" %s>%s</option>',
+            esc_attr($key),
+            selected($current, $key, false),
+            esc_html($label)
+        );
+    }
+    echo '</select>';
+}
+
+// 7. Handle Filter Logic
+add_action('pre_get_posts', 'flashoffers_handle_admin_filter');
+function flashoffers_handle_admin_filter($query) {
+    if (!is_admin() || !$query->is_main_query() || $query->get('post_type') !== 'flash_offer') {
+        return;
+    }
+
+    if (!empty($_GET['filter_offer_type'])) {
+        global $wpdb;
+        $type = sanitize_text_field($_GET['filter_offer_type']);
+        
+        // Ensure table is joined
+        add_filter('posts_join', 'flashoffers_admin_join_table');
+        
+        // Add where clause
+        add_filter('posts_where', function($where) use ($type, $wpdb) {
+            $where .= $wpdb->prepare(" AND {$wpdb->prefix}flash_offers.offer_type = %s", $type);
+            return $where;
+        });
+    }
 }
