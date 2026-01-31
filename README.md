@@ -43,7 +43,8 @@ This plugin is designed for performance, scalability, and real-world WooCommerce
 - Discount applies **only when accessed through offer**
 
 ### 🎁 BOGO Offer
-- Buy X Get Y free or discounted
+- Buy One Get One
+- Buy X Get Y On Discount
 - Quantity-based rules
 - Applied in cart and checkout
 
