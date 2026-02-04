@@ -21,10 +21,12 @@ function flashoffers_display_bogo_offer_on_product_page()
 
     // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
     $bogo_offers = $wpdb->get_results($wpdb->prepare(
-        "SELECT * FROM {$wpdb->prefix}bogo_offers
-         WHERE (buy_product_id = %d OR get_product_id = %d)
-         AND start_date <= %s
-         AND end_date >= %s",
+        "SELECT o.* FROM {$wpdb->prefix}bogo_offers o
+         JOIN {$wpdb->posts} wp ON o.post_id = wp.ID
+         WHERE (o.buy_product_id = %d OR o.get_product_id = %d)
+         AND o.start_date <= %s
+         AND o.end_date >= %s
+         AND wp.post_status = 'publish'",
         $product_id,
         $product_id,
         $current_date,
@@ -328,11 +330,13 @@ function flashoffers_get_bogo_offer_data($product)
 
     // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
     $offer = $wpdb->get_row($wpdb->prepare(
-        "SELECT * FROM {$wpdb->prefix}bogo_offers
-         WHERE (buy_product_id = %d OR get_product_id = %d)
-         AND start_date <= %s
-         AND end_date >= %s
-         ORDER BY id DESC
+        "SELECT o.* FROM {$wpdb->prefix}bogo_offers o
+         JOIN {$wpdb->posts} wp ON o.post_id = wp.ID
+         WHERE (o.buy_product_id = %d OR o.get_product_id = %d)
+         AND o.start_date <= %s
+         AND o.end_date >= %s
+         AND wp.post_status = 'publish'
+         ORDER BY o.id DESC
          LIMIT 1",
         $product_id,
         $product_id,

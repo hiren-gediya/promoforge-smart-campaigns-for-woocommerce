@@ -719,8 +719,10 @@ function flashoffers_suppress_default_search($search, $query)
 
 // 6. Add Filter Dropdown
 add_action('restrict_manage_posts', 'flashoffers_render_offer_type_filter');
-function flashoffers_render_offer_type_filter($post_type) {
-    if ($post_type !== 'flash_offer') return;
+function flashoffers_render_offer_type_filter($post_type)
+{
+    if ($post_type !== 'flash_offer')
+        return;
 
     $options = [
         'flash' => esc_html__('Flash Offer', 'advanced-offers-for-woocommerce'),
@@ -728,7 +730,8 @@ function flashoffers_render_offer_type_filter($post_type) {
         'special' => esc_html__('Special Offer', 'advanced-offers-for-woocommerce'),
     ];
 
-    $current = isset($_GET['filter_offer_type']) ? sanitize_text_field($_GET['filter_offer_type']) : '';
+    // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+    $current = isset($_GET['filter_offer_type']) ? sanitize_text_field(wp_unslash($_GET['filter_offer_type'])) : '';
 
     echo '<select name="filter_offer_type" id="filter_offer_type">';
     echo '<option value="">' . esc_html__('All Offer Types', 'advanced-offers-for-woocommerce') . '</option>';
@@ -745,20 +748,23 @@ function flashoffers_render_offer_type_filter($post_type) {
 
 // 7. Handle Filter Logic
 add_action('pre_get_posts', 'flashoffers_handle_admin_filter');
-function flashoffers_handle_admin_filter($query) {
+function flashoffers_handle_admin_filter($query)
+{
     if (!is_admin() || !$query->is_main_query() || $query->get('post_type') !== 'flash_offer') {
         return;
     }
 
+    // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
     if (!empty($_GET['filter_offer_type'])) {
         global $wpdb;
-        $type = sanitize_text_field($_GET['filter_offer_type']);
-        
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+        $type = sanitize_text_field(wp_unslash($_GET['filter_offer_type']));
+
         // Ensure table is joined
         add_filter('posts_join', 'flashoffers_admin_join_table');
-        
+
         // Add where clause
-        add_filter('posts_where', function($where) use ($type, $wpdb) {
+        add_filter('posts_where', function ($where) use ($type, $wpdb) {
             $where .= $wpdb->prepare(" AND {$wpdb->prefix}flash_offers.offer_type = %s", $type);
             return $where;
         });

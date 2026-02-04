@@ -344,7 +344,7 @@ function flashoffers_populate_bogo_admin_columns($column, $post_id)
         case 'buy_product':
             if ($offer->buy_product_id) {
                 $product = wc_get_product($offer->buy_product_id);
-                echo $product ? esc_html($product->get_name()) . ' (x' . $offer->buy_quantity . ')' : esc_html__('Unknown Product', 'advanced-offers-for-woocommerce');
+                echo $product ? esc_html($product->get_name()) . ' (x' . esc_html($offer->buy_quantity) . ')' : esc_html__('Unknown Product', 'advanced-offers-for-woocommerce');
             } else {
                 echo '-';
             }
@@ -353,7 +353,7 @@ function flashoffers_populate_bogo_admin_columns($column, $post_id)
         case 'get_product':
             if ($offer->get_product_id) {
                 $product = wc_get_product($offer->get_product_id);
-                echo $product ? esc_html($product->get_name()) . ' (x' . $offer->get_quantity . ')' : esc_html__('Unknown Product', 'advanced-offers-for-woocommerce');
+                echo $product ? esc_html($product->get_name()) . ' (x' . esc_html($offer->get_quantity) . ')' : esc_html__('Unknown Product', 'advanced-offers-for-woocommerce');
             } else {
                 echo '-';
             }
@@ -484,15 +484,18 @@ function flashoffers_handle_bogo_admin_search($query)
 
 // 6. Add Filter Dropdown
 add_action('restrict_manage_posts', 'flashoffers_render_bogo_type_filter');
-function flashoffers_render_bogo_type_filter($post_type) {
-    if ($post_type !== 'bogo_offer') return;
+function flashoffers_render_bogo_type_filter($post_type)
+{
+    if ($post_type !== 'bogo_offer')
+        return;
 
     $options = [
         'buy_x_get_y' => esc_html__('Buy X Get Y', 'advanced-offers-for-woocommerce'),
         'buy_one_get_one' => esc_html__('Buy One Get One', 'advanced-offers-for-woocommerce'),
     ];
 
-    $current = isset($_GET['filter_offer_type']) ? sanitize_text_field($_GET['filter_offer_type']) : '';
+    // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+    $current = isset($_GET['filter_offer_type']) ? sanitize_text_field(wp_unslash($_GET['filter_offer_type'])) : '';
 
     echo '<select name="filter_offer_type" id="filter_offer_type">';
     echo '<option value="">' . esc_html__('All Offer Types', 'advanced-offers-for-woocommerce') . '</option>';
@@ -509,20 +512,23 @@ function flashoffers_render_bogo_type_filter($post_type) {
 
 // 7. Handle Filter Logic
 add_action('pre_get_posts', 'flashoffers_handle_bogo_admin_filter');
-function flashoffers_handle_bogo_admin_filter($query) {
+function flashoffers_handle_bogo_admin_filter($query)
+{
     if (!is_admin() || !$query->is_main_query() || $query->get('post_type') !== 'bogo_offer') {
         return;
     }
 
+    // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
     if (!empty($_GET['filter_offer_type'])) {
         global $wpdb;
-        $type = sanitize_text_field($_GET['filter_offer_type']);
-        
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+        $type = sanitize_text_field(wp_unslash($_GET['filter_offer_type']));
+
         // Ensure table is joined
         add_filter('posts_join', 'flashoffers_bogo_admin_join_table');
-        
+
         // Add where clause
-        add_filter('posts_where', function($where) use ($type, $wpdb) {
+        add_filter('posts_where', function ($where) use ($type, $wpdb) {
             $where .= $wpdb->prepare(" AND {$wpdb->prefix}bogo_offers.offer_type = %s", $type);
             return $where;
         });

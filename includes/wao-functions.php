@@ -520,8 +520,10 @@ function flashoffers_get_offer_data($product)
         $wpdb->prepare(
             "SELECT o.* FROM {$wpdb->prefix}flash_offers o
              JOIN {$wpdb->prefix}flash_offer_products p ON o.id = p.offer_id
+             JOIN {$wpdb->posts} wp ON o.post_id = wp.ID
              WHERE p.product_id = %d
              AND o.end_date > %s
+             AND wp.post_status = 'publish'
              ORDER BY o.discount DESC",
             $product_id,
             current_time('mysql')
@@ -940,7 +942,7 @@ function flashoffers_validate_add_to_cart_login($passed, $product_id, $quantity)
 }
 
 
-function remove_woocommerce_variations_form()
+function flashoffers_remove_woocommerce_variations_form()
 {
   // Variable
   remove_action('woocommerce_variable_add_to_cart', 'woocommerce_variable_add_to_cart', 30);
@@ -964,17 +966,19 @@ function flashoffers_should_use_table_display() {
 add_action('wp', 'flashoffers_maybe_remove_variations_form');
 function flashoffers_maybe_remove_variations_form() {
     if (flashoffers_should_use_table_display()) {
-        remove_woocommerce_variations_form();
+        flashoffers_remove_woocommerce_variations_form();
+        // Remove theme's table if it exists
+        remove_action('woocommerce_single_product_summary', 'custom_display_variable_product', 25);
     }
 }
 
 add_action('woocommerce_single_product_summary', 'flashoffers_maybe_add_custom_display', 25);
 function flashoffers_maybe_add_custom_display() {
     if (flashoffers_should_use_table_display()) {
-        custom_display_variable_product();
+        flashoffers_custom_display_variable_product();
     }
 }
-function custom_display_variable_product()
+function flashoffers_custom_display_variable_product()
 {
   global $product;
 
@@ -1027,24 +1031,24 @@ function custom_display_variable_product()
           }
           
           if (!empty($value)) {
-             $variation_specs[] = '<strong>' . esc_html($label) . ':</strong> ' . esc_html($value);
+             $variation_specs[] = ucwords($value);
           }
       }
       $variation_html = implode(', ', $variation_specs);
 
       echo '<tr>';
-      echo '<td>' . ((!empty($variation_html)) ? $variation_html : esc_html__('Default', 'woocommerce')) . '</td>';
-      echo '<td class="price">' . wc_price($price) . '</td>';
+      echo '<td>' . ((!empty($variation_html)) ? esc_html($variation_html) : esc_html__('Default', 'advanced-offers-for-woocommerce')) . '</td>';
+      echo '<td class="price">' . wp_kses_post(wc_price($price)) . '</td>';
       
       echo '<td class="price-unit">';
       if (is_numeric($price_per_piece)) {
-          echo wc_price($price_per_piece) . ' /Piece';
+          echo wp_kses_post(wc_price($price_per_piece)) . ' /Piece';
       } else {
-          echo wc_price($price) . ' /Piece';
+          echo wp_kses_post(wc_price($price)) . ' /Piece';
       }
       echo '</td>';
       
-      echo '<td class="list-quantity"><input type="number" value="1" min="1" class="qty" id="qty_' . $variation['variation_id'] . '" name="quantity_' . $variation['variation_id'] . '"></td>';
+      echo '<td class="list-quantity"><input type="number" value="1" min="1" class="qty" id="qty_' . esc_attr($variation['variation_id']) . '" name="quantity_' . esc_attr($variation['variation_id']) . '"></td>';
       echo '<td>';
       ?>
       <form class="cart" action="<?php echo esc_url($product->get_permalink()); ?>" method="post">
@@ -1055,9 +1059,9 @@ function custom_display_variable_product()
           echo '<input type="hidden" name="attribute_' . esc_attr(str_replace('attribute_', '', $attribute_name)) . '" value="' . esc_attr($attribute_value) . '" />';
         }
         ?>
-        <input type="hidden" name="quantity" id="quantity_<?php echo $variation['variation_id']; ?>" value="1" />
+        <input type="hidden" name="quantity" id="quantity_<?php echo esc_attr($variation['variation_id']); ?>" value="1" />
         <button type="submit" class="single_add_to_cart_button button" <?php echo !$is_in_stock ? "disabled" : ""; ?>       <?php echo $is_in_stock ? 'onclick="updateQuantity(' . esc_js($variation['variation_id']) . ')"' : ''; ?>>
-            <?php echo $is_in_stock ? esc_html($product->single_add_to_cart_text()) : esc_html__('Out of stock', 'woocommerce'); ?>
+            <?php echo $is_in_stock ? esc_html($product->single_add_to_cart_text()) : esc_html__('Out of stock', 'advanced-offers-for-woocommerce'); ?>
         </button>
       </form>
       <?php
@@ -1084,22 +1088,22 @@ function custom_display_variable_product()
       $pack_size_val = $product->get_attribute('pa_pack-size'); 
 
       echo '<tr>';
-      echo '<td class="price">' . wc_price($price) . '</td>';
+      echo '<td class="price">' . wp_kses_post(wc_price($price)) . '</td>';
       
       echo '<td class="price-unit">';
       if (is_numeric($price)) {
-          echo wc_price($price) . ' /Piece';
+          echo wp_kses_post(wc_price($price)) . ' /Piece';
       } 
       echo '</td>';
       
-      echo '<td class="list-quantity"><input type="number" value="1" min="1" class="qty" id="qty_' . $product->get_id() . '" name="quantity"></td>';
+      echo '<td class="list-quantity"><input type="number" value="1" min="1" class="qty" id="qty_' . esc_attr($product->get_id()) . '" name="quantity"></td>';
       echo '<td>';
       ?>
       <form class="cart" action="<?php echo esc_url($product->get_permalink()); ?>" method="post">
         <input type="hidden" name="add-to-cart" value="<?php echo esc_attr($product->get_id()); ?>" />
-        <input type="hidden" name="quantity" id="quantity_<?php echo $product->get_id(); ?>" value="1" />
+        <input type="hidden" name="quantity" id="quantity_<?php echo esc_attr($product->get_id()); ?>" value="1" />
         <button type="submit" class="single_add_to_cart_button button" <?php echo !$is_in_stock ? "disabled" : ""; ?> <?php echo $is_in_stock ? 'onclick="updateQuantity(' . esc_js($product->get_id()) . ')"' : ''; ?>>
-            <?php echo $is_in_stock ? esc_html($product->single_add_to_cart_text()) : esc_html__('Out of stock', 'woocommerce'); ?>
+            <?php echo $is_in_stock ? esc_html($product->single_add_to_cart_text()) : esc_html__('Out of stock', 'advanced-offers-for-woocommerce'); ?>
         </button>
       </form>
       <?php
@@ -1135,20 +1139,20 @@ function custom_display_variable_product()
 
           echo '<tr>';
           echo '<td>' . esc_html($child->get_name()) . ' <small>(' . esc_html($pack_size_val) . ')</small></td>';
-          echo '<td class="price">' . wc_price($price) . '</td>';
+          echo '<td class="price">' . wp_kses_post(wc_price($price)) . '</td>';
           
           echo '<td class="price-unit">';
           if (is_numeric($price_per_piece)) {
-              echo wc_price($price_per_piece) . ' /Piece';
+              echo wp_kses_post(wc_price($price_per_piece)) . ' /Piece';
           } else {
               echo '-';
           }
           echo '</td>';
           
-          echo '<td class="list-quantity"><input type="number" value="1" min="1" class="qty" name="quantity[' . $child_id . ']"></td>';
+          echo '<td class="list-quantity"><input type="number" value="1" min="1" class="qty" name="quantity[' . esc_attr($child_id) . ']"></td>';
           echo '<td>';
           // Grouped adds to cart via main form usually, but individual adds work too
-          echo '<a href="' . $child->add_to_cart_url() . '" class="button single_add_to_cart_button">' . $child->add_to_cart_text() . '</a>'; 
+          echo '<a href="' . esc_url($child->add_to_cart_url()) . '" class="button single_add_to_cart_button">' . esc_html($child->add_to_cart_text()) . '</a>'; 
           echo '</td></tr>';
       }
       echo '</tbody></table>';
@@ -1172,7 +1176,7 @@ function custom_display_variable_product()
       
       echo '<tr>';
       echo '<td>' . esc_html($pack_size_val) . '</td>';
-      echo '<td class="price">' . wc_price($price) . '</td>';
+      echo '<td class="price">' . wp_kses_post(wc_price($price)) . '</td>';
       echo '<td class="price-unit">-</td>';
       echo '<td class="list-quantity">-</td>';
       echo '<td>';
