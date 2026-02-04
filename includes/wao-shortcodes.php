@@ -23,8 +23,9 @@ function flashoffers_display_special_offer_products($atts)
     // Get offer info
     // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
     $offer = $wpdb->get_row($wpdb->prepare(
-        "SELECT id, discount, end_date FROM {$wpdb->prefix}flash_offers 
-         WHERE post_id = %d AND offer_type = %s",
+        "SELECT o.id, o.discount, o.end_date FROM {$wpdb->prefix}flash_offers o
+         JOIN {$wpdb->posts} wp ON o.post_id = wp.ID
+         WHERE o.post_id = %d AND o.offer_type = %s AND wp.post_status = 'publish'",
         $offer_id,
         'special'
     ));
@@ -55,6 +56,7 @@ function flashoffers_display_special_offer_products($atts)
     // WP Query to get products
     $args = [
         'post_type' => 'product',
+        'post_status' => 'publish',
         'post__in' => $product_ids,
         'posts_per_page' => -1,
         'orderby' => 'post__in',
@@ -89,7 +91,7 @@ function flashoffers_display_special_offer_products($atts)
 
                 <div class="wao-product flash-special-offer-product product">
                     <a href="<?php echo esc_url($product_url); ?>" class="woocommerce-LoopProduct-link">
-                        <?php echo $product->get_image('woocommerce_thumbnail'); ?>
+                        <?php echo wp_kses_post($product->get_image('woocommerce_thumbnail')); ?>
                     </a>
 
                     <?php
@@ -99,10 +101,10 @@ function flashoffers_display_special_offer_products($atts)
                     ?>
 
                     <h2 class="woocommerce-loop-product__title">
-                        <a href="<?php echo esc_url($product_url); ?>"><?php echo get_the_title(); ?></a>
+                        <a href="<?php echo esc_url($product_url); ?>"><?php echo esc_html(get_the_title()); ?></a>
                     </h2>
 
-                    <span class="price"><?php echo $product->get_price_html(); ?></span>
+                    <span class="price"><?php echo wp_kses_post($product->get_price_html()); ?></span>
 
                     <div class="flash-special-offer-actions">
                         <?php
