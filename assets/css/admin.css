@@ -1,0 +1,424 @@
+.product-select-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.product-select-list .product-box {
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
+    width: 120px;
+    text-align: center;
+    background: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    position: relative;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.product-select-list .product-box:hover {
+    border-color: #0073aa;
+    /* WooCommerce blue */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.product-select-list .product-box input[type="checkbox"] {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    transform: scale(1.2);
+    cursor: pointer;
+}
+
+.product-select-list .product-box img {
+    max-width: 100%;
+    height: auto;
+}
+
+.product-select-list .product-box strong {
+    display: block;
+    margin-top: 5px;
+    font-size: 0.9em;
+}
+
+/* ===============================
+   Moved Inline Styles
+   =============================== */
+.wao-admin-select-300 {
+    width: 300px;
+}
+
+.wao-admin-select-200 {
+    width: fit-content;
+}
+
+.wao-admin-input-200 {
+    width: 200px;
+}
+
+.wao-width-full {
+    width: 100%;
+}
+
+.wao-display-none {
+    display: none;
+}
+
+.wao-display-block {
+    display: block;
+}
+
+/* Admin UI */
+.wao-admin-width-200 {
+    width: 200px;
+}
+
+.wao-admin-width-400 {
+    width: 400px;
+}
+
+.wao-mt-20 {
+    margin-top: 20px;
+}
+
+.wao-mt-30 {
+    margin-top: 30px;
+}
+
+.wao-product-img-container {
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wao-flex-wrap-gap-15 {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.wao-product-title-small {
+    display: block;
+    margin-top: 5px;
+    font-size: 0.9em;
+}
+
+.wao-price-small {
+    font-size: 0.8em;
+}
+
+/* JS Dynamic Elements */
+.wao-selected-product {
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    text-align: left;
+    width: 250px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.wao-selected-product:hover {
+    border-color: #0073aa;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.wao-remove-product-link {
+    color: #a00;
+    text-decoration: none;
+}
+/* ===============================
+   Settings Page Styling
+   =============================== */
+.flash-offers-settings-wrap {
+    max-width: 1200px;
+    margin: 20px auto;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+}
+
+.flash-offers-settings-wrap h1 {
+    font-weight: 700;
+    color: #23282d;
+    margin-bottom: 20px;
+    font-size: 2.5em;
+}
+
+.flash-offers-settings-wrap form {
+    background: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    border: 1px solid #e5e5e5;
+}
+
+.flash-offers-settings-wrap .form-table {
+    margin-bottom: 30px;
+}
+
+.flash-offers-settings-wrap .form-table th {
+    font-weight: 600;
+    color: #333;
+    padding: 25px 20px 25px 0;
+    width: 250px;
+    vertical-align: top;
+}
+
+.flash-offers-settings-wrap .form-table td {
+    padding: 20px 0;
+    vertical-align: top;
+}
+
+.flash-offers-settings-wrap input[type="text"],
+.flash-offers-settings-wrap input[type="number"],
+.flash-offers-settings-wrap input[type="email"],
+.flash-offers-settings-wrap textarea,
+.flash-offers-settings-wrap select {
+    width: 100%;
+    max-width: 600px;
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background-color: #f9f9f9;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);
+    transition: all 0.3s ease;
+    font-size: 14px;
+    color: #333;
+}
+
+.flash-offers-settings-wrap input:focus,
+.flash-offers-settings-wrap textarea:focus,
+.flash-offers-settings-wrap select:focus {
+    border-color: #0073aa;
+    background-color: #fff;
+    box-shadow: 0 0 0 1px #0073aa;
+    outline: none;
+}
+
+.flash-offers-settings-wrap textarea {
+    line-height: 1.5;
+}
+
+.flash-offers-settings-wrap .description {
+    color: #666;
+    font-size: 13px;
+    margin-top: 8px;
+    font-style: normal;
+}
+
+/* Checkboxes & Radio Buttons */
+.flash-offers-settings-wrap label {
+    display: inline-block;
+    margin-bottom: 8px;
+    margin-right: 15px;
+    font-size: 14px;
+    color: #444;
+    cursor: pointer;
+}
+
+.flash-offers-settings-wrap input[type="checkbox"],
+.flash-offers-settings-wrap input[type="radio"] {
+    margin-right: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px; /* Soft square for checkboxes */
+}
+
+/* Section dividers if any */
+.flash-offers-settings-wrap h2 {
+    font-size: 1.5em;
+    margin: 30px 0 20px 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+    color: #23282d;
+}
+
+/* Submit Button styling */
+.flash-offers-settings-wrap .submit {
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+    margin-top: 30px;
+}
+
+.flash-offers-settings-wrap .button-primary {
+    background: #0073aa;
+    border-color: #0073aa;
+    color: #fff;
+    text-decoration: none;
+    text-shadow: none;
+    padding: 8px 25px;
+    height: auto;
+    font-size: 16px;
+    border-radius: 5px;
+    transition: background 0.3s ease;
+}
+
+.flash-offers-settings-wrap .button-primary:hover,
+.flash-offers-settings-wrap .button-primary:focus {
+    background: #005177;
+    border-color: #005177;
+    color: #fff;
+}
+
+/* Color Picker fix */
+.flash-offers-settings-wrap .wp-picker-container {
+    display: inline-block;
+}
+
+.flash-offers-settings-wrap .wp-picker-input-wrap label {
+    display: inline-block;
+    margin: 0;
+    vertical-align: top;
+}
+
+/* ===============================
+   Meta Box Styling (Post Editor)
+   =============================== */
+.flash-offer-admin {
+    padding: 20px;
+    background: #fafafa; /* Slightly grey background to distinguish from main WP */
+}
+
+.flash-offer-admin p {
+    margin-bottom: 25px; /* More breathing room */
+}
+
+/* Improve labels */
+.flash-offer-admin label {
+    font-weight: 600;
+    color: #333;
+    font-size: 14px;
+    display: block; /* Ensure labels are on their own line */
+    margin-bottom: 8px;
+}
+
+/* Improve ALL inputs and selects inside the meta box */
+.flash-offer-admin input[type="text"],
+.flash-offer-admin input[type="number"],
+.flash-offer-admin input[type="datetime-local"],
+.flash-offer-admin select {
+    display: block;
+    height: 40px; /* Taller touch-friendly inputs */
+    line-height: normal;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.03);
+    color: #32373c;
+    font-size: 14px;
+    transition: border-color 0.2s;
+    background-color: #fff;
+}
+
+.flash-offer-admin input:focus,
+.flash-offer-admin select:focus {
+    border-color: #0073aa;
+    box-shadow: 0 0 0 1px #0073aa;
+    outline: none;
+}
+
+/* Specific widths override */
+.wao-admin-select-200, .wao-admin-input-200 { width: fit-content; max-width: 250px; }
+.wao-admin-width-400 { width: 20%; max-width: 500px; height: auto !important; min-height: 120px; } /* For multi-select */
+
+/* Selected Products Section */
+#selected-product-list h4 {
+    font-size: 1.1em;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+    color: #23282d;
+}
+
+.selected-product-box.wao-flex-wrap-gap-15 {
+    background: #fff;
+    padding: 15px;
+    border: 1px solid #e5e5e5;
+    border-radius: 6px;
+    min-height: 50px;
+}
+
+/* Enhance the wao-selected-product look */
+.wao-selected-product {
+    background: #fdfdfd;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05); /* Softer shadow */
+    border: 1px solid #e0e0e0; /* Lighter border */
+}
+
+.wao-selected-product strong {
+    color: #0073aa;
+}
+
+.wao-selected-product:hover {
+    border-color: #0073aa;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transform: translateY(-1px); /* Subtle lift */
+    transition: all 0.2s ease;
+}
+
+.wao-remove-product-link {
+    font-size: 13px;
+    padding: 3px 8px;
+    background: #fff0f0;
+    color: #d63638;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.wao-remove-product-link:hover {
+    background: #d63638;
+    color: #fff;
+    text-decoration: none;
+}
+
+/* ===============================
+   BOGO Offer Styling
+   =============================== */
+.bogo-offer-configuration {
+    padding: 20px;
+    background: #fafafa;
+    border-radius: 4px;
+}
+
+.bogo-offer-configuration p {
+    margin-bottom: 25px;
+}
+
+.bogo-offer-configuration label {
+    font-weight: 600;
+    color: #333;
+    font-size: 14px;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.bogo-offer-configuration input[type="text"],
+.bogo-offer-configuration input[type="number"],
+.bogo-offer-configuration input[type="datetime-local"],
+.bogo-offer-configuration select {
+    display: block;
+    height: 40px;
+    line-height: normal;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.03);
+    color: #32373c;
+    font-size: 14px;
+    transition: border-color 0.2s;
+    background-color: #fff;
+}
+
+.bogo-offer-configuration input:focus,
+.bogo-offer-configuration select:focus {
+    border-color: #0073aa;
+    box-shadow: 0 0 0 1px #0073aa;
+    outline: none;
+}
+
+/* Ensure full width selects look good */
+.wao-width-full {
+    width: fit-content;
+    max-width: 100%; /* Ensure it doesn't overflow container */
+}
