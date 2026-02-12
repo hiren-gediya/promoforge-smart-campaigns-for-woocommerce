@@ -435,9 +435,6 @@ function promoforge_display_bogo_offer_badge()
 
     if ($show_on_shop || $show_on_category || $show_on_home || $is_other_location || $show_on_single) {
         // Inject CSS to hide default sale badge when custom BOGO badge is shown
-        global $promoforge_hide_sale_badge_ids;
-        $promoforge_hide_sale_badge_ids[] = $product_id;
-
         echo '<span class="flash-offer-badge ' . esc_attr($offer_data['status']) . '" style="background-color:' . esc_attr($badge_color) . ';">' . esc_html($offer_data['badge_text']) . '</span>';
     }
 }
@@ -446,50 +443,97 @@ function promoforge_display_bogo_offer_badge()
 add_action('woocommerce_before_shop_loop_item', 'promoforge_remove_bogo_sale_badge_css');
 add_action('woocommerce_before_single_product_summary', 'promoforge_remove_bogo_sale_badge_css');
 
-function promoforge_remove_bogo_sale_badge_css()
+/**
+ * determine if default sale badge should be hidden
+ * Helper function to check if the default sale badge should be hidden
+ * 
+ * @param WC_Product $product
+ * @return bool
+ */
+function promoforge_should_hide_default_badge($product)
 {
-    global $product;
-    if (!$product)
-        return;
+    if (!$product) {
+        return false;
+    }
 
-    // Get BOGO data
+    $product_id = $product->get_id();
+
+    // Check if already rendered via block filter
+    if (!empty($GLOBALS['promoforge_badge_rendered_' . $product_id])) {
+        return false;
+    }
+
     $offer_data = promoforge_get_bogo_offer_data($product);
 
-    // If variation has no offer, check parent
-    if (empty($offer_data['offer']) && $product->is_type('variation')) {
-        $parent = wc_get_product($product->get_parent_id());
-        if ($parent) {
-            $offer_data = promoforge_get_bogo_offer_data($parent);
-        }
-    }
-
-    // Check if offer is already in cart (same logic as badge)
-    if (!empty($offer_data['offer'])) {
-        $offer = $offer_data['offer'];
-        $buy_in_cart = false;
-        $get_in_cart = false;
-
-        if (WC()->cart) {
-            foreach (WC()->cart->get_cart() as $cart_item) {
-                if (intval($cart_item['product_id']) === intval($offer->buy_product_id)) {
-                    $buy_in_cart = true;
-                }
-                if (intval($cart_item['product_id']) === intval($offer->get_product_id)) {
-                    $get_in_cart = true;
-                }
+    if (!$offer_data || empty($offer_data['offer'])) {
+        // If variation has no offer, check parent
+        if ($product->is_type('variation')) {
+            $parent = wc_get_product($product->get_parent_id());
+            if ($parent) {
+                $offer_data = promoforge_get_bogo_offer_data($parent);
             }
         }
+    }
 
-        if ($buy_in_cart && $get_in_cart) {
-            return;
+    if (!$offer_data || empty($offer_data['offer'])) {
+        return false;
+    }
+
+    // Check if offer is already in cart
+    $offer = $offer_data['offer'];
+    $buy_in_cart = false;
+    $get_in_cart = false;
+
+    if (WC()->cart) {
+        foreach (WC()->cart->get_cart() as $cart_item) {
+            if (intval($cart_item['product_id']) === intval($offer->buy_product_id)) {
+                $buy_in_cart = true;
+            }
+            if (intval($cart_item['product_id']) === intval($offer->get_product_id)) {
+                $get_in_cart = true;
+            }
         }
     }
 
-    // ✅ Only if this product has an offer → hide badge for THIS product only
-    if (!empty($offer_data['offer'])) {
-        global $promoforge_hide_sale_badge_ids;
-        $promoforge_hide_sale_badge_ids[] = $product->get_id();
+    if ($buy_in_cart && $get_in_cart) {
+        return false;
     }
+
+    // Check locations logic (replicated from display function logic where applicable, 
+    // or just assume if offer exists and is active, we validly might show it)
+    // The display logic checks locations.
+    $locations = $offer_data['locations'];
+    $show_on_shop = is_shop() && !empty($locations['shop_loop']);
+    $show_on_category = is_product_category() && !empty($locations['category_page']);
+    $show_on_home = is_front_page() && !empty($locations['home_page']);
+    $is_other_location = !is_shop() && !is_product_category() && !is_product() && !is_front_page() && !empty($locations['other_page']);
+    $show_on_single = is_product() && !empty($locations['product_page']);
+
+    if ($show_on_shop || $show_on_category || $show_on_home || $is_other_location || $show_on_single) {
+        return true;
+    }
+
+    return false;
+}
+
+// Add class to product wrapper if BOGO offer is active
+add_filter('post_class', 'promoforge_add_bogo_class_to_product', 10, 3);
+function promoforge_add_bogo_class_to_product($classes, $class, $post_id)
+{
+    if ('product' === get_post_type($post_id)) {
+        $product = wc_get_product($post_id);
+        if (promoforge_should_hide_default_badge($product)) {
+            $classes[] = 'promoforge-hide-default-sale-badge';
+        }
+    }
+    return $classes;
+}
+
+// Deprecated/Modified: No longer used to populate global array, but kept for legacy hook compatibility if needed.
+// Only used to ensure logic consistency or future hooks.
+function promoforge_remove_bogo_sale_badge_css()
+{
+    // The logic is now handled via post_class and static CSS
 }
 
 

@@ -911,3 +911,10 @@
 .woocommerce .variable-product-table .cart {
   margin-bottom: 0 !important;
 }
+/* Hide default sale badge when custom BOGO badge is active */
+.promoforge-hide-default-sale-badge .onsale,
+.promoforge-hide-default-sale-badge .wc-block-components-product-sale-badge,
+.wc-block-product.promoforge-hide-default-sale-badge .wc-block-components-product-sale-badge {
+    display: none !important;
+}
+

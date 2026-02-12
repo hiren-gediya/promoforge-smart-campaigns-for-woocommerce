@@ -38,10 +38,10 @@ require_once PROMOFORGE_PATH . 'includes/promoforge-special-cart.php';
 require_once PROMOFORGE_PATH . 'includes/promoforge-bogo-admin.php';
 require_once PROMOFORGE_PATH . 'includes/promoforge-bogo-frontend.php';
 
-// Initialize global variable for hiding sale badges
-add_action('init', function () {
-    $GLOBALS['promoforge_hide_sale_badge_ids'] = [];
-});
+// Initialize global variable for hiding sale badges (Deprecated: now using CSS classes)
+// add_action('init', function () {
+//     $GLOBALS['promoforge_hide_sale_badge_ids'] = [];
+// });
 // Run migration on plugin activation or when admin loads
 add_action('admin_init', function () {
     if (current_user_can('activate_plugins')) {
@@ -121,25 +121,4 @@ function promoforge_handle_uninstall()
 
     require_once plugin_dir_path(__FILE__) . 'includes/promoforge-functions.php';
     promoforge_uninstall();
-}
-
-/**
- * Print inline styles in footer to hide default sale badges
- */
-add_action('wp_footer', 'promoforge_print_footer_styles');
-function promoforge_print_footer_styles()
-{
-    if (empty($GLOBALS['promoforge_hide_sale_badge_ids'])) {
-        return;
-    }
-    $ids = array_unique($GLOBALS['promoforge_hide_sale_badge_ids']);
-    if (empty($ids))
-        return;
-
-    echo '<style>';
-    foreach ($ids as $id) {
-        $id = intval($id);
-        echo ".post-{$id} .onsale, .post-{$id} .wc-block-components-product-sale-badge, .wc-block-product.post-{$id} .wc-block-components-product-sale-badge { display: none !important; } ";
-    }
-    echo '</style>';
 }
