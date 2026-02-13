@@ -1,10 +1,9 @@
 jQuery(document).ready(function ($) {
-    console.log('BOGO Frontend script loaded.');
 
     // Insert BOGO modal HTML into body
     if ($('#bogo-offer-modal').length === 0) {
         const bogoModalHTML = `
-            <div id="bogo-offer-modal" class="wao-display-none">
+            <div id="bogo-offer-modal" class="promoforge-display-none">
                 <div class="bogo-modal-content">
                     <span id="bogo-close-modal">✖</span>
                     <div id="bogo-offer-modal-body"></div>
@@ -17,7 +16,6 @@ jQuery(document).ready(function ($) {
     // --- Open BOGO modal ---
     $(document).on('click', '.bogo-popup-btn', function (e) {
         e.preventDefault();
-        console.log('BOGO Button Clicked');
 
         try {
             if (typeof promoforge_bogo_ajax === 'undefined') {
@@ -34,11 +32,6 @@ jQuery(document).ready(function ($) {
             var offerType = $(this).data('offer-type');
             var discount = $(this).data('discount');
 
-            console.log('Sending AJAX request:', {
-                action: 'load_bogo_product_form',
-                buy_product_id: buyProductId,
-                get_product_id: getProductId
-            });
 
             $.ajax({
                 url: promoforge_bogo_ajax.ajax_url,
@@ -75,7 +68,7 @@ jQuery(document).ready(function ($) {
 
                         if (offerType === 'buy_one_get_one') {
                             // For BOGO 1+1, set buy form quantity to 2 (buy 1 + get 1)
-                            buyQtyInput.val(2);
+                            buyQtyInput.val(2).prop('readonly', true);
                         } else {
                             // For buy x get y, set buy and get quantities accordingly
                             buyQtyInput.val(buyQuantity);
@@ -110,11 +103,6 @@ jQuery(document).ready(function ($) {
                 $('#bogo-offer-modal').hide().removeClass('hide');
             }, 300);
         }
-    });
-
-    // Log WooCommerce cart fragments refresh event for debugging
-    $(document.body).on('wc_fragments_refreshed', function () {
-        console.log('WooCommerce cart fragments refreshed');
     });
 
     // --- Handle add to cart for default WooCommerce forms in modal (both simple and variable) ---
@@ -193,8 +181,6 @@ jQuery(document).ready(function ($) {
 
         var row = $button.closest('tr');
         var userQty = parseInt(row.find('.qty').val()) || 2;
-
-        console.log('Add to cart clicked:', { productId, variationId, userQty, productType });
 
         $.ajax({
             url: promoforge_bogo_ajax.ajax_url,

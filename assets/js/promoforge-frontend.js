@@ -3,9 +3,9 @@ jQuery(document).ready(function ($) {
      * Shortcode Logic: Redirects & Slider
      */
     // Redirect fixes for Special Offers inside Shortcode
-    $(document).on('click', '.flash-special-offer-product .add_to_cart_button, .flash-special-offer-product a.woocommerce-LoopProduct-link', function (e) {
-        var $productItem = $(this).closest('.flash-special-offer-product');
-        var $container = $productItem.closest('.flash-special-offer-container');
+    $(document).on('click', '.promoforge-special-offer-product .add_to_cart_button, .promoforge-special-offer-product a.woocommerce-LoopProduct-link', function (e) {
+        var $productItem = $(this).closest('.promoforge-special-offer-product');
+        var $container = $productItem.closest('.promoforge-special-offer-container');
         var offerId = $container.data('offer-id');
 
         // If no offerId found via container, try checking URL or other means if necessary
@@ -20,9 +20,9 @@ jQuery(document).ready(function ($) {
     });
 
     // Auto slider for Special Offers
-    if ($('.flash-special-offer-container.flash-offer-slider-enabled').length) {
-        $('.flash-special-offer-container.flash-offer-slider-enabled .wao-products').each(function () {
-            var $container = $(this).closest('.flash-special-offer-container');
+    if ($('.promoforge-special-offer-container.promoforge-offer-slider-enabled').length) {
+        $('.promoforge-special-offer-container.promoforge-offer-slider-enabled .promoforge-products').each(function () {
+            var $container = $(this).closest('.promoforge-special-offer-container');
             var columns = $container.data('columns') || 3;
             var productCount = $(this).children().length;
 
@@ -44,7 +44,7 @@ jQuery(document).ready(function ($) {
                     }]
                 });
             } else {
-                $(this).addClass('wao-no-slider');
+                $(this).addClass('promoforge-no-slider');
             }
         });
     }
@@ -67,3 +67,11 @@ jQuery(document).ready(function ($) {
         });
     }
 });
+
+function updateQuantity(id) {
+    var qtyInput = document.getElementById('qty_' + id);
+    var hiddenInput = document.getElementById('quantity_' + id);
+    if (qtyInput && hiddenInput) {
+        hiddenInput.value = qtyInput.value;
+    }
+}

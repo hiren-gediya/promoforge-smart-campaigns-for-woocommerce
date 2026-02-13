@@ -4,7 +4,7 @@ defined('ABSPATH') or die('Direct access not allowed');
 // Add meta box to flash offer admin side
 add_action('add_meta_boxes', function () {
     add_meta_box(
-        'flash_offer_details',
+        'promoforge_offer_details',
         esc_html__('Offer Details', 'promoforge-smart-campaigns-for-woocommerce'),
         'promoforge_offer_details_callback',
         'promoforge_flash',
@@ -22,7 +22,7 @@ function promoforge_offer_details_callback($post)
 
     // Verify tables exist
     // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-    if ($wpdb->get_var("SHOW TABLES LIKE '{$wpdb->prefix}promoforge_flash_offers'") != $wpdb->prefix . 'promoforge_flash_offers') {
+    if ($wpdb->get_var("SHOW TABLES LIKE '{$wpdb->prefix}promoforge_offers'") != $wpdb->prefix . 'promoforge_offers') {
         echo '<div class="error"><p>' . esc_html__('Promoforge Flash Offers tables not found. Please deactivate and reactivate the plugin.', 'promoforge-smart-campaigns-for-woocommerce') . '</p></div>';
         return;
     }
@@ -30,7 +30,7 @@ function promoforge_offer_details_callback($post)
     // Get offer data
     // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
     $offer = $wpdb->get_row($wpdb->prepare(
-        "SELECT * FROM {$wpdb->prefix}promoforge_flash_offers WHERE post_id = %d",
+        "SELECT * FROM {$wpdb->prefix}promoforge_offers WHERE post_id = %d",
         $post->ID
     ));
 
@@ -67,11 +67,11 @@ function promoforge_offer_details_callback($post)
     ]);
     ?>
 
-    <div class="flash-offer-admin">
+    <div class="promoforge-offer-admin">
         <p>
             <label
                 for="offer_type"><?php esc_html_e('Offer Type:', 'promoforge-smart-campaigns-for-woocommerce'); ?></label><br>
-            <select name="offer_type" id="offer_type" class="wao-admin-select-200">
+            <select name="offer_type" id="offer_type" class="promoforge-admin-select-200">
                 <option value="flash" <?php selected($offer_type, 'flash'); ?>>
                     <?php esc_html_e('Flash Offer', 'promoforge-smart-campaigns-for-woocommerce'); ?>
                 </option>
@@ -85,41 +85,41 @@ function promoforge_offer_details_callback($post)
         </p>
 
         <p
-            class="flash_offer_start_fields <?php echo ($offer_type === 'flash') ? 'wao-display-none' : 'wao-display-block'; ?>">
+            class="promoforge_offer_start_fields <?php echo ($offer_type === 'flash') ? 'promoforge-display-none' : 'promoforge-display-block'; ?>">
             <label
-                for="flash_offer_start"><?php esc_html_e('Start Date & Time:', 'promoforge-smart-campaigns-for-woocommerce'); ?></label><br>
-            <input type="datetime-local" name="flash_offer_start"
+                for="promoforge_offer_start"><?php esc_html_e('Start Date & Time:', 'promoforge-smart-campaigns-for-woocommerce'); ?></label><br>
+            <input type="datetime-local" name="promoforge_offer_start"
                 value="<?php echo esc_attr($start ? str_replace(' ', 'T', substr($start, 0, 16)) : ''); ?>"
-                class="wao-admin-input-200">
+                class="promoforge-admin-input-200">
         </p>
 
         <p>
             <label
-                for="flash_offer_end"><?php esc_html_e('End Date & Time:', 'promoforge-smart-campaigns-for-woocommerce'); ?></label><br>
-            <input type="datetime-local" name="flash_offer_end"
+                for="promoforge_offer_end"><?php esc_html_e('End Date & Time:', 'promoforge-smart-campaigns-for-woocommerce'); ?></label><br>
+            <input type="datetime-local" name="promoforge_offer_end"
                 value="<?php echo esc_attr($end ? str_replace(' ', 'T', substr($end, 0, 16)) : ''); ?>"
-                class="wao-admin-input-200">
+                class="promoforge-admin-input-200">
         </p>
 
         <p>
             <label
-                for="flash_offer_discount"><?php esc_html_e('Discount (%):', 'promoforge-smart-campaigns-for-woocommerce'); ?></label><br>
-            <input type="number" name="flash_offer_discount" value="<?php echo esc_attr($discount); ?>" min="1" max="100"
-                class="wao-admin-input-200">
+                for="promoforge_offer_discount"><?php esc_html_e('Discount (%):', 'promoforge-smart-campaigns-for-woocommerce'); ?></label><br>
+            <input type="number" name="promoforge_offer_discount" value="<?php echo esc_attr($discount); ?>" min="1"
+                max="100" class="promoforge-admin-input-200">
         </p>
         <p>
             <label
-                for="flash_offer_use_offers"><?php esc_html_e('How Many Time User Can Use This Offers:', 'promoforge-smart-campaigns-for-woocommerce'); ?></label><br>
-            <input type="number" name="flash_offer_use_offers" value="<?php echo esc_attr($use_offers); ?>" min="1"
-                max="100" class="wao-admin-input-200">
+                for="promoforge_offer_use_offers"><?php esc_html_e('How Many Time User Can Use This Offers:', 'promoforge-smart-campaigns-for-woocommerce'); ?></label><br>
+            <input type="number" name="promoforge_offer_use_offers" value="<?php echo esc_attr($use_offers); ?>" min="1"
+                max="100" class="promoforge-admin-input-200">
         </p>
 
 
-        <div id="flash_offer_upcoming_offer_fields_product">
+        <div id="promoforge_offer_upcoming_offer_fields_product">
             <p>
                 <label><?php esc_html_e('Assign to Categories:', 'promoforge-smart-campaigns-for-woocommerce'); ?></label><br>
-                <select id="flash_offer_category_selector" name="flash_offer_offer_categories[]" multiple="multiple"
-                    class="flash_offer_wc-enhanced-select wao-admin-width-400">
+                <select id="promoforge_offer_category_selector" name="promoforge_offer_offer_categories[]"
+                    multiple="multiple" class="promoforge_offer_wc-enhanced-select promoforge-admin-width-400">
                     <?php foreach ($categories_list as $category): ?>
                         <option value="<?php echo esc_attr($category->term_id); ?>" <?php selected(in_array($category->term_id, $categories)); ?>>
                             <?php echo esc_html($category->name); ?>
@@ -128,18 +128,18 @@ function promoforge_offer_details_callback($post)
                 </select>
             </p>
 
-            <div id="category-product-preview" class="wao-mt-20">
+            <div id="category-product-preview" class="promoforge-mt-20">
                 <?php if (!empty($products)): ?>
-                    <div class="product-select-list">
+                    <div class="promoforge-product-select-list">
                         <?php foreach ($products as $product_id):
                             $product = wc_get_product($product_id);
                             if (!$product)
                                 continue;
                             ?>
-                            <label class="product-box">
+                            <label class="promoforge-product-box">
                                 <input type="checkbox" name="offer_products[]" value="<?php echo esc_attr($product_id); ?>"
                                     checked />
-                                <div class="wao-product-img-container">
+                                <div class="promoforge-product-img-container">
                                     <?php echo wp_kses_post($product->get_image('thumbnail')); ?>
                                 </div>
                                 <strong><?php echo esc_html($product->get_name()); ?></strong>
@@ -154,9 +154,9 @@ function promoforge_offer_details_callback($post)
             </div>
         </div>
 
-        <div id="selected-product-list" class="wao-mt-30">
+        <div id="promoforge-selected-product-list" class="promoforge-mt-30">
             <h4><?php esc_html_e('Selected Products:', 'promoforge-smart-campaigns-for-woocommerce'); ?></h4>
-            <div class="selected-product-box wao-flex-wrap-gap-15"></div>
+            <div class="selected-promoforge-product-box promoforge-flex-wrap-gap-15"></div>
         </div>
 
         <div id="hidden-offer-products"></div>
@@ -182,7 +182,7 @@ add_action('save_post_promoforge_flash', function ($post_id) {
         return;
 
     // Prevent duplicate saves with transient lock
-    $lock_key = 'flash_offer_saving_' . $post_id;
+    $lock_key = 'promoforge_offer_saving_' . $post_id;
     if (get_transient($lock_key)) {
         return; // Already saving, skip this call
     }
@@ -196,23 +196,23 @@ add_action('save_post_promoforge_flash', function ($post_id) {
     $offer_data = [
         'post_id' => $post_id,
         'offer_type' => sanitize_text_field(wp_unslash($_POST['offer_type'] ?? 'flash')),
-        'start_date' => !empty($_POST['flash_offer_start']) ? str_replace('T', ' ', sanitize_text_field(wp_unslash($_POST['flash_offer_start']))) : current_time('mysql'),
-        'end_date' => str_replace('T', ' ', sanitize_text_field(wp_unslash($_POST['flash_offer_end'] ?? ''))),
-        'discount' => floatval($_POST['flash_offer_discount'] ?? 0),
-        'use_offers' => intval($_POST['flash_offer_use_offers'] ?? 0)
+        'start_date' => !empty($_POST['promoforge_offer_start']) ? str_replace('T', ' ', sanitize_text_field(wp_unslash($_POST['promoforge_offer_start']))) : current_time('mysql'),
+        'end_date' => str_replace('T', ' ', sanitize_text_field(wp_unslash($_POST['promoforge_offer_end'] ?? ''))),
+        'discount' => floatval($_POST['promoforge_offer_discount'] ?? 0),
+        'use_offers' => intval($_POST['promoforge_offer_use_offers'] ?? 0)
     ];
 
     // Check if offer exists
     // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
     $offer = $wpdb->get_row($wpdb->prepare(
-        "SELECT id FROM {$wpdb->prefix}promoforge_flash_offers WHERE post_id = %d",
+        "SELECT id FROM {$wpdb->prefix}promoforge_offers WHERE post_id = %d",
         $post_id
     ));
 
     if ($offer) {
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $wpdb->update(
-            $wpdb->prefix . 'promoforge_flash_offers',
+            $wpdb->prefix . 'promoforge_offers',
             $offer_data,
             ['id' => $offer->id],
             ['%d', '%s', '%s', '%s', '%f', '%d'],
@@ -222,7 +222,7 @@ add_action('save_post_promoforge_flash', function ($post_id) {
     } else {
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $wpdb->insert(
-            $wpdb->prefix . 'promoforge_flash_offers',
+            $wpdb->prefix . 'promoforge_offers',
             $offer_data,
             ['%d', '%s', '%s', '%s', '%f', '%d']
         );
@@ -307,7 +307,7 @@ add_action('save_post_promoforge_flash', function ($post_id) {
 
 
 // Add shortcode meta box ONLY if offer is special
-add_action('add_meta_boxes_flash_offer', 'promoforge_add_conditional_shortcode_meta_box');
+add_action('add_meta_boxes_promoforge_flash', 'promoforge_add_conditional_shortcode_meta_box');
 function promoforge_add_conditional_shortcode_meta_box($post)
 {
     global $wpdb;
@@ -320,7 +320,7 @@ function promoforge_add_conditional_shortcode_meta_box($post)
     // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
     $offer_type = $wpdb->get_var(
         $wpdb->prepare(
-            "SELECT offer_type FROM {$wpdb->prefix}promoforge_flash_offers WHERE post_id = %d AND offer_type = %s",
+            "SELECT offer_type FROM {$wpdb->prefix}promoforge_offers WHERE post_id = %d AND offer_type = %s",
             $post_id,
             'special'
         )
@@ -345,7 +345,7 @@ function promoforge_add_conditional_shortcode_meta_box($post)
 // Display shortcode for special offer at edit post
 function promoforge_display_special_offer_shortcode($post)
 {
-    $shortcode = '[flash_special_offer id=' . $post->ID . ']';
+    $shortcode = '[promoforge_special_offer id=' . $post->ID . ']';
     ?>
     <p><?php esc_html_e('Use this shortcode to display this special offer:', 'promoforge-smart-campaigns-for-woocommerce'); ?>
     </p>
@@ -383,7 +383,7 @@ function promoforge_get_products_by_categories()
     if ($current_post_id) {
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $offer_id = $wpdb->get_var($wpdb->prepare(
-            "SELECT id FROM {$wpdb->prefix}promoforge_flash_offers WHERE post_id = %d",
+            "SELECT id FROM {$wpdb->prefix}promoforge_offers WHERE post_id = %d",
             $current_post_id
         ));
 
@@ -403,7 +403,7 @@ function promoforge_get_products_by_categories()
         $wpdb->prepare(
             "SELECT DISTINCT product_id FROM {$wpdb->prefix}promoforge_offer_products 
              WHERE offer_id IN (
-                 SELECT id FROM {$wpdb->prefix}promoforge_flash_offers 
+                 SELECT id FROM {$wpdb->prefix}promoforge_offers 
                  WHERE post_id != %d AND end_date > NOW()
              )",
             $current_post_id
@@ -450,7 +450,7 @@ function promoforge_get_products_by_categories()
     $products_query = new WP_Query($args);
 
     if ($products_query->have_posts()) {
-        echo '<div class="product-select-list">';
+        echo '<div class="promoforge-product-select-list">';
 
         while ($products_query->have_posts()) {
             $products_query->the_post();
@@ -461,11 +461,11 @@ function promoforge_get_products_by_categories()
             $product_id = $product->get_id();
             $checked = in_array($product_id, $current_offer_products) ? 'checked' : '';
 
-            echo '<label class="product-box">';
+            echo '<label class="promoforge-product-box">';
             echo '<input type="checkbox" name="offer_products[]" value="' . esc_attr($product_id) . '" ' . esc_attr($checked) . ' />';
-            echo '<div class="wao-product-img-container">' . wp_kses_post($product->get_image('thumbnail')) . '</div>';
-            echo '<strong class="wao-product-title-small">' . esc_html($product->get_name()) . '</strong>';
-            echo '<span class="wao-price-small">' . wp_kses_post($product->get_price_html()) . '</span>';
+            echo '<div class="promoforge-product-img-container">' . wp_kses_post($product->get_image('thumbnail')) . '</div>';
+            echo '<strong class="promoforge-product-title-small">' . esc_html($product->get_name()) . '</strong>';
+            echo '<span class="promoforge-price-small">' . wp_kses_post($product->get_price_html()) . '</span>';
             echo '</label>';
         }
 
@@ -482,23 +482,23 @@ function promoforge_get_products_by_categories()
 add_action('before_delete_post', function ($post_id) {
     global $wpdb;
 
-    // Check if this is a flash_offer post type
+    // Check if this is a promoforge_offer post type
     $post = get_post($post_id);
     if (!$post || $post->post_type !== 'promoforge_flash') {
         return;
     }
 
-    // Get the offer ID from the flash_offers table
+    // Get the offer ID from the promoforge_offers table
     // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
     $offer = $wpdb->get_row($wpdb->prepare(
-        "SELECT id FROM {$wpdb->prefix}promoforge_flash_offers WHERE post_id = %d",
+        "SELECT id FROM {$wpdb->prefix}promoforge_offers WHERE post_id = %d",
         $post_id
     ));
 
     if ($offer) {
         $offer_id = $offer->id;
 
-        // Delete from flash_offer_categories table
+        // Delete from promoforge_offer_categories table
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $wpdb->delete(
             $wpdb->prefix . 'promoforge_offer_categories',
@@ -506,18 +506,18 @@ add_action('before_delete_post', function ($post_id) {
             ['%d']
         );
 
-        // Delete from flash_offer_products table
+        // Delete from promoforge_offer_products table
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $wpdb->delete(
-            $wpdb->prefix . 'flash_offer_products',
+            $wpdb->prefix . 'promoforge_offer_products',
             ['offer_id' => $offer_id],
             ['%d']
         );
 
-        // Delete from flash_offers table
+        // Delete from promoforge_offers table
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $wpdb->delete(
-            $wpdb->prefix . 'promoforge_flash_offers',
+            $wpdb->prefix . 'promoforge_offers',
             ['post_id' => $post_id],
             ['%d']
         );
@@ -527,7 +527,7 @@ add_action('before_delete_post', function ($post_id) {
 // --- Admin Columns for Flash Offers ---
 
 // 1. Add Columns
-add_filter('manage_flash_offer_posts_columns', 'promoforge_add_admin_columns');
+add_filter('manage_promoforge_flash_posts_columns', 'promoforge_add_admin_columns');
 function promoforge_add_admin_columns($columns)
 {
     $new_columns = [];
@@ -548,7 +548,7 @@ function promoforge_add_admin_columns($columns)
 }
 
 // 2. Populate Columns
-add_action('manage_flash_offer_posts_custom_column', 'promoforge_populate_admin_columns', 10, 2);
+add_action('manage_promoforge_flash_posts_custom_column', 'promoforge_populate_admin_columns', 10, 2);
 function promoforge_populate_admin_columns($column, $post_id)
 {
     global $wpdb;
@@ -556,7 +556,7 @@ function promoforge_populate_admin_columns($column, $post_id)
     // Fetch data from custom table
     // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
     $offer = $wpdb->get_row($wpdb->prepare(
-        "SELECT * FROM {$wpdb->prefix}promoforge_flash_offers WHERE post_id = %d",
+        "SELECT * FROM {$wpdb->prefix}promoforge_offers WHERE post_id = %d",
         $post_id
     ));
 
@@ -601,7 +601,7 @@ function promoforge_populate_admin_columns($column, $post_id)
 }
 
 // 3. Make Columns Sortable
-add_filter('manage_edit-flash_offer_sortable_columns', 'promoforge_sortable_admin_columns');
+add_filter('manage_edit-promoforge_flash_sortable_columns', 'promoforge_sortable_admin_columns');
 function promoforge_sortable_admin_columns($columns)
 {
     $columns['offer_type'] = 'offer_type';
@@ -630,8 +630,8 @@ function promoforge_admin_join_table($join)
 {
     global $wpdb;
     // Check if not already joined to avoid errors if triggered multiple times
-    if (strpos($join, $wpdb->prefix . 'promoforge_flash_offers') === false) {
-        $join .= " LEFT JOIN {$wpdb->prefix}promoforge_flash_offers ON {$wpdb->posts}.ID = {$wpdb->prefix}promoforge_flash_offers.post_id ";
+    if (strpos($join, $wpdb->prefix . 'promoforge_offers') === false) {
+        $join .= " LEFT JOIN {$wpdb->prefix}promoforge_offers ON {$wpdb->posts}.ID = {$wpdb->prefix}promoforge_offers.post_id ";
     }
     return $join;
 }
@@ -646,7 +646,7 @@ function promoforge_admin_orderby_table($orderby)
     $allowed_cols = ['offer_type', 'start_date', 'end_date', 'discount'];
 
     if (in_array($sort_col, $allowed_cols)) {
-        return "{$wpdb->prefix}promoforge_flash_offers.{$sort_col} {$order}";
+        return "{$wpdb->prefix}promoforge_offers.{$sort_col} {$order}";
     }
 
     return $orderby;
@@ -669,7 +669,7 @@ function promoforge_handle_admin_search($query)
     // 1. Search in Custom Table
     // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
     $custom_ids = $wpdb->get_col($wpdb->prepare(
-        "SELECT post_id FROM {$wpdb->prefix}promoforge_flash_offers 
+        "SELECT post_id FROM {$wpdb->prefix}promoforge_offers 
          WHERE offer_type LIKE %s 
          OR discount LIKE %s 
          OR start_date LIKE %s 
@@ -768,7 +768,7 @@ function promoforge_handle_admin_filter($query)
 
         // Add where clause
         add_filter('posts_where', function ($where) use ($type, $wpdb) {
-            $where .= $wpdb->prepare(" AND {$wpdb->prefix}promoforge_flash_offers.offer_type = %s", $type);
+            $where .= $wpdb->prepare(" AND {$wpdb->prefix}promoforge_offers.offer_type = %s", $type);
             return $where;
         });
     }

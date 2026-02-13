@@ -1,20 +1,25 @@
-.flash-offer-badge {
-  width: fit-content;
+.promoforge-offer-badge {
   display: inline-block;
   color: white;
-  padding: 3px 10px;
-  border-radius: 3px;
-  font-size: 12px;
-  font-weight: bold;
-  margin-bottom: 5px;
+  top: 10px !important;
+  left: 10px !important;
+  z-index: 99 !important;
+  padding: 4px 8px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  font-size: 11px;
+  font-weight: 700;
+  width: fit-content;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  line-height: 1.2;
 }
 
-.woocommerce-loop-product__title+.flash-offer-badge {
+.woocommerce-loop-product__title+.promoforge-offer-badge {
   margin-top: 5px;
   display: block;
 }
 
-.flash-special-offer-container {
+.promoforge-special-offer-container {
   margin: 20px 0;
 }
 
@@ -177,28 +182,28 @@
   padding: 10px;
 }
 
-.wao-display-none {
+.promoforge-display-none {
   display: none;
 }
 
-.wao-display-block {
+.promoforge-display-block {
   display: block;
 }
 
-.flash-special-offer-container {
+.promoforge-special-offer-container {
   padding: 20px;
   position: relative;
   max-width: 100%;
   margin: 30px auto;
 }
 
-.flash-special-offer-container .slick-track {
+.promoforge-special-offer-container .slick-track {
   display: flex;
 
   padding-bottom: 20px;
 }
 
-.flash-special-offer-container .wao-products .wao-product {
+.promoforge-special-offer-container .promoforge-products .promoforge-product {
   text-align: center;
   background: #fff;
   border: 1px solid #e5e5e5;
@@ -212,13 +217,13 @@
   justify-content: space-between;
 }
 
-.flash-special-offer-container .wao-products .wao-product:hover {
+.promoforge-special-offer-container .promoforge-products .promoforge-product:hover {
   transform: translateY(-5px);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
   border-color: #0073aa;
 }
 
-.flash-special-offer-container .wao-products .wao-product img {
+.promoforge-special-offer-container .promoforge-products .promoforge-product img {
   max-width: 100%;
   height: auto;
   object-fit: contain;
@@ -226,8 +231,8 @@
   border-radius: 4px;
 }
 
-.flash-special-offer-container .wao-products .wao-product h2,
-.flash-special-offer-container .wao-products .wao-product .woocommerce-loop-product__title {
+.promoforge-special-offer-container .promoforge-products .promoforge-product h2,
+.promoforge-special-offer-container .promoforge-products .promoforge-product .woocommerce-loop-product__title {
   font-size: 16px;
   font-weight: 600;
   color: #333;
@@ -236,7 +241,7 @@
   min-height: 44px;
 }
 
-.flash-special-offer-container .wao-products .wao-product .price {
+.promoforge-special-offer-container .promoforge-products .promoforge-product .price {
   font-size: 15px;
   font-weight: 700;
   color: #0073aa;
@@ -244,19 +249,19 @@
   display: block;
 }
 
-.flash-special-offer-container .wao-products .wao-product .price del {
+.promoforge-special-offer-container .promoforge-products .promoforge-product .price del {
   color: #999;
   font-weight: 400;
   font-size: 13px;
   margin-right: 5px;
 }
 
-.flash-special-offer-actions {
+.promoforge-special-offer-actions {
   margin-top: 15px;
   width: 100%;
 }
 
-.flash-special-offer-container .wao-products .wao-product .add_to_cart_button {
+.promoforge-special-offer-container .promoforge-products .promoforge-product .add_to_cart_button {
   display: inline-block;
   padding: 10px 20px;
   background-color: #0073aa;
@@ -271,25 +276,25 @@
   margin-top: 10px;
 }
 
-.flash-special-offer-container .wao-products .wao-product .add_to_cart_button:hover {
+.promoforge-special-offer-container .promoforge-products .promoforge-product .add_to_cart_button:hover {
   background-color: #005177;
   color: #fff;
 }
 
-.flash-special-offer-container .wao-products .wao-product .add_to_cart_button.loading {
+.promoforge-special-offer-container .promoforge-products .promoforge-product .add_to_cart_button.loading {
   opacity: 0.7;
   cursor: wait;
 }
 
-.flash-special-offer-container .wao-products .wao-product .add_to_cart_button.added::after {
+.promoforge-special-offer-container .promoforge-products .promoforge-product .add_to_cart_button.added::after {
   font-family: 'WooCommerce';
   content: '\e017';
   margin-left: .5em;
   vertical-align: bottom;
 }
 
-.flash-special-offer-container .slick-prev,
-.flash-special-offer-container .slick-next {
+.promoforge-special-offer-container .slick-prev,
+.promoforge-special-offer-container .slick-next {
   width: 40px;
   height: 40px;
   background: #fff;
@@ -299,34 +304,34 @@
   transition: all 0.2s;
 }
 
-.flash-special-offer-container .slick-prev:hover,
-.flash-special-offer-container .slick-next:hover {
+.promoforge-special-offer-container .slick-prev:hover,
+.promoforge-special-offer-container .slick-next:hover {
   background: #0073aa;
   color: #fff;
 }
 
-.flash-special-offer-container .slick-prev::before,
-.flash-special-offer-container .slick-next::before {
+.promoforge-special-offer-container .slick-prev::before,
+.promoforge-special-offer-container .slick-next::before {
   color: #333;
   opacity: 1;
   font-size: 24px;
 }
 
-.flash-special-offer-container .slick-prev:hover::before,
-.flash-special-offer-container .slick-next:hover::before {
+.promoforge-special-offer-container .slick-prev:hover::before,
+.promoforge-special-offer-container .slick-next:hover::before {
   color: #fff;
 }
 
-.flash-special-offer-container .slick-prev {
+.promoforge-special-offer-container .slick-prev {
   left: -15px;
 }
 
-.flash-special-offer-container .slick-next {
+.promoforge-special-offer-container .slick-next {
   right: -15px;
 }
 
-.flash-special-offer-container .slick-prev,
-.flash-special-offer-container .slick-next {
+.promoforge-special-offer-container .slick-prev,
+.promoforge-special-offer-container .slick-next {
   font-size: 0;
   line-height: 0;
   position: absolute;
@@ -346,8 +351,8 @@
   z-index: 100;
 }
 
-.flash-special-offer-container .slick-prev:before,
-.flash-special-offer-container .slick-next:before {
+.promoforge-special-offer-container .slick-prev:before,
+.promoforge-special-offer-container .slick-next:before {
   font-family: 'Dashicons';
   font-size: 20px;
   line-height: 35px;
@@ -358,33 +363,33 @@
   text-align: center;
 }
 
-.flash-special-offer-container .slick-prev:before {
+.promoforge-special-offer-container .slick-prev:before {
   content: '\f341';
 }
 
-.flash-special-offer-container .slick-next:before {
+.promoforge-special-offer-container .slick-next:before {
   content: '\f345';
 }
 
-.flash-special-offer-container .slick-prev:hover,
-.flash-special-offer-container .slick-next:hover {
+.promoforge-special-offer-container .slick-prev:hover,
+.promoforge-special-offer-container .slick-next:hover {
   background: #00a99d;
 }
 
-.flash-special-offer-container .slick-prev:hover:before,
-.flash-special-offer-container .slick-next:hover:before {
+.promoforge-special-offer-container .slick-prev:hover:before,
+.promoforge-special-offer-container .slick-next:hover:before {
   color: #fff;
 }
 
-.flash-special-offer-container .slick-prev {
+.promoforge-special-offer-container .slick-prev {
   left: -10px;
 }
 
-.flash-special-offer-container .slick-next {
+.promoforge-special-offer-container .slick-next {
   right: -10px;
 }
 
-.flash-special-offer-container .wao-products .wao-product {
+.promoforge-special-offer-container .promoforge-products .promoforge-product {
   background: #fff;
   border: 1px solid #f1f1f1;
   border-radius: 12px;
@@ -401,14 +406,14 @@
   overflow: hidden;
 }
 
-.flash-special-offer-container .wao-products .wao-product:hover {
+.promoforge-special-offer-container .promoforge-products .promoforge-product:hover {
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
   transform: translateY(-5px);
   border-color: transparent;
 }
 
-.flash-special-offer-container .wao-products .wao-product img,
-.flash-special-offer-container .wao-products .wao-product .woocommerce-loop-product__link img {
+.promoforge-special-offer-container .promoforge-products .promoforge-product img,
+.promoforge-special-offer-container .promoforge-products .promoforge-product .woocommerce-loop-product__link img {
   height: 180px;
   width: 100%;
   object-fit: contain;
@@ -416,7 +421,7 @@
   mix-blend-mode: multiply;
 }
 
-.flash-special-offer-container .wao-products .wao-product .woocommerce-loop-product__title {
+.promoforge-special-offer-container .promoforge-products .promoforge-product .woocommerce-loop-product__title {
   font-size: 15px;
   font-weight: 700;
   color: #2c3e50;
@@ -431,28 +436,28 @@
   overflow: hidden;
 }
 
-.flash-special-offer-container .wao-products .wao-product .price {
+.promoforge-special-offer-container .promoforge-products .promoforge-product .price {
   font-size: 16px;
   margin-bottom: 15px;
   display: block;
   color: #333;
 }
 
-.flash-special-offer-container .wao-products .wao-product .price del {
+.promoforge-special-offer-container .promoforge-products .promoforge-product .price del {
   color: #999;
   font-size: 14px;
   margin-right: 6px;
   font-weight: normal;
 }
 
-.flash-special-offer-container .wao-products .wao-product .price ins {
+.promoforge-special-offer-container .promoforge-products .promoforge-product .price ins {
   color: #ff9800;
   font-weight: 700;
   text-decoration: none;
 }
 
-.flash-special-offer-container .wao-products .wao-product .button,
-.flash-special-offer-container .wao-products .wao-product .add_to_cart_button {
+.promoforge-special-offer-container .promoforge-products .promoforge-product .button,
+.promoforge-special-offer-container .promoforge-products .promoforge-product .add_to_cart_button {
   background-color: #00a99d;
   color: #fff !important;
   border-radius: 50px;
@@ -471,47 +476,45 @@
   transition: all 0.2s;
 }
 
-.flash-special-offer-container .wao-products .wao-product .button:hover,
-.flash-special-offer-container .wao-products .wao-product .add_to_cart_button:hover {
+.promoforge-special-offer-container .promoforge-products .promoforge-product .button:hover,
+.promoforge-special-offer-container .promoforge-products .promoforge-product .add_to_cart_button:hover {
   background-color: #008f84;
   transform: scale(1.02);
 }
 
-.flash-special-offer-container .wao-products .wao-product .add_to_cart_button::before {
+.promoforge-special-offer-container .promoforge-products .promoforge-product .add_to_cart_button::before {
   content: '\f174';
   font-family: 'Dashicons';
   font-size: 16px;
   margin-right: 5px;
 }
 
-.flash-special-offer-container .wao-products .wao-product .add_to_cart_button.loading {
+.promoforge-special-offer-container .promoforge-products .promoforge-product .add_to_cart_button.loading {
   padding-right: 25px;
 }
 
-.flash-special-offer-container .wao-products .wao-product .add_to_cart_button.loading::after {
+.promoforge-special-offer-container .promoforge-products .promoforge-product .add_to_cart_button.loading::after {
   top: auto;
 }
 
-.flash-special-offer-container .wao-products .wao-product .flash-offer-badge,
-.flash-special-offer-container .wao-products .wao-product .onsale {
+.promoforge-special-offer-container .promoforge-products .promoforge-product .promoforge-offer-badge,
+.promoforge-special-offer-container .promoforge-products .promoforge-product .onsale {
   position: absolute;
-  top: 15px;
-  left: 15px;
+  top: 45px;
+  left: 10px;
   margin: 0;
-  z-index: 5;
+  z-index: 99;
   border-radius: 4px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
   font-size: 11px;
   font-weight: 700;
-  text-transform: uppercase;
-  padding: 6px 12px;
-  /* Match the visual weight of correct badges */
+  padding: 4px 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  line-height: 1.2;
 }
 
 
 
-.flash-special-offer-container.flash-offer-grid-view .wao-products {
+.promoforge-special-offer-container.promoforge-offer-grid-view .promoforge-products {
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
@@ -521,41 +524,42 @@
   list-style: none;
 }
 
-.flash-special-offer-container.flash-offer-grid-view .wao-products .wao-product {
+.promoforge-special-offer-container.promoforge-offer-grid-view .promoforge-products .promoforge-product {
   width: calc(33.333% - 20px);
   margin: 0;
   flex: 0 0 auto;
 }
 
 @media (max-width: 768px) {
-  .flash-special-offer-container.flash-offer-grid-view .wao-products .wao-product {
+  .promoforge-special-offer-container.promoforge-offer-grid-view .promoforge-products .promoforge-product {
     width: calc(50% - 15px);
   }
 }
 
 @media (max-width: 480px) {
-  .flash-special-offer-container.flash-offer-grid-view .wao-products .wao-product {
+  .promoforge-special-offer-container.promoforge-offer-grid-view .promoforge-products .promoforge-product {
     width: 100%;
   }
 }
 
-.flash-special-offer-container.flash-offer-slider-enabled .wao-products.slick-slider .wao-product.slick-slide {
+.promoforge-special-offer-container.promoforge-offer-slider-enabled .promoforge-products.slick-slider .promoforge-product.slick-slide {
   margin: 15px !important;
   padding: 25px !important;
 }
 
-.flash-special-offer-container .slick-list {
+.promoforge-special-offer-container .slick-list {
   margin: 0 -15px;
   padding: 20px 0;
 }
 
-.flash-special-offer-container .wao-products .wao-product .flash-offer-countdown-timer {
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  margin: 0;
-  z-index: 5;
-  background: #fff;
+.promoforge-special-offer-container .promoforge-products .promoforge-product .promoforge-offer-countdown-timer {
+  position: absolute !important;
+  top: 45px !important;
+  left: 10px !important;
+  right: auto !important;
+  margin: 0 !important;
+  z-index: 99 !important;
+  background: rgba(255, 255, 255, 0.95);
   padding: 4px 8px;
   border-radius: 4px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
@@ -565,33 +569,33 @@
   border: 1px solid #eee;
 }
 
-.flash-special-offer-container .wao-products .wao-product img {
+.promoforge-special-offer-container .promoforge-products .promoforge-product img {
   margin-top: 25px;
 }
 
-.flash-special-offer-container.flash-offer-slider-enabled .wao-products.slick-slider .wao-product {
+.promoforge-special-offer-container.promoforge-offer-slider-enabled .promoforge-products.slick-slider .promoforge-product {
   float: none;
   margin: 0 !important;
   flex: 0 0 auto;
 }
 
-.flash-special-offer-container .wao-products .wao-product {
+.promoforge-special-offer-container .promoforge-products .promoforge-product {
   padding: 10px;
   box-sizing: border-box;
 }
 
-.flash-special-offer-container .wao-products {
+.promoforge-special-offer-container .promoforge-products {
   margin: 0;
   padding: 0;
   list-style: none;
   display: block;
 }
 
-.flash-special-offer-container.flash-offer-slider-enabled .wao-products.slick-slider {
+.promoforge-special-offer-container.promoforge-offer-slider-enabled .promoforge-products.slick-slider {
   display: block;
 }
 
-.flash-special-offer-container .wao-product img {
+.promoforge-special-offer-container .promoforge-product img {
   width: 100%;
   height: auto;
   max-width: 100%;
@@ -599,17 +603,17 @@
   margin: 0 auto 15px;
 }
 
-.wao-products .flash-special-offer-product .product {
+.promoforge-products .promoforge-special-offer-product .product {
   width: auto !important;
 }
 
-.flash-special-offer-container.flash-offer-grid-view .wao-products .wao-product {
+.promoforge-special-offer-container.promoforge-offer-grid-view .promoforge-products .promoforge-product {
   margin: 15px !important;
   padding: 25px !important;
   width: calc(33.333% - 30px) !important;
 }
 
-.flash-special-offer-container.flash-offer-grid-view .wao-products {
+.promoforge-special-offer-container.promoforge-offer-grid-view .promoforge-products {
   justify-content: center;
 }
 
@@ -617,7 +621,7 @@
    WAO No Slider View (Fallback for <5 items)
    Match exact slider styling but in a flex row.
    =============================== */
-.flash-special-offer-container .wao-products.wao-no-slider {
+.promoforge-special-offer-container .promoforge-products.promoforge-no-slider {
   display: flex;
   flex-wrap: wrap;
   gap: 0;
@@ -627,7 +631,7 @@
   list-style: none;
 }
 
-.flash-special-offer-container .wao-products.wao-no-slider .wao-product {
+.promoforge-special-offer-container .promoforge-products.promoforge-no-slider .promoforge-product {
   margin: 15px !important;
   padding: 25px !important;
   width: calc(33.333% - 30px) !important;
@@ -643,19 +647,19 @@
   text-align: center;
 }
 
-.flash-special-offer-container .wao-products.wao-no-slider .wao-product img {
+.promoforge-special-offer-container .promoforge-products.promoforge-no-slider .promoforge-product img {
   margin-top: 25px;
 }
 
 /* Responsive for no-slider */
 @media (max-width: 768px) {
-  .flash-special-offer-container .wao-products.wao-no-slider .wao-product {
+  .promoforge-special-offer-container .promoforge-products.promoforge-no-slider .promoforge-product {
     width: calc(50% - 30px) !important;
   }
 }
 
 @media (max-width: 480px) {
-  .flash-special-offer-container .wao-products.wao-no-slider .wao-product {
+  .promoforge-special-offer-container .promoforge-products.promoforge-no-slider .promoforge-product {
     width: calc(100% - 30px) !important;
   }
 }
@@ -676,14 +680,14 @@
   position: relative !important;
 }
 
-.woocommerce ul.products li.product .flash-offer-badge,
-.woocommerce-page ul.products li.product .flash-offer-badge,
-.woocommerce .products .product .flash-offer-badge,
-.woocommerce .related.products .product .flash-offer-badge,
-.woocommerce .up-sells.products .product .flash-offer-badge,
-.products .product .flash-offer-badge,
-.wc-block-grid__product .flash-offer-badge,
-.wc-block-product .flash-offer-badge {
+.woocommerce ul.products li.product .promoforge-offer-badge,
+.woocommerce-page ul.products li.product .promoforge-offer-badge,
+.woocommerce .products .product .promoforge-offer-badge,
+.woocommerce .related.products .product .promoforge-offer-badge,
+.woocommerce .up-sells.products .product .promoforge-offer-badge,
+.products .product .promoforge-offer-badge,
+.wc-block-grid__product .promoforge-offer-badge,
+.wc-block-product .promoforge-offer-badge {
   position: absolute !important;
   top: 10px !important;
   left: 10px !important;
@@ -693,16 +697,36 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.woocommerce ul.products li.product .flash-offer-countdown-timer,
+.woocommerce ul.products li.product .promoforge-offer-badge.active,
+.woocommerce .products .product .promoforge-offer-badge.active,
+.woocommerce .related.products .product .promoforge-offer-badge.active,
+.products .product .promoforge-offer-badge.active,
+.wc-block-grid__product .promoforge-offer-badge.active,
+.wc-block-product .promoforge-offer-badge.active {
+  position: absolute !important;
+  top: 10px !important;
+  left: 10px !important;
+  z-index: 99 !important;
+  padding: 4px 8px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  font-size: 11px;
+  font-weight: 700;
+  width: fit-content;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  line-height: 1.2;
+}
+
+.woocommerce ul.products li.product .promoforge-offer-countdown-timer,
 .woocommerce ul.products li.product .upcoming-offer,
-.woocommerce .products .product .flash-offer-countdown-timer,
+.woocommerce .products .product .promoforge-offer-countdown-timer,
 .woocommerce .products .product .upcoming-offer,
-.woocommerce .related.products .product .flash-offer-countdown-timer,
+.woocommerce .related.products .product .promoforge-offer-countdown-timer,
 .woocommerce .related.products .product .upcoming-offer,
-.products .product .flash-offer-countdown-timer,
+.products .product .promoforge-offer-countdown-timer,
 .products .product .upcoming-offer,
-.wc-block-grid__product .flash-offer-countdown-timer,
-.wc-block-product .flash-offer-countdown-timer,
+.wc-block-grid__product .promoforge-offer-countdown-timer,
+.wc-block-product .promoforge-offer-countdown-timer,
 .wc-block-grid__product .upcoming-offer,
 .wc-block-product .upcoming-offer {
   position: absolute !important;
@@ -729,7 +753,7 @@
   clear: both;
 }
 
-.woocommerce div.product .wao-title-badge-wrapper {
+.woocommerce div.product .promoforge-title-badge-wrapper {
   margin-bottom: 15px !important;
   display: flex !important;
   flex-direction: column;
@@ -737,8 +761,8 @@
   gap: 5px;
 }
 
-.woocommerce div.product .wao-title-badge-wrapper .flash-offer-badge,
-.woocommerce div.product .wao-title-badge-wrapper .flash-offer-countdown-timer {
+.woocommerce div.product .promoforge-title-badge-wrapper .promoforge-offer-badge,
+.woocommerce div.product .promoforge-title-badge-wrapper .promoforge-offer-countdown-timer {
   position: relative !important;
   top: auto !important;
   left: auto !important;
@@ -747,7 +771,7 @@
   display: inline-block !important;
 }
 
-.woocommerce div.product .wao-title-badge-wrapper .flash-offer-badge {
+.woocommerce div.product .promoforge-title-badge-wrapper .promoforge-offer-badge {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15) !important;
   padding: 6px 12px !important;
   font-size: 14px !important;
@@ -759,18 +783,22 @@
   display: inline-block !important;
 }
 
-.woocommerce div.product .flash-offer-countdown-timer {
-  background: rgba(255, 255, 255, 0.95) !important;
-  border: 1px solid rgba(0, 0, 0, 0.05) !important;
-  padding: 6px 12px !important;
-  font-size: 14px !important;
-  font-weight: 700 !important;
-  color: #e74c3c !important;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15) !important;
-  border-radius: 4px !important;
-  width: fit-content !important;
-  margin-bottom: 10px !important;
-  display: inline-block !important;
+.woocommerce div.product .promoforge-offer-countdown-timer {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #e74c3c;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  width: fit-content;
+  margin-bottom: 10px;
+  display: inline-block;
+  margin-left: 5px;
+  line-height: 1.2;
+  top: 10px !important;
+  left: 10px !important;
 }
 
 .woocommerce .related.products ul.products li.product,
@@ -788,23 +816,23 @@
 }
 
 /* Force absolute positioning for badges specifically in related/upsells */
-.woocommerce .related.products ul.products li.product .flash-offer-badge,
-.woocommerce .related.products ul.products li.product .flash-offer-countdown-timer,
-.woocommerce .up-sells.products ul.products li.product .flash-offer-badge,
-.woocommerce .up-sells.products ul.products li.product .flash-offer-countdown-timer {
+.woocommerce .related.products ul.products li.product .promoforge-offer-badge,
+.woocommerce .related.products ul.products li.product .promoforge-offer-countdown-timer,
+.woocommerce .up-sells.products ul.products li.product .promoforge-offer-badge,
+.woocommerce .up-sells.products ul.products li.product .promoforge-offer-countdown-timer {
   position: absolute !important;
   left: 10px !important;
   z-index: 100 !important;
   width: auto !important;
 }
 
-.woocommerce .related.products ul.products li.product .flash-offer-badge,
-.woocommerce .up-sells.products ul.products li.product .flash-offer-badge {
+.woocommerce .related.products ul.products li.product .promoforge-offer-badge,
+.woocommerce .up-sells.products ul.products li.product .promoforge-offer-badge {
   top: 10px !important;
 }
 
-.woocommerce .related.products ul.products li.product .flash-offer-countdown-timer,
-.woocommerce .up-sells.products ul.products li.product .flash-offer-countdown-timer {
+.woocommerce .related.products ul.products li.product .promoforge-offer-countdown-timer,
+.woocommerce .up-sells.products ul.products li.product .promoforge-offer-countdown-timer {
   top: 45px !important;
   background: rgba(255, 255, 255, 0.95) !important;
   padding: 4px 8px !important;
@@ -825,8 +853,8 @@
 }
 
 /* Lift the wrapper entirely out of the flow */
-.wp-block-woocommerce-product-collection .wc-block-product .wao-title-badge-wrapper,
-.wc-block-product-template .wc-block-product .wao-title-badge-wrapper {
+.wp-block-woocommerce-product-collection .wc-block-product .promoforge-title-badge-wrapper,
+.wc-block-product-template .wc-block-product .promoforge-title-badge-wrapper {
   position: absolute !important;
   top: 0 !important;
   left: 0 !important;
@@ -839,8 +867,8 @@
 }
 
 /* Position items inside the lifted wrapper */
-.wp-block-woocommerce-product-collection .wc-block-product .wao-title-badge-wrapper .flash-offer-badge,
-.wc-block-product-template .wc-block-product .wao-title-badge-wrapper .flash-offer-badge {
+.wp-block-woocommerce-product-collection .wc-block-product .promoforge-title-badge-wrapper .promoforge-offer-badge,
+.wc-block-product-template .wc-block-product .promoforge-title-badge-wrapper .promoforge-offer-badge {
   position: absolute !important;
   top: 10px !important;
   left: 10px !important;
@@ -848,10 +876,10 @@
   width: auto !important;
 }
 
-.wp-block-woocommerce-product-collection .wc-block-product .wao-title-badge-wrapper .flash-offer-countdown-timer,
-.wc-block-product-template .wc-block-product .wao-title-badge-wrapper .flash-offer-countdown-timer {
+.wp-block-woocommerce-product-collection .wc-block-product .promoforge-title-badge-wrapper .promoforge-offer-countdown-timer,
+.wc-block-product-template .wc-block-product .promoforge-title-badge-wrapper .promoforge-offer-countdown-timer {
   position: absolute !important;
-  top: 45px !important;
+  top: 55px !important;
   left: 10px !important;
   margin: 0 !important;
   width: fit-content !important;
@@ -879,8 +907,8 @@
   z-index: 90 !important;
 }
 
-.wc-block-product .wao-title-badge-wrapper,
-.wc-block-grid__product .wao-title-badge-wrapper {
+.wc-block-product .promoforge-title-badge-wrapper,
+.wc-block-grid__product .promoforge-title-badge-wrapper {
   margin: 0 !important;
   height: 0 !important;
   width: 0 !important;
@@ -896,7 +924,7 @@
   overflow: visible !important;
 }
 
-.woocommerce div.product div.images .flash-offer-badge {
+.woocommerce div.product div.images .promoforge-offer-badge {
   position: absolute !important;
   top: 20px !important;
   left: 20px !important;
@@ -911,10 +939,25 @@
 .woocommerce .variable-product-table .cart {
   margin-bottom: 0 !important;
 }
+
 /* Hide default sale badge when custom BOGO badge is active */
 .promoforge-hide-default-sale-badge .onsale,
 .promoforge-hide-default-sale-badge .wc-block-components-product-sale-badge,
 .wc-block-product.promoforge-hide-default-sale-badge .wc-block-components-product-sale-badge {
-    display: none !important;
+  display: none !important;
 }
 
+/* Hide number spinners in BOGO table */
+.variable-product-table .list-quantity input.qty::-webkit-outer-spin-button,
+.variable-product-table .list-quantity input.qty::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.variable-product-table .list-quantity input.qty {
+  -moz-appearance: textfield;
+  appearance: none;
+  cursor: default;
+  background-color: #f8f8f8 !important;
+  border-color: #eee !important;
+}
