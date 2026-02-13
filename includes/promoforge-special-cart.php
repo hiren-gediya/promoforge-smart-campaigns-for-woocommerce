@@ -12,7 +12,7 @@ add_filter('woocommerce_add_cart_item_data', function ($cart_item_data, $product
 
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $is_valid = $wpdb->get_var($wpdb->prepare(
-            "SELECT COUNT(*) FROM {$wpdb->prefix}promoforge_flash_offers o
+            "SELECT COUNT(*) FROM {$wpdb->prefix}promoforge_offers o
              JOIN {$wpdb->prefix}promoforge_offer_products op ON o.id = op.offer_id
              WHERE o.post_id = %d 
              AND o.offer_type = 'special'
@@ -56,7 +56,7 @@ add_action('woocommerce_before_calculate_totals', function ($cart) {
 
             if (isset($cart_item['from_offer']) && $cart_item['from_offer'] == $remove_offer_id) {
                 WC()->cart->remove_cart_item($cart_item_key);
-                $notice_key = 'flash_offer_removed_' . $remove_offer_id;
+                $notice_key = 'promoforge_offer_removed_' . $remove_offer_id;
                 if (!wc_has_notice($notice_key)) {
                     wc_add_notice(__('Special offer removed from your cart.', 'promoforge-smart-campaigns-for-woocommerce'), 'notice', array('key' => $notice_key));
                 }
@@ -85,7 +85,7 @@ add_action('woocommerce_before_calculate_totals', function ($cart) {
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $is_valid = $wpdb->get_var($wpdb->prepare(
             "SELECT COUNT(*) FROM {$wpdb->prefix}promoforge_offer_products op
-             JOIN {$wpdb->prefix}promoforge_flash_offers o ON op.offer_id = o.id
+             JOIN {$wpdb->prefix}promoforge_offers o ON op.offer_id = o.id
              WHERE o.post_id = %d 
              AND o.offer_type = 'special'
              AND op.product_id = %d
@@ -105,7 +105,7 @@ add_action('woocommerce_before_calculate_totals', function ($cart) {
         // Get offer discount
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $offer = $wpdb->get_row($wpdb->prepare(
-            "SELECT discount FROM {$wpdb->prefix}promoforge_flash_offers 
+            "SELECT discount FROM {$wpdb->prefix}promoforge_offers 
              WHERE post_id = %d AND offer_type = 'special'",
             $offer_id
         ));

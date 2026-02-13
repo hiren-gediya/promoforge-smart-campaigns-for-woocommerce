@@ -57,7 +57,7 @@ function promoforge_display_bogo_offer_on_product_page()
             if ($buy_in_cart && $get_in_cart) {
                 continue;
             }
-            do_action('flash_offers_before_bogo_offer_notice', $offer, $buy_product, $get_product);
+            do_action('promoforge_offers_before_bogo_offer_notice', $offer, $buy_product, $get_product);
 
             echo '<div class="bogo-offer-notice">';
             echo '<h3>' . esc_html__('Special BOGO Offer!', 'promoforge-smart-campaigns-for-woocommerce') . '</h3>';
@@ -66,7 +66,7 @@ function promoforge_display_bogo_offer_on_product_page()
             $discount_text = $offer->discount > 0 ? $offer->discount . '%' : '100%';
 
             /* translators: 1: Buy quantity 2: Buy product name 3: Get quantity 4: Get product name 5: Discount percentage */
-            $msg_fmt = esc_html__('Buy %1$d %2$s and get %3$d %4$s with %5$s discount!', 'promoforge-smart-campaigns-for-woocommerce');
+            $msg_fmt = esc_html__('Buy %1$d %2$s and Get %3$d %4$s with %5$s Discount!', 'promoforge-smart-campaigns-for-woocommerce');
             $message = sprintf(
                 $msg_fmt,
                 intval($offer->buy_quantity),
@@ -77,7 +77,7 @@ function promoforge_display_bogo_offer_on_product_page()
             );
             echo '<p>' . wp_kses_post($message) . '</p>';
 
-            do_action('flash_offers_before_bogo_offer_box', $offer, $buy_product, $get_product);
+            do_action('promoforge_offers_before_bogo_offer_box', $offer, $buy_product, $get_product);
 
             echo '<button type="button" class="button alt bogo-popup-btn"
                     data-buy-product-id="' . esc_attr($offer->buy_product_id) . '"
@@ -87,11 +87,11 @@ function promoforge_display_bogo_offer_on_product_page()
                     data-offer-type="' . esc_attr($offer->offer_type) . '"
                     data-discount="' . esc_attr($offer->discount) . '">' . esc_html__('Add BOGO Offer to Cart', 'promoforge-smart-campaigns-for-woocommerce') . '</button>';
 
-            do_action('flash_offers_after_bogo_offer_box', $offer, $buy_product, $get_product);
+            do_action('promoforge_offers_after_bogo_offer_box', $offer, $buy_product, $get_product);
 
             echo '</div>';
 
-            do_action('flash_offers_after_bogo_offer_notice', $offer, $buy_product, $get_product);
+            do_action('promoforge_offers_after_bogo_offer_notice', $offer, $buy_product, $get_product);
         }
     }
 }
@@ -156,14 +156,14 @@ function promoforge_bogo_custom_display_variable_product($product_type = '')
         }
         echo '<td class="price-unit">' . wp_kses_post(wc_price($price_per_piece)) . ' /Piece</td>';
         if ($offer_type == 'buy_one_get_one') {
-            echo '<td class="list-quantity"><input type="number" value="2" min="1" class="qty" id="qty_' . esc_attr($product->get_ID()) . '" name="quantity_' . esc_attr($product->get_ID()) . '"></td>';
+            echo '<td class="list-quantity"><input type="number" value="2" min="1" class="qty" id="qty_' . esc_attr($product->get_ID()) . '" name="quantity_' . esc_attr($product->get_ID()) . '" readonly></td>';
         }
         if ($offer_type == 'buy_x_get_y') {
 
             if ($product_id === $buy_product_id) {
-                echo '<td class="list-quantity"><input type="number" value="' . esc_attr($buy_quantity) . '" min="1" class="qty" id="qty_' . esc_attr($product->get_ID()) . '" name="quantity_' . esc_attr($product->get_ID()) . '"></td>';
+                echo '<td class="list-quantity"><input type="number" value="' . esc_attr($buy_quantity) . '" min="1" class="qty" id="qty_' . esc_attr($product->get_ID()) . '" name="quantity_' . esc_attr($product->get_ID()) . '" readonly></td>';
             } else {
-                echo '<td class="list-quantity"><input type="number" value="' . esc_attr($get_quantity) . '" min="1" class="qty" id="qty_' . esc_attr($product->get_ID()) . '" name="quantity_' . esc_attr($product->get_ID()) . '"></td>';
+                echo '<td class="list-quantity"><input type="number" value="' . esc_attr($get_quantity) . '" min="1" class="qty" id="qty_' . esc_attr($product->get_ID()) . '" name="quantity_' . esc_attr($product->get_ID()) . '" readonly></td>';
             }
         }
         echo '<td class="add-bogo">';
@@ -256,13 +256,13 @@ function promoforge_bogo_custom_display_variable_product($product_type = '')
 
             // ✅ Quantity logic
             if ($offer_type == 'buy_one_get_one') {
-                echo '<td class="list-quantity"><input type="number" value="2" min="1" class="qty" id="qty_' . esc_attr($variation['variation_id']) . '" name="quantity_' . esc_attr($variation['variation_id']) . '"></td>';
+                echo '<td class="list-quantity"><input type="number" value="2" min="1" class="qty" id="qty_' . esc_attr($variation['variation_id']) . '" name="quantity_' . esc_attr($variation['variation_id']) . '" readonly></td>';
             }
             if ($offer_type == 'buy_x_get_y') {
                 if ($parent_id == $buy_product_id) {
-                    echo '<td class="list-quantity"><input type="number" value="' . esc_attr($buy_quantity) . '" min="1" class="qty" id="qty_' . esc_attr($variation['variation_id']) . '" name="quantity_' . esc_attr($variation['variation_id']) . '"></td>';
+                    echo '<td class="list-quantity"><input type="number" value="' . esc_attr($buy_quantity) . '" min="1" class="qty" id="qty_' . esc_attr($variation['variation_id']) . '" name="quantity_' . esc_attr($variation['variation_id']) . '" readonly></td>';
                 } else {
-                    echo '<td class="list-quantity"><input type="number" value="' . esc_attr($get_quantity) . '" min="1" class="qty" id="qty_' . esc_attr($variation['variation_id']) . '" name="quantity_' . esc_attr($variation['variation_id']) . '"></td>';
+                    echo '<td class="list-quantity"><input type="number" value="' . esc_attr($get_quantity) . '" min="1" class="qty" id="qty_' . esc_attr($variation['variation_id']) . '" name="quantity_' . esc_attr($variation['variation_id']) . '" readonly></td>';
                 }
             }
 
@@ -296,11 +296,11 @@ function promoforge_bogo_custom_display_variable_product($product_type = '')
 // Display the BOGO product form (table or default Woo)
 function promoforge_display_bogo_product_form($product, $type_label = '', $show_price = false, $product_type = '')
 {
-    $options = get_option('flash_offers_options');
+    $options = get_option('promoforge_offers_options');
     $bogo_format = $options['bogo_format'] ?? 'default';
 
     // Allow theme or plugin to override BOGO product form display
-    $override = apply_filters('flash_offers_override_bogo_product_form', false, $product, $type_label, $show_price, $product_type);
+    $override = apply_filters('promoforge_offers_override_bogo_product_form', false, $product, $type_label, $show_price, $product_type);
     if ($override) {
         echo wp_kses_post($override);
         return;
@@ -348,8 +348,8 @@ function promoforge_get_bogo_offer_data($product)
         return false;
     }
 
-    $options = get_option('flash_offers_options');
-    $badge_text = $options['bogo_offer_badge_text'] ?? '';
+    $options = get_option('promoforge_offers_options');
+    $badge_text = $options['promoforge_bogo_offer_badge_text'] ?? '';
     $locations = $options['locations'] ?? [];
     $countdown_locations = $options['countdown_locations'] ?? [];
     $bogo_override_type = $options['bogo_override_type'] ?? 'sale';
@@ -382,10 +382,10 @@ function promoforge_get_bogo_offer_data($product)
 
 
 // Hook display function to WooCommerce actions
-add_action('woocommerce_before_shop_loop_item_title', 'promoforge_display_bogo_offer_badge', 9);
-add_action('woocommerce_single_product_summary', 'promoforge_display_bogo_offer_badge', 8);
-add_action('promoforge_display_bogo_offer_badge', 'promoforge_display_bogo_offer_badge');
-function promoforge_display_bogo_offer_badge()
+add_action('woocommerce_before_shop_loop_item_title', 'promoforge_display_promoforge_bogo_offer_badge', 5);
+add_action('woocommerce_single_product_summary', 'promoforge_display_promoforge_bogo_offer_badge', 8);
+add_action('promoforge_display_promoforge_bogo_offer_badge', 'promoforge_display_promoforge_bogo_offer_badge');
+function promoforge_display_promoforge_bogo_offer_badge()
 {
     global $product;
     if (!$product)
@@ -430,12 +430,12 @@ function promoforge_display_bogo_offer_badge()
     $show_on_home = is_front_page() && !empty($locations['home_page']);
     $is_other_location = !is_shop() && !is_product_category() && !is_product() && !is_front_page() && !empty($locations['other_page']);
     $show_on_single = is_product() && !empty($locations['product_page']);
-    $options = get_option('flash_offers_options');
+    $options = get_option('promoforge_offers_options');
     $badge_color = $options['badge_bg_color'] ?? '#00a99d';
 
     if ($show_on_shop || $show_on_category || $show_on_home || $is_other_location || $show_on_single) {
         // Inject CSS to hide default sale badge when custom BOGO badge is shown
-        echo '<span class="flash-offer-badge ' . esc_attr($offer_data['status']) . '" style="background-color:' . esc_attr($badge_color) . ';">' . esc_html($offer_data['badge_text']) . '</span>';
+        echo '<div class="promoforge-offer-badge ' . esc_attr($offer_data['status']) . '" style="background:' . esc_attr($badge_color) . '">' . esc_html($offer_data['badge_text']) . '</div>';
     }
 }
 
@@ -461,6 +461,15 @@ function promoforge_should_hide_default_badge($product)
     // Check if already rendered via block filter
     if (!empty($GLOBALS['promoforge_badge_rendered_' . $product_id])) {
         return false;
+    }
+
+    // Check for Flash/Special offers first
+    $promoforge_data = promoforge_get_offer_data($product);
+    if (
+        $promoforge_data && isset($promoforge_data['status']) && $promoforge_data['status'] === 'active' &&
+        isset($promoforge_data['remaining_display']) && $promoforge_data['remaining_display'] > 0
+    ) {
+        return true;
     }
 
     $offer_data = promoforge_get_bogo_offer_data($product);
@@ -590,15 +599,15 @@ function promoforge_display_bogoffers_countdown()
         if ($offer_data['status'] === 'upcoming' && !empty($offer_data['start'])) {
             $start = new DateTime($offer_data['start'], $wp_timezone);
             $start->setTimezone(new DateTimeZone('UTC'));
-            echo '<div class="flash-offer-countdown-timer upcoming-offer"
+            echo '<div class="promoforge-offer-countdown-timer upcoming-offer"
                   data-start="' . esc_attr($start->format('Y-m-d\TH:i:s\Z')) . '"
-                  data-product-id="' . esc_attr($product->get_id()) . '">Starts soon</div>';
+                  data-product-id="' . esc_attr($product->get_id()) . '">' . esc_html__('Starts soon', 'promoforge-smart-campaigns-for-woocommerce') . '</div>';
         } elseif (!empty($offer_data['end'])) {
             $end = new DateTime($offer_data['end'], $wp_timezone);
             $end->setTimezone(new DateTimeZone('UTC'));
-            echo '<div class="flash-offer-countdown-timer"
+            echo '<div class="promoforge-offer-countdown-timer"
                   data-end="' . esc_attr($end->format('Y-m-d\TH:i:s\Z')) . '"
-                  data-product-id="' . esc_attr($product->get_id()) . '">Ending soon</div>';
+                  data-product-id="' . esc_attr($product->get_id()) . '">' . esc_html__('Ending soon', 'promoforge-smart-campaigns-for-woocommerce') . '</div>';
         }
     }
 }

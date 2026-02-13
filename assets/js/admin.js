@@ -13,13 +13,13 @@ jQuery(document).ready(function ($) {
      * ===================== */
     $('#offer_type').change(function () {
         // Start fields are now always visible
-        $('.flash_offer_start_fields').show();
+        $('.promoforge_offer_start_fields').show();
     });
 
     /** =====================
      * Load Products on Category Change
      * ===================== */
-    $('#flash_offer_category_selector').on('change', function () {
+    $('#promoforge_offer_category_selector').on('change', function () {
         const selectedCategories = $(this).val() || [];
         const postId = $('#post_ID').val();
 
@@ -106,14 +106,14 @@ jQuery(document).ready(function ($) {
      * Render Selected Product Box
      * ===================== */
     function updateSelectedBox() {
-        const selectedBox = $('.selected-product-box');
+        const selectedBox = $('.selected-promoforge-product-box');
         selectedBox.empty();
 
         selectedProducts.forEach((name, productId) => {
             const productDiv = $(`
-                <div class="selected-product wao-selected-product" data-product-id="${productId}">
+                <div class="selected-product promoforge-selected-product" data-product-id="${productId}">
                     <span>${name}</span>
-                    <a href="#" class="remove-product wao-remove-product-link" data-product-id="${productId}">Remove</a>
+                    <a href="#" class="remove-product promoforge-remove-product-link" data-product-id="${productId}">Remove</a>
                 </div>
             `);
 

@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function updateAllCountdowns() {
-        const countdownEls = document.querySelectorAll('.flash-offer-countdown-timer');
+        const countdownEls = document.querySelectorAll('.promoforge-offer-countdown-timer');
         if (!countdownEls.length) return;
 
         const now = new Date().getTime();

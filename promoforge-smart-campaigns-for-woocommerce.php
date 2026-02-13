@@ -57,7 +57,7 @@ add_action('wp_enqueue_scripts', function () {
         wp_enqueue_script('promoforge-timer', plugin_dir_url(__FILE__) . 'assets/js/countdown.js', [], '1.1', true);
     }
     // Get countdown format from settings
-    $options = get_option('flash_offers_options');
+    $options = get_option('promoforge_offers_options');
     $countdown_format = $options['countdown_format'] ?? 'format1';
 
     wp_localize_script('promoforge-timer', 'promoforge_vars', [
@@ -95,7 +95,7 @@ add_action('admin_enqueue_scripts', function ($hook) {
 
     wp_enqueue_style('promoforge-admin-style', plugin_dir_url(__FILE__) . 'assets/css/admin.css', [], '1.1');
     wp_enqueue_script('jquery');
-    wp_localize_script('flash-offer-product-select', 'FlashOfferAjax', [
+    wp_localize_script('promoforge-offer-product-select', 'PromoforgeOfferAjax', [
         'ajax_url' => admin_url('admin-ajax.php'),
     ]);
 
@@ -103,7 +103,7 @@ add_action('admin_enqueue_scripts', function ($hook) {
     wp_enqueue_script('wp-color-picker');
     wp_add_inline_script('wp-color-picker', '
 jQuery(document).ready(function($) {
-$(".flash-offer-color-field").wpColorPicker();
+$(".promoforge-offer-color-field").wpColorPicker();
 });
 ');
 });

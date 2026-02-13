@@ -6,44 +6,46 @@ if (!defined('ABSPATH')) {
 // Field callback function
 function promoforge_message_field_callback()
 {
-    $options = get_option('flash_offers_options');
+    $options = get_option('promoforge_offers_options');
     $message = isset($options['message']) ? $options['message'] : 'Congratulations! You saved {amount} in this order';
     ?>
-    <textarea name="flash_offers_options[message]" rows="5" cols="50"
+    <textarea name="promoforge_offers_options[message]" rows="5" cols="50"
         class="large-text"><?php echo esc_textarea($message); ?></textarea>
     <p class="description">
-        <?php esc_html_e('Enter the flash offer message to be displayed.', 'promoforge-smart-campaigns-for-woocommerce'); ?>
+        <?php esc_html_e('Enter the offer message to be displayed on Thankyou Page.', 'promoforge-smart-campaigns-for-woocommerce'); ?>
     </p>
     <?php
 }
 // Display locations field for badge  callback function
 function promoforge_locations_field_callback()
 {
-    $options = get_option('flash_offers_options');
-    $shop_loop = isset($options['locations']['shop_loop']) ? 1 : 1;
-    $product_page = isset($options['locations']['product_page']) ? 1 : 1;
-    $category_page = isset($options['locations']['category_page']) ? 1 : 1;
-    $home_page = isset($options['locations']['home_page']) ? 1 : 0;
-    $other_page = isset($options['locations']['other_page']) ? 1 : 0;
+    $options = get_option('promoforge_offers_options');
+    $never_saved = ($options === false);
+
+    $shop_loop = $never_saved || isset($options['locations']['shop_loop']) ? 1 : 0;
+    $product_page = $never_saved || isset($options['locations']['product_page']) ? 1 : 0;
+    $category_page = $never_saved || isset($options['locations']['category_page']) ? 1 : 0;
+    $home_page = $never_saved || isset($options['locations']['home_page']) ? 1 : 0;
+    $other_page = $never_saved || isset($options['locations']['other_page']) ? 1 : 0;
     ?>
     <label>
-        <input type="checkbox" name="flash_offers_options[locations][shop_loop]" value="1" <?php checked($shop_loop, 1); ?>>
+        <input type="checkbox" name="promoforge_offers_options[locations][shop_loop]" value="1" <?php checked($shop_loop, 1); ?>>
         <?php esc_html_e('Shop/Archive Pages', 'promoforge-smart-campaigns-for-woocommerce'); ?>
     </label><br>
     <label>
-        <input type="checkbox" name="flash_offers_options[locations][home_page]" value="1" <?php checked($home_page, 1); ?>>
+        <input type="checkbox" name="promoforge_offers_options[locations][home_page]" value="1" <?php checked($home_page, 1); ?>>
         <?php esc_html_e('Home Page', 'promoforge-smart-campaigns-for-woocommerce'); ?>
     </label><br>
     <label>
-        <input type="checkbox" name="flash_offers_options[locations][category_page]" value="1" <?php checked($category_page, 1); ?>>
+        <input type="checkbox" name="promoforge_offers_options[locations][category_page]" value="1" <?php checked($category_page, 1); ?>>
         <?php esc_html_e('Category Pages', 'promoforge-smart-campaigns-for-woocommerce'); ?>
     </label><br>
     <label>
-        <input type="checkbox" name="flash_offers_options[locations][product_page]" value="1" <?php checked($product_page, 1); ?>>
+        <input type="checkbox" name="promoforge_offers_options[locations][product_page]" value="1" <?php checked($product_page, 1); ?>>
         <?php esc_html_e('Single Product Pages', 'promoforge-smart-campaigns-for-woocommerce'); ?>
     </label><br>
     <label>
-        <input type="checkbox" name="flash_offers_options[locations][other_page]" value="1" <?php checked($other_page, 1); ?>>
+        <input type="checkbox" name="promoforge_offers_options[locations][other_page]" value="1" <?php checked($other_page, 1); ?>>
         <?php esc_html_e('Other Pages', 'promoforge-smart-campaigns-for-woocommerce'); ?>
     </label>
     <?php
@@ -52,32 +54,33 @@ function promoforge_locations_field_callback()
 // Countdown locations field
 function promoforge_countdown_locations_field_callback()
 {
-    $options = get_option('flash_offers_options');
+    $options = get_option('promoforge_offers_options');
+    $never_saved = ($options === false);
 
-    $shop_loop = isset($options['countdown_locations']['shop_loop']) ? 1 : 1;
-    $product_page = isset($options['countdown_locations']['product_page']) ? 1 : 1;
-    $category_page = isset($options['countdown_locations']['category_page']) ? 1 : 1;
-    $home_page = isset($options['countdown_locations']['home_page']) ? 1 : 0;
-    $other_page = isset($options['countdown_locations']['other_page']) ? 1 : 0;
+    $shop_loop = $never_saved || isset($options['countdown_locations']['shop_loop']) ? 1 : 0;
+    $product_page = $never_saved || isset($options['countdown_locations']['product_page']) ? 1 : 0;
+    $category_page = $never_saved || isset($options['countdown_locations']['category_page']) ? 1 : 0;
+    $home_page = $never_saved || isset($options['countdown_locations']['home_page']) ? 1 : 0;
+    $other_page = $never_saved || isset($options['countdown_locations']['other_page']) ? 1 : 0;
     ?>
     <label>
-        <input type="checkbox" name="flash_offers_options[countdown_locations][shop_loop]" value="1" <?php checked($shop_loop, 1); ?>>
+        <input type="checkbox" name="promoforge_offers_options[countdown_locations][shop_loop]" value="1" <?php checked($shop_loop, 1); ?>>
         <?php esc_html_e('Shop/Archive Pages', 'promoforge-smart-campaigns-for-woocommerce'); ?>
     </label><br>
     <label>
-        <input type="checkbox" name="flash_offers_options[countdown_locations][category_page]" value="1" <?php checked($category_page, 1); ?>>
+        <input type="checkbox" name="promoforge_offers_options[countdown_locations][category_page]" value="1" <?php checked($category_page, 1); ?>>
         <?php esc_html_e('Category Pages', 'promoforge-smart-campaigns-for-woocommerce'); ?>
     </label><br>
     <label>
-        <input type="checkbox" name="flash_offers_options[countdown_locations][home_page]" value="1" <?php checked($home_page, 1); ?>>
+        <input type="checkbox" name="promoforge_offers_options[countdown_locations][home_page]" value="1" <?php checked($home_page, 1); ?>>
         <?php esc_html_e('Home Page', 'promoforge-smart-campaigns-for-woocommerce'); ?>
     </label><br>
     <label>
-        <input type="checkbox" name="flash_offers_options[countdown_locations][product_page]" value="1" <?php checked($product_page, 1); ?>>
+        <input type="checkbox" name="promoforge_offers_options[countdown_locations][product_page]" value="1" <?php checked($product_page, 1); ?>>
         <?php esc_html_e('Single Product Pages', 'promoforge-smart-campaigns-for-woocommerce'); ?>
     </label><br>
     <label>
-        <input type="checkbox" name="flash_offers_options[countdown_locations][other_page]" value="1" <?php checked($other_page, 1); ?>>
+        <input type="checkbox" name="promoforge_offers_options[countdown_locations][other_page]" value="1" <?php checked($other_page, 1); ?>>
         <?php esc_html_e('Other Pages', 'promoforge-smart-campaigns-for-woocommerce'); ?>
     </label>
     <?php
@@ -86,10 +89,10 @@ function promoforge_countdown_locations_field_callback()
 // Badge style field callback function
 function promoforge_bogo_offer_badge_callback()
 {
-    $options = get_option('flash_offers_options');
-    $text = $options['bogo_offer_badge_text'] ?? 'BOGO Deal! 🔥';
+    $options = get_option('promoforge_offers_options');
+    $text = $options['promoforge_bogo_offer_badge_text'] ?? 'BOGO Deal! 🔥';
     ?>
-    <textarea name="flash_offers_options[bogo_offer_badge_text]" rows="2" cols="50"
+    <textarea name="promoforge_offers_options[promoforge_bogo_offer_badge_text]" rows="2" cols="50"
         class="large-text"><?php echo esc_textarea($text); ?></textarea>
     <p class="description">
         <?php esc_html_e('Enter the BOGO offer badge text to be displayed.', 'promoforge-smart-campaigns-for-woocommerce'); ?>
@@ -100,10 +103,10 @@ function promoforge_bogo_offer_badge_callback()
 // Callback: Active Badge
 function promoforge_active_badge_text_callback()
 {
-    $options = get_option('flash_offers_options');
+    $options = get_option('promoforge_offers_options');
     $text = $options['active_badge_text'] ?? 'Hot Deal! 🔥';
     ?>
-    <textarea name="flash_offers_options[active_badge_text]" rows="2" cols="50"
+    <textarea name="promoforge_offers_options[active_badge_text]" rows="2" cols="50"
         class="large-text"><?php echo esc_textarea($text); ?></textarea>
     <?php
 }
@@ -111,10 +114,10 @@ function promoforge_active_badge_text_callback()
 // Callback: Upcoming Badge
 function promoforge_upcoming_badge_text_callback()
 {
-    $options = get_option('flash_offers_options');
+    $options = get_option('promoforge_offers_options');
     $text = $options['upcoming_badge_text'] ?? 'Coming Soon ⏳';
     ?>
-    <textarea name="flash_offers_options[upcoming_badge_text]" rows="2" cols="50"
+    <textarea name="promoforge_offers_options[upcoming_badge_text]" rows="2" cols="50"
         class="large-text"><?php echo esc_textarea($text); ?></textarea>
     <?php
 }
@@ -122,10 +125,10 @@ function promoforge_upcoming_badge_text_callback()
 // Callback: Special Badge
 function promoforge_special_badge_text_callback()
 {
-    $options = get_option('flash_offers_options');
+    $options = get_option('promoforge_offers_options');
     $text = $options['special_badge_text'] ?? 'Special Offer ✨';
     ?>
-    <textarea name="flash_offers_options[special_badge_text]" rows="2" cols="50"
+    <textarea name="promoforge_offers_options[special_badge_text]" rows="2" cols="50"
         class="large-text"><?php echo esc_textarea($text); ?></textarea>
     <?php
 }
@@ -133,12 +136,16 @@ function promoforge_special_badge_text_callback()
 // Callback: Selections for override Price
 function promoforge_render_price_type_field()
 {
-    $options = get_option('flash_offers_options');
-    $value = $options['flash_override_type'] ?? 'regular'; ?>
-    <select name="flash_offers_options[flash_override_type]">
+    $options = get_option('promoforge_offers_options');
+    $value = $options['promoforge_override_type'] ?? 'regular'; ?>
+    <select name="promoforge_offers_options[promoforge_override_type]">
         <option value="select"><?php esc_html_e('Select', 'promoforge-smart-campaigns-for-woocommerce'); ?></option>
-        <option value="sale" <?php selected($value, 'sale'); ?>><?php esc_html_e('Sale Price', 'promoforge-smart-campaigns-for-woocommerce'); ?></option>
-        <option value="regular" <?php selected($value, 'regular'); ?>><?php esc_html_e('Regular Price', 'promoforge-smart-campaigns-for-woocommerce'); ?></option>
+        <option value="sale" <?php selected($value, 'sale'); ?>>
+            <?php esc_html_e('Sale Price', 'promoforge-smart-campaigns-for-woocommerce'); ?>
+        </option>
+        <option value="regular" <?php selected($value, 'regular'); ?>>
+            <?php esc_html_e('Regular Price', 'promoforge-smart-campaigns-for-woocommerce'); ?>
+        </option>
     </select>
     <p class="description">
         <?php esc_html_e('Choose which price the offer should override.', 'promoforge-smart-campaigns-for-woocommerce'); ?>
@@ -149,12 +156,16 @@ function promoforge_render_price_type_field()
 // Callback: Selections for BOGO override Price
 function promoforge_bogo_offer_render_price_type_field()
 {
-    $options = get_option('flash_offers_options');
+    $options = get_option('promoforge_offers_options');
     $value = $options['bogo_override_type'] ?? 'regular'; ?>
-    <select name="flash_offers_options[bogo_override_type]">
+    <select name="promoforge_offers_options[bogo_override_type]">
         <option value="select"><?php esc_html_e('Select', 'promoforge-smart-campaigns-for-woocommerce'); ?></option>
-        <option value="sale" <?php selected($value, 'sale'); ?>><?php esc_html_e('Sale Price', 'promoforge-smart-campaigns-for-woocommerce'); ?></option>
-        <option value="regular" <?php selected($value, 'regular'); ?>><?php esc_html_e('Regular Price', 'promoforge-smart-campaigns-for-woocommerce'); ?></option>
+        <option value="sale" <?php selected($value, 'sale'); ?>>
+            <?php esc_html_e('Sale Price', 'promoforge-smart-campaigns-for-woocommerce'); ?>
+        </option>
+        <option value="regular" <?php selected($value, 'regular'); ?>>
+            <?php esc_html_e('Regular Price', 'promoforge-smart-campaigns-for-woocommerce'); ?>
+        </option>
     </select>
     <p class="description">
         <?php esc_html_e('Choose which price the offer should override.', 'promoforge-smart-campaigns-for-woocommerce'); ?>
@@ -164,12 +175,16 @@ function promoforge_bogo_offer_render_price_type_field()
 // Callback: Variable Product Display Selection
 function promoforge_variable_product_display_callback()
 {
-    $options = get_option('flash_offers_options');
+    $options = get_option('promoforge_offers_options');
     $display = $options['variable_product_display'] ?? 'default';
     ?>
-    <select name="flash_offers_options[variable_product_display]">
-        <option value="default" <?php selected($display, 'default'); ?>><?php esc_html_e('Default WooCommerce', 'promoforge-smart-campaigns-for-woocommerce'); ?></option>
-        <option value="table" <?php selected($display, 'table'); ?>><?php esc_html_e('Table View', 'promoforge-smart-campaigns-for-woocommerce'); ?></option>
+    <select name="promoforge_offers_options[variable_product_display]">
+        <option value="default" <?php selected($display, 'default'); ?>>
+            <?php esc_html_e('Default WooCommerce', 'promoforge-smart-campaigns-for-woocommerce'); ?>
+        </option>
+        <option value="table" <?php selected($display, 'table'); ?>>
+            <?php esc_html_e('Table View', 'promoforge-smart-campaigns-for-woocommerce'); ?>
+        </option>
     </select>
     <p class="description">
         <?php esc_html_e('Choose how all products are displayed on single product pages.', 'promoforge-smart-campaigns-for-woocommerce'); ?>
@@ -180,13 +195,19 @@ function promoforge_variable_product_display_callback()
 // Callback: Countdown Format Selection
 function promoforge_countdown_format_field_callback()
 {
-    $options = get_option('flash_offers_options');
+    $options = get_option('promoforge_offers_options');
     $format = $options['countdown_format'] ?? 'format1';
     ?>
-    <select name="flash_offers_options[countdown_format]">
-        <option value="format1" <?php selected($format, 'format1'); ?>><?php esc_html_e('d h m s', 'promoforge-smart-campaigns-for-woocommerce'); ?></option>
-        <option value="format2" <?php selected($format, 'format2'); ?>><?php esc_html_e('Day Hours Minutes Seconds', 'promoforge-smart-campaigns-for-woocommerce'); ?></option>
-        <option value="format3" <?php selected($format, 'format3'); ?>><?php esc_html_e('00:00:00:00', 'promoforge-smart-campaigns-for-woocommerce'); ?></option>
+    <select name="promoforge_offers_options[countdown_format]">
+        <option value="format1" <?php selected($format, 'format1'); ?>>
+            <?php esc_html_e('d h m s', 'promoforge-smart-campaigns-for-woocommerce'); ?>
+        </option>
+        <option value="format2" <?php selected($format, 'format2'); ?>>
+            <?php esc_html_e('Day Hours Minutes Seconds', 'promoforge-smart-campaigns-for-woocommerce'); ?>
+        </option>
+        <option value="format3" <?php selected($format, 'format3'); ?>>
+            <?php esc_html_e('00:00:00:00', 'promoforge-smart-campaigns-for-woocommerce'); ?>
+        </option>
     </select>
     <p class="description">
         <?php esc_html_e('Choose how the countdown timer should be displayed.', 'promoforge-smart-campaigns-for-woocommerce'); ?>
@@ -225,10 +246,10 @@ function promoforge_block_render_badge($block_content, $block)
 
     $is_product_page = is_product();
     $target_blocks = ['core/post-title', 'woocommerce/product-title', 'woocommerce/product-image', 'core/post-thumbnail'];
-    
+
     if (in_array($block['blockName'], $target_blocks, true)) {
         global $product;
-        
+
         // Ensure we have a product object
         if (!$product || !is_a($product, 'WC_Product')) {
             $post_id = get_the_ID();
@@ -240,29 +261,29 @@ function promoforge_block_render_badge($block_content, $block)
 
         if ($product && is_a($product, 'WC_Product')) {
             $product_id = $product->get_id();
-            
+
             // Check if already rendered for this product to avoid duplicates within the same render cycle
             // BUT: for loop items, we might hit multiple times for different blocks. 
             // We want primarily:
             // - On Single Product: Before Title
             // - On Loops: Before Image
-            
+
             $should_render = false;
             if ($is_product_page && strpos($block['blockName'], 'title') !== false) {
-                 $should_render = true;
+                $should_render = true;
             } elseif (!$is_product_page && (strpos($block['blockName'], 'image') !== false || strpos($block['blockName'], 'thumbnail') !== false)) {
-                 $should_render = true;
+                $should_render = true;
             }
 
             if ($should_render) {
-                 // Check if already rendered via global flag (to prevent double rendering if multiple blocks match)
-                 if (!empty($GLOBALS['promoforge_badge_rendered_' . $product_id])) {
-                     return $block_content;
-                 }
+                // Check if already rendered via global flag (to prevent double rendering if multiple blocks match)
+                if (!empty($GLOBALS['promoforge_badge_rendered_' . $product_id])) {
+                    return $block_content;
+                }
 
                 // Capture Flash Offer Badge
                 ob_start();
-                promoforge_display_flash_offer_badge();
+                promoforge_display_promoforge_offer_badge();
                 $badge_html = ob_get_clean();
 
                 // Capture Flash Countdown
@@ -272,11 +293,11 @@ function promoforge_block_render_badge($block_content, $block)
 
                 // Capture BOGO Offer Badge
                 ob_start();
-                if (function_exists('promoforge_display_bogo_offer_badge')) {
-                    promoforge_display_bogo_offer_badge();
+                if (function_exists('promoforge_display_promoforge_bogo_offer_badge')) {
+                    promoforge_display_promoforge_bogo_offer_badge();
                 }
                 $bogo_badge_html = ob_get_clean();
-                
+
                 // Capture BOGO Countdown
                 ob_start();
                 if (function_exists('promoforge_display_bogoffers_countdown')) {
@@ -285,31 +306,31 @@ function promoforge_block_render_badge($block_content, $block)
                 $bogo_countdown_html = ob_get_clean();
 
                 if ($badge_html || $bogo_badge_html || $countdown_html || $bogo_countdown_html) {
-                     // Set global flag to prevent duplicate rendering in hooks
-                     $GLOBALS['promoforge_badge_rendered_' . $product_id] = true;
-                     
-                     $wrapper_class = $is_product_page ? 'wao-title-badge-wrapper' : 'wao-loop-badge-wrapper';
-                     $style = 'margin-bottom: 10px; display: block;';
-                     
-                     return '<div class="' . $wrapper_class . '" style="' . $style . '">' . 
-                            $badge_html . $bogo_badge_html . 
-                            $countdown_html . $bogo_countdown_html . 
-                            '</div>' . $block_content;
+                    // Set global flag to prevent duplicate rendering in hooks
+                    $GLOBALS['promoforge_badge_rendered_' . $product_id] = true;
+
+                    $wrapper_class = $is_product_page ? 'promoforge-title-badge-wrapper' : 'promoforge-loop-badge-wrapper';
+                    $style = 'margin-bottom: 10px; display: block;';
+
+                    return '<div class="' . $wrapper_class . '" style="' . $style . '">' .
+                        $badge_html . $bogo_badge_html .
+                        $countdown_html . $bogo_countdown_html .
+                        '</div>' . $block_content;
                 }
             }
         }
     }
-    
+
     return $block_content;
 }
 
 /**
  * Register the action hook for flash offer badge
  */
-add_action('woocommerce_before_shop_loop_item', 'promoforge_display_flash_offer_badge', 5); // Raised priority to show before image
-add_action('woocommerce_single_product_summary', 'promoforge_display_flash_offer_badge', 4);
+add_action('woocommerce_before_shop_loop_item_title', 'promoforge_display_promoforge_offer_badge', 5); // Moved to inside the link to match countdown
+add_action('woocommerce_single_product_summary', 'promoforge_display_promoforge_offer_badge', 4);
 
-function promoforge_display_flash_offer_badge()
+function promoforge_display_promoforge_offer_badge()
 {
 
     // Removed is_user_logged_in check
@@ -320,10 +341,11 @@ function promoforge_display_flash_offer_badge()
         return;
 
     $product_id = $product->get_id();
-    
+
     // Check if valid product ID
-    if (!$product_id) return;
-    
+    if (!$product_id)
+        return;
+
     // Check if already rendered via block filter
     if (!empty($GLOBALS['promoforge_badge_rendered_' . $product_id])) {
         return;
@@ -335,7 +357,7 @@ function promoforge_display_flash_offer_badge()
     $offers = $wpdb->get_results(
         $wpdb->prepare(
             "SELECT o.*
-             FROM {$wpdb->prefix}promoforge_flash_offers o
+             FROM {$wpdb->prefix}promoforge_offers o
              INNER JOIN {$wpdb->prefix}promoforge_offer_products p
                 ON o.id = p.offer_id
              WHERE p.product_id = %d
@@ -404,10 +426,10 @@ function promoforge_display_flash_offer_badge()
     global $promoforge_hide_sale_badge_ids;
     $promoforge_hide_sale_badge_ids[] = $product_id;
 
-    echo '<span class="flash-offer-badge active"
+    echo '<div class="promoforge-offer-badge active"
         style="background:' . esc_attr($offer_data['background_color']) . '">
         ' . esc_html($offer_data['badge_text']) . '
-    </span>';
+    </div>';
 }
 
 
@@ -423,7 +445,7 @@ function promoforge_show_countdown()
     if (!$product) {
         return;
     }
-    
+
     // Check if already rendered via block filter
     if (!empty($GLOBALS['promoforge_badge_rendered_' . $product->get_id()])) {
         return;
@@ -447,17 +469,17 @@ function promoforge_show_countdown()
     $is_other_location = !is_shop() && !is_product_category() && !is_product() && !empty($locations['other_page']);
     $show_on_single = is_product() && !empty($locations['product_page']);
     $wp_timezone = wp_timezone();
-    if ($show_on_shop || $show_on_category || $is_other_location || $show_on_single) {
+    if ($show_on_shop || $show_on_category || $is_other_location || $show_on_single || !empty($GLOBALS['promoforge_special_offer_context'])) {
         if ($offer_data['status'] === 'upcoming' && !empty($offer_data['start'])) {
             $start = new DateTime($offer_data['start'], $wp_timezone);
             $start->setTimezone(new DateTimeZone('UTC'));
-            echo '<div class="flash-offer-countdown-timer upcoming-offer" 
+            echo '<div class="promoforge-offer-countdown-timer upcoming-offer" 
                   data-start="' . esc_attr($start->format('Y-m-d\TH:i:s\Z')) . '" 
                   data-product-id="' . esc_attr($product->get_id()) . '">' . esc_html__('Starts soon', 'promoforge-smart-campaigns-for-woocommerce') . '</div>';
         } elseif (!empty($offer_data['end'])) {
             $end = new DateTime($offer_data['end'], $wp_timezone);
             $end->setTimezone(new DateTimeZone('UTC'));
-            echo '<div class="flash-offer-countdown-timer" 
+            echo '<div class="promoforge-offer-countdown-timer" 
                   data-end="' . esc_attr($end->format('Y-m-d\TH:i:s\Z')) . '" 
                   data-product-id="' . esc_attr($product->get_id()) . '">' . esc_html__('Ending soon', 'promoforge-smart-campaigns-for-woocommerce') . '</div>';
         }
@@ -468,17 +490,30 @@ function promoforge_show_countdown()
 add_filter('woocommerce_sale_flash', 'promoforge_disable_woocommerce_sale_flash', 10, 3);
 function promoforge_disable_woocommerce_sale_flash($html, $post, $product)
 {
+    // Check for Flash/Special offers
     $offer_data = promoforge_get_offer_data($product);
-    if ($offer_data) {
+    // Only hide default badge if we have an ACTIVE flash/special offer AND remaining usage is available
+    if (
+        $offer_data && isset($offer_data['status']) && $offer_data['status'] === 'active' &&
+        isset($offer_data['remaining_display']) && $offer_data['remaining_display'] > 0
+    ) {
         return ''; // remove the sale badge if flash offer exists
     }
-    return $html; // default badge if no flash offer
+
+    // Check for BOGO offers
+    if (function_exists('promoforge_should_hide_default_badge')) {
+        if (promoforge_should_hide_default_badge($product)) {
+            return '';
+        }
+    }
+
+    return $html;
 }
 
-add_action('woocommerce_before_shop_loop_item', 'promoforge_remove_flash_sale_badge_css');
-add_action('woocommerce_before_single_product_summary', 'promoforge_remove_flash_sale_badge_css');
+add_action('woocommerce_before_shop_loop_item', 'promoforge_remove_promoforge_sale_badge_css');
+add_action('woocommerce_before_single_product_summary', 'promoforge_remove_promoforge_sale_badge_css');
 
-function promoforge_remove_flash_sale_badge_css()
+function promoforge_remove_promoforge_sale_badge_css()
 {
     global $product;
     if (!$product)
@@ -495,8 +530,11 @@ function promoforge_remove_flash_sale_badge_css()
         }
     }
 
-    // ✅ Only if this product has an offer → hide badge for THIS product only
-    if (!empty($offer_data)) {
+    // ✅ Only if this product has an active offer AND limits allow display → hide badge for THIS product only
+    if (
+        !empty($offer_data) && isset($offer_data['status']) && $offer_data['status'] === 'active' &&
+        isset($offer_data['remaining_display']) && $offer_data['remaining_display'] > 0
+    ) {
         global $promoforge_hide_sale_badge_ids;
         $promoforge_hide_sale_badge_ids[] = $product->get_id();
     }
@@ -504,22 +542,22 @@ function promoforge_remove_flash_sale_badge_css()
 // Color picker field callback function
 function promoforge_render_color_picker()
 {
-    $options = get_option('flash_offers_options');
+    $options = get_option('promoforge_offers_options');
     $badge_color = $options['badge_bg_color'] ?? '#00a99d';
     ?>
-    <input type="text" name="flash_offers_options[badge_bg_color]" id="flash_offer_badge_bg_color"
-        class="flash-offer-color-field" value="<?php echo esc_attr($badge_color); ?>" />
+    <input type="text" name="promoforge_offers_options[badge_bg_color]" id="promoforge_offer_badge_bg_color"
+        class="promoforge-offer-color-field" value="<?php echo esc_attr($badge_color); ?>" />
     <?php
 }
 
 // Settings page
 add_action('admin_menu', function () {
     add_submenu_page(
-        'offers',  // parent slug (same as we used for the Offers top-level menu)
+        'promoforge-offers',  // parent slug (same as we used for the Offers top-level menu)
         esc_html__('Offers Settings', 'promoforge-smart-campaigns-for-woocommerce'), // Page title
         esc_html__('Settings', 'promoforge-smart-campaigns-for-woocommerce'),        // Menu title
         'manage_options',                      // Capability
-        'flash-offers-settings',               // Menu slug
+        'promoforge-offers-settings',               // Menu slug
         'promoforge_settings_page'           // Callback function
     );
 });
@@ -529,13 +567,13 @@ add_action('admin_menu', function () {
 function promoforge_settings_page()
 {
     ?>
-    <div class="wrap flash-offers-settings-wrap">
-        <h1><?php esc_html_e('Flash Offers Settings', 'promoforge-smart-campaigns-for-woocommerce'); ?></h1>
+    <div class="wrap promoforge-offers-settings-wrap">
+        <h1><?php esc_html_e('Promoforge Offers Settings', 'promoforge-smart-campaigns-for-woocommerce'); ?></h1>
         <?php settings_errors(); ?>
         <form method="post" action="options.php">
             <?php
-            settings_fields('flash_offers_settings_group');
-            do_settings_sections('flash-offers-settings');
+            settings_fields('promoforge_offers_settings_group');
+            do_settings_sections('promoforge-offers-settings');
             submit_button('Apply');
             ?>
         </form>

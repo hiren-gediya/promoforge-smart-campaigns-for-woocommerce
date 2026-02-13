@@ -38,14 +38,14 @@ function promoforge_offer_thankyou_total_saving_notice($order_id)
         $sale_price = (float) $data['sale_price'];
 
         // Use helper functions to check if the product is part of an active offer.
-        $flash_offer_data = promoforge_get_offer_data($product);
+        $promoforge_offer_data = promoforge_get_offer_data($product);
         $bogo_offer_data = promoforge_get_bogo_offer_data($product);
 
         $original_price = $regular_price;
 
-        if ($flash_offer_data && 'active' === $flash_offer_data['status']) {
-            // For Flash Offers, the original price is based on the 'flash_override_type' setting.
-            $override_type = $flash_offer_data['flash_override_type'] ?? 'sale';
+        if ($promoforge_offer_data && 'active' === $promoforge_offer_data['status']) {
+            // For Flash Offers, the original price is based on the 'promoforge_override_type' setting.
+            $override_type = $promoforge_offer_data['promoforge_override_type'] ?? 'sale';
             if ('regular' === $override_type) {
                 $original_price = $regular_price;
             } else { // 'sale'
@@ -68,7 +68,7 @@ function promoforge_offer_thankyou_total_saving_notice($order_id)
 
     // ✅ Show message if any saving
     if ($total_saved > 0) {
-        $options = get_option('flash_offers_options');
+        $options = get_option('promoforge_offers_options');
         if (empty($options['message'])) {
             $options = get_option('bogo_offers_options');
         }
@@ -97,10 +97,10 @@ function promoforge_offer_order_item_price_html($item_name, $item, $is_visible)
         return $item_name;
 
     $price_html = '';
-    $flash_offer_data = promoforge_get_offer_data($product);
+    $promoforge_offer_data = promoforge_get_offer_data($product);
     $bogo_offer_data = promoforge_get_bogo_offer_data($product);
 
-    if ($flash_offer_data && 'active' === $flash_offer_data['status']) {
+    if ($promoforge_offer_data && 'active' === $promoforge_offer_data['status']) {
         $price_html = promoforge_get_price_html($product);
     } elseif ($bogo_offer_data && 'active' === $bogo_offer_data['status']) {
         $price_html = promoforge_bogo_offers_price_html_override($product->get_price_html(), $product);

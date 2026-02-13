@@ -42,19 +42,19 @@ function promoforge_bogo_products_box_callback($post)
     $buy_quantity = $bogo_data['buy_quantity'] ?? 1;
     $get_quantity = $bogo_data['get_quantity'] ?? 1;
 
-    // 1. Get all Flash Offer IDs (custom table: flash_offers)
+    // 1. Get all Flash Offer IDs (custom table: promoforge_offers)
     // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-    $flash_offer_ids = $wpdb->get_col("SELECT id FROM {$wpdb->prefix}promoforge_flash_offers");
+    $promoforge_offer_ids = $wpdb->get_col("SELECT id FROM {$wpdb->prefix}promoforge_offers");
 
-    $flash_product_ids = [];
-    if (!empty($flash_offer_ids)) {
+    $promoforge_product_ids = [];
+    if (!empty($promoforge_offer_ids)) {
         // 2. Get all product_ids linked to those flash offers
-        $placeholders = implode(',', array_fill(0, count($flash_offer_ids), '%d'));
+        $placeholders = implode(',', array_fill(0, count($promoforge_offer_ids), '%d'));
 
         // Prepare query safely
         $query = "SELECT product_id FROM {$wpdb->prefix}promoforge_offer_products WHERE offer_id IN ($placeholders)";
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
-        $flash_product_ids = $wpdb->get_col($wpdb->prepare($query, $flash_offer_ids));
+        $promoforge_product_ids = $wpdb->get_col($wpdb->prepare($query, $promoforge_offer_ids));
     }
 
     // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
@@ -67,7 +67,7 @@ function promoforge_bogo_products_box_callback($post)
     /**
      * 🔹 3. Build exclusion list
      */
-    $exclude_ids = array_merge($flash_product_ids, $bogo_product_ids);
+    $exclude_ids = array_merge($promoforge_product_ids, $bogo_product_ids);
 
     // Keep current post's own buy/get IDs allowed (so you can edit them)
     $exclude_ids = array_diff($exclude_ids, [$buy_product_id, $get_product_id]);
@@ -85,11 +85,11 @@ function promoforge_bogo_products_box_callback($post)
     wp_nonce_field('promoforge_bogo_details', 'promoforge_bogo_details_nonce');
     ?>
 
-    <div class="bogo-offer-configuration">
+    <div class="promoforge-bogo-offer-configuration">
         <p>
             <label
                 for="bogo_offer_type"><strong><?php esc_html_e('BOGO Offer Type:', 'promoforge-smart-campaigns-for-woocommerce'); ?></strong></label><br>
-            <select name="bogo_offer_type" id="bogo_offer_type" class="wao-admin-select-300">
+            <select name="bogo_offer_type" id="bogo_offer_type" class="promoforge-admin-select-300">
                 <option value="buy_x_get_y" <?php selected($offer_type, 'buy_x_get_y'); ?>>
                     <?php esc_html_e('Buy X Get Y (Different Products)', 'promoforge-smart-campaigns-for-woocommerce'); ?>
                 </option>
@@ -100,11 +100,11 @@ function promoforge_bogo_products_box_callback($post)
         </p>
 
         <div id="buy_x_get_y_fields"
-            class="bogo-type-fields <?php echo ($offer_type === 'buy_one_get_one') ? 'wao-display-none' : 'wao-display-block'; ?>">
+            class="bogo-type-fields <?php echo ($offer_type === 'buy_one_get_one') ? 'promoforge-display-none' : 'promoforge-display-block'; ?>">
             <p>
                 <label
                     for="bogo_buy_product"><strong><?php esc_html_e('Buy Product:', 'promoforge-smart-campaigns-for-woocommerce'); ?></strong></label><br>
-                <select name="bogo_buy_product" class="wao-width-full">
+                <select name="bogo_buy_product" class="promoforge-width-full">
                     <option value="">
                         <?php esc_html_e('Select Buy Product', 'promoforge-smart-campaigns-for-woocommerce'); ?>
                     </option>
@@ -120,13 +120,13 @@ function promoforge_bogo_products_box_callback($post)
                 <label
                     for="bogo_buy_quantity"><strong><?php esc_html_e('Buy Quantity:', 'promoforge-smart-campaigns-for-woocommerce'); ?></strong></label><br>
                 <input type="number" name="bogo_buy_quantity" value="<?php echo esc_attr($buy_quantity); ?>" min="1"
-                    class="wao-admin-input-200" />
+                    class="promoforge-admin-input-200" />
             </p>
 
             <p>
                 <label
                     for="bogo_get_product"><strong><?php esc_html_e('Get Product:', 'promoforge-smart-campaigns-for-woocommerce'); ?></strong></label><br>
-                <select name="bogo_get_product" class="wao-width-full">
+                <select name="bogo_get_product" class="promoforge-width-full">
                     <option value="">
                         <?php esc_html_e('Select Get Product', 'promoforge-smart-campaigns-for-woocommerce'); ?>
                     </option>
@@ -142,24 +142,24 @@ function promoforge_bogo_products_box_callback($post)
                 <label
                     for="bogo_get_quantity"><strong><?php esc_html_e('Get Quantity:', 'promoforge-smart-campaigns-for-woocommerce'); ?></strong></label><br>
                 <input type="number" name="bogo_get_quantity" value="<?php echo esc_attr($get_quantity); ?>" min="1"
-                    class="wao-admin-input-200" />
+                    class="promoforge-admin-input-200" />
             </p>
 
             <p>
                 <label
                     for="bogo_discount"><strong><?php esc_html_e('Discount (%):', 'promoforge-smart-campaigns-for-woocommerce'); ?></strong></label><br>
                 <input type="number" name="bogo_discount" value="<?php echo esc_attr($discount); ?>" min="0" max="100"
-                    class="wao-admin-input-200" />
+                    class="promoforge-admin-input-200" />
                 <em><?php esc_html_e('Set to 100 for free product, 0 for no discount', 'promoforge-smart-campaigns-for-woocommerce'); ?></em>
             </p>
         </div>
 
         <div id="buy_one_get_one_fields"
-            class="bogo-type-fields <?php echo ($offer_type === 'buy_one_get_one') ? 'wao-display-block' : 'wao-display-none'; ?>">
+            class="bogo-type-fields <?php echo ($offer_type === 'buy_one_get_one') ? 'promoforge-display-block' : 'promoforge-display-none'; ?>">
             <p>
                 <label
                     for="bogo_bogo_product"><strong><?php esc_html_e('Product:', 'promoforge-smart-campaigns-for-woocommerce'); ?></strong></label><br>
-                <select name="bogo_bogo_product" class="wao-admin-select-200">
+                <select name="bogo_bogo_product" class="promoforge-admin-select-200">
                     <option value=""><?php esc_html_e('Select Product', 'promoforge-smart-campaigns-for-woocommerce'); ?>
                     </option>
                     <?php foreach ($products as $product): ?>
@@ -179,14 +179,14 @@ function promoforge_bogo_products_box_callback($post)
             <label
                 for="bogo_start_date"><strong><?php esc_html_e('Start Date:', 'promoforge-smart-campaigns-for-woocommerce'); ?></strong></label><br>
             <input type="datetime-local" name="bogo_start_date" value="<?php echo esc_attr($start_date); ?>"
-                class="wao-admin-input-200" />
+                class="promoforge-admin-input-200" />
         </p>
 
         <p>
             <label
                 for="bogo_end_date"><strong><?php esc_html_e('End Date:', 'promoforge-smart-campaigns-for-woocommerce'); ?></strong></label><br>
             <input type="datetime-local" name="bogo_end_date" value="<?php echo esc_attr($end_date); ?>"
-                class="wao-admin-input-200" />
+                class="promoforge-admin-input-200" />
         </p>
     </div>
 
@@ -211,7 +211,7 @@ add_action('save_post_promoforge_bogo', function ($post_id) {
         return;
 
     // Prevent duplicate saves
-    $lock_key = 'bogo_saving_' . $post_id;
+    $lock_key = 'promoforge_bogo_saving_' . $post_id;
     if (get_transient($lock_key))
         return;
     set_transient($lock_key, true, 10);
@@ -298,7 +298,7 @@ add_action('before_delete_post', function ($post_id) {
 // --- Admin Columns for BOGO Offers ---
 
 // 1. Add Columns
-add_filter('manage_bogo_offer_posts_columns', 'promoforge_add_bogo_admin_columns');
+add_filter('manage_promoforge_bogo_posts_columns', 'promoforge_add_bogo_admin_columns');
 function promoforge_add_bogo_admin_columns($columns)
 {
     $new_columns = [];
@@ -318,7 +318,7 @@ function promoforge_add_bogo_admin_columns($columns)
 }
 
 // 2. Populate Columns
-add_action('manage_bogo_offer_posts_custom_column', 'promoforge_populate_bogo_admin_columns', 10, 2);
+add_action('manage_promoforge_bogo_posts_custom_column', 'promoforge_populate_bogo_admin_columns', 10, 2);
 function promoforge_populate_bogo_admin_columns($column, $post_id)
 {
     global $wpdb;
@@ -387,7 +387,7 @@ function promoforge_populate_bogo_admin_columns($column, $post_id)
 }
 
 // 3. Make Columns Sortable
-add_filter('manage_edit-bogo_offer_sortable_columns', 'promoforge_sortable_bogo_admin_columns');
+add_filter('manage_edit-promoforge_bogo_sortable_columns', 'promoforge_sortable_bogo_admin_columns');
 function promoforge_sortable_bogo_admin_columns($columns)
 {
     $columns['offer_type'] = 'offer_type';

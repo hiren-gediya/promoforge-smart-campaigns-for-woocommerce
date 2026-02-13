@@ -3,7 +3,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-// In flash-functions.php
+// In promoforge-functions.php
 register_activation_hook(__FILE__, 'promoforge_activate_plugin');
 
 // Activation hook function
@@ -27,6 +27,9 @@ function promoforge_check_table_creation()
     }
 }
 
+// FORCE create tables on admin load (temporary to fix missing table)
+// add_action('admin_init', 'promoforge_create_database_tables');
+
 // create tables in database
 function promoforge_create_database_tables()
 {
@@ -34,12 +37,12 @@ function promoforge_create_database_tables()
 
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
-    // Check if we need to migrate existing flash_offer_categories table
+    // Check if we need to migrate existing promoforge_offer_categories table
     promoforge_migrate_categories_table();
 
     $tables = [
-        'promoforge_flash_offers' => "
-            CREATE TABLE {$wpdb->prefix}promoforge_flash_offers (
+        'promoforge_offers' => "
+            CREATE TABLE {$wpdb->prefix}promoforge_offers (
                 id bigint(20) NOT NULL AUTO_INCREMENT,
                 post_id bigint(20) NOT NULL,
                 offer_type varchar(50) NOT NULL DEFAULT 'flash',
@@ -102,7 +105,7 @@ function promoforge_create_database_tables()
     }
 }
 
-// Migrate existing flash_offer_categories table to include product_id
+// Migrate existing promoforge_offer_categories table to include product_id
 function promoforge_migrate_categories_table()
 {
     global $wpdb;
@@ -143,12 +146,12 @@ function promoforge_migrate_categories_table()
     }
 }
 
-// Migrate flash_offers table to include use_offers column
+// Migrate promoforge_offers table to include use_offers column
 function promoforge_migrate_use_offers_column()
 {
     global $wpdb;
 
-    $table_name = $wpdb->prefix . 'promoforge_flash_offers';
+    $table_name = $wpdb->prefix . 'promoforge_offers';
 
     // Check if table exists
     // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
@@ -158,12 +161,12 @@ function promoforge_migrate_use_offers_column()
 
     // Check if use_offers column already exists
     // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-    $column_exists = $wpdb->get_results("SHOW COLUMNS FROM {$wpdb->prefix}promoforge_flash_offers LIKE 'use_offers'");
+    $column_exists = $wpdb->get_results("SHOW COLUMNS FROM {$wpdb->prefix}promoforge_offers LIKE 'use_offers'");
 
     if (empty($column_exists)) {
         // Add use_offers column
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.DirectDatabaseQuery.NoCaching
-        $wpdb->query("ALTER TABLE {$wpdb->prefix}promoforge_flash_offers ADD COLUMN use_offers int(11) NOT NULL DEFAULT 1");
+        $wpdb->query("ALTER TABLE {$wpdb->prefix}promoforge_offers ADD COLUMN use_offers int(11) NOT NULL DEFAULT 1");
     }
 }
 
@@ -221,7 +224,7 @@ function promoforge_ensure_tables_exist($force_check = false)
     }
 
     $required_tables = [
-        'promoforge_flash_offers',
+        'promoforge_offers',
         'promoforge_offer_products',
         'promoforge_offer_categories',
         'promoforge_bogo_offers'
@@ -260,7 +263,7 @@ function promoforge_tables_exist()
     return promoforge_ensure_tables_exist();
 }
 
-// In flash-offers-plugin.php
+// In promoforge-offers-plugin.php
 add_action('plugins_loaded', 'promoforge_emergency_table_check');
 
 // Simplified emergency table check using consolidated function
@@ -287,7 +290,7 @@ function promoforge_uninstall()
 
     global $wpdb;
 
-    // 1. FIRST: Delete all flash_offer posts and their meta
+    // 1. FIRST: Delete all promoforge_offer posts and their meta
     // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
     $posts = $wpdb->get_col("SELECT ID FROM {$wpdb->posts} WHERE post_type = 'promoforge_flash'");
 
@@ -297,7 +300,7 @@ function promoforge_uninstall()
 
     // 2. Delete plugin tables
     $tables = [
-        'promoforge_flash_offers',
+        'promoforge_offers',
         'promoforge_offer_products',
         'promoforge_offer_categories',
         'promoforge_bogo_offers'
@@ -310,7 +313,7 @@ function promoforge_uninstall()
     }
 
     // 3. Delete options
-    delete_option('flash_offers_options');
+    delete_option('promoforge_offers_options');
     delete_option('promoforge_check_tables');
 
     // 4. Clean up any remaining postmeta (optional but recommended)
@@ -324,10 +327,10 @@ function promoforge_uninstall()
 }
 add_action('admin_menu', function () {
     add_menu_page(
-        esc_html__('Offers', 'promoforge-smart-campaigns-for-woocommerce'),          // Page title
-        esc_html__('Offers', 'promoforge-smart-campaigns-for-woocommerce'),          // Menu title
+        esc_html__('Promoforge Offers', 'promoforge-smart-campaigns-for-woocommerce'),          // Page title
+        esc_html__('Promoforge Offers', 'promoforge-smart-campaigns-for-woocommerce'),          // Menu title
         'manage_options',  // Capability
-        'offers',          // Menu slug (used as parent slug above)
+        'promoforge-offers',          // Menu slug (used as parent slug above)
         '',                // No callback, because CPTs handle their own screens
         'dashicons-clock', // Icon
         25                 // Position
@@ -338,14 +341,14 @@ add_action('admin_menu', function () {
 add_action('init', function () {
     register_post_type('promoforge_flash', [
         'labels' => [
-            'name' => esc_html__('Flash Offers', 'promoforge-smart-campaigns-for-woocommerce'),
-            'singular_name' => esc_html__('Flash Offer', 'promoforge-smart-campaigns-for-woocommerce'),
+            'name' => esc_html__('Offers', 'promoforge-smart-campaigns-for-woocommerce'),
+            'singular_name' => esc_html__('Offer', 'promoforge-smart-campaigns-for-woocommerce'),
         ],
         'public' => false,
         'show_ui' => true,
         'supports' => ['title'],
         'menu_icon' => 'dashicons-clock', // will be ignored since we're grouping
-        'show_in_menu' => 'offers',       // attach under Offers menu
+        'show_in_menu' => 'promoforge-offers',       // attach under Offers menu
     ]);
 });
 
@@ -360,119 +363,119 @@ add_action('init', function () {
         'show_ui' => true,
         'supports' => ['title'],
         'menu_icon' => 'dashicons-clock',
-        'show_in_menu' => 'offers',       // same parent
+        'show_in_menu' => 'promoforge-offers',       // same parent
     ]);
 });
 
 
 // Register settings
 add_action('admin_init', function () {
-    register_setting('flash_offers_settings_group', 'flash_offers_options', ['sanitize_callback' => 'promoforge_sanitize_options']);
+    register_setting('promoforge_offers_settings_group', 'promoforge_offers_options', ['sanitize_callback' => 'promoforge_sanitize_options']);
 
     add_settings_section(
-        'flash_offers_main_section',
+        'promoforge_offers_main_section',
         '',
         '__return_null',
-        'flash-offers-settings'
+        'promoforge-offers-settings'
     );
 
     add_settings_field(
-        'flash_offer_message',
-        esc_html__('Flash Offer Message', 'promoforge-smart-campaigns-for-woocommerce'),
+        'promoforge_offer_message',
+        esc_html__('Offer Message', 'promoforge-smart-campaigns-for-woocommerce'),
         'promoforge_message_field_callback',
-        'flash-offers-settings',
-        'flash_offers_main_section'
+        'promoforge-offers-settings',
+        'promoforge_offers_main_section'
     );
 
     // Display locations
     add_settings_field(
-        'flash_offer_locations',
+        'promoforge_offer_locations',
         esc_html__('Badge Display Locations', 'promoforge-smart-campaigns-for-woocommerce'),
         'promoforge_locations_field_callback',
-        'flash-offers-settings',
-        'flash_offers_main_section'
+        'promoforge-offers-settings',
+        'promoforge_offers_main_section'
     );
 
     // Add countdown locations to settings
     add_settings_field(
-        'flash_offer_countdown_locations',
+        'promoforge_offer_countdown_locations',
         esc_html__('Countdown Display Locations', 'promoforge-smart-campaigns-for-woocommerce'),
         'promoforge_countdown_locations_field_callback',
-        'flash-offers-settings',
-        'flash_offers_main_section'
+        'promoforge-offers-settings',
+        'promoforge_offers_main_section'
     );
 
     // Badge style
     add_settings_field(
-        'flash_offer_active_badge_text',
+        'promoforge_offer_active_badge_text',
         esc_html__('Active Badge Text', 'promoforge-smart-campaigns-for-woocommerce'),
         'promoforge_active_badge_text_callback',
-        'flash-offers-settings',
-        'flash_offers_main_section'
+        'promoforge-offers-settings',
+        'promoforge_offers_main_section'
     );
 
     add_settings_field(
-        'flash_offer_upcoming_badge_text',
+        'promoforge_offer_upcoming_badge_text',
         esc_html__('Upcoming Badge Text', 'promoforge-smart-campaigns-for-woocommerce'),
         'promoforge_upcoming_badge_text_callback',
-        'flash-offers-settings',
-        'flash_offers_main_section'
+        'promoforge-offers-settings',
+        'promoforge_offers_main_section'
     );
 
     add_settings_field(
-        'flash_offer_special_badge_text',
+        'promoforge_offer_special_badge_text',
         esc_html__('Special Badge Text', 'promoforge-smart-campaigns-for-woocommerce'),
         'promoforge_special_badge_text_callback',
-        'flash-offers-settings',
-        'flash_offers_main_section'
+        'promoforge-offers-settings',
+        'promoforge_offers_main_section'
     );
 
     add_settings_field(
-        'flash_offer_badge_bg_color',
+        'promoforge_offer_badge_bg_color',
         esc_html__('Badge Background Color', 'promoforge-smart-campaigns-for-woocommerce'),
         'promoforge_render_color_picker',
-        'flash-offers-settings',
-        'flash_offers_main_section'
+        'promoforge-offers-settings',
+        'promoforge_offers_main_section'
     );
 
     add_settings_field(
-        'flash_offer_override_price_type',
+        'promoforge_offer_override_price_type',
         esc_html__('Override Price Type For Flash Offers', 'promoforge-smart-campaigns-for-woocommerce'),
         'promoforge_render_price_type_field',
-        'flash-offers-settings',
-        'flash_offers_main_section'
+        'promoforge-offers-settings',
+        'promoforge_offers_main_section'
     );
 
     // Add countdown format selection field
     add_settings_field(
-        'flash_offer_countdown_format',
+        'promoforge_offer_countdown_format',
         esc_html__('Countdown Display Format', 'promoforge-smart-campaigns-for-woocommerce'),
         'promoforge_countdown_format_field_callback',
-        'flash-offers-settings',
-        'flash_offers_main_section'
+        'promoforge-offers-settings',
+        'promoforge_offers_main_section'
     );
 
     add_settings_field(
-        'bogo_offer_badge',
+        'promoforge_bogo_offer_badge',
         esc_html__('BOGO Offer Badge Text', 'promoforge-smart-campaigns-for-woocommerce'),
         'promoforge_bogo_offer_badge_callback',
-        'flash-offers-settings',
-        'flash_offers_main_section'
+        'promoforge-offers-settings',
+        'promoforge_offers_main_section'
     );
     add_settings_field(
-        'bogo_offer_override_price_type',
+        'promoforge_bogo_offer_override_price_type',
         esc_html__('Override Price Type For BOGO Offers', 'promoforge-smart-campaigns-for-woocommerce'),
         'promoforge_bogo_offer_render_price_type_field',
-        'flash-offers-settings',
-        'flash_offers_main_section'
+        'promoforge-offers-settings',
+        'promoforge_offers_main_section'
     );
 
     add_settings_field(
-        'flash_offer_variable_product_display',
+        'promoforge_offer_variable_product_display',
         esc_html__('Product Details Display', 'promoforge-smart-campaigns-for-woocommerce'),
         'promoforge_variable_product_display_callback',
-        'flash-offers-settings',
-        'flash_offers_main_section'
+        'promoforge-offers-settings',
+        'promoforge_offers_main_section'
     );
 
 });
@@ -483,8 +486,8 @@ function promoforge_sanitize_options($input)
     $new_input = [];
     if (isset($input['message']))
         $new_input['message'] = sanitize_textarea_field($input['message']);
-    if (isset($input['flash_override_type']))
-        $new_input['flash_override_type'] = sanitize_text_field($input['flash_override_type']);
+    if (isset($input['promoforge_override_type']))
+        $new_input['promoforge_override_type'] = sanitize_text_field($input['promoforge_override_type']);
     // Add other fields as necessary
     return $input; // Returning input for now to preserve all data, but normally should be explicit
 }
@@ -507,7 +510,7 @@ function promoforge_get_offer_data($product)
     // Check tables safely
     if (
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-        !$wpdb->get_var("SHOW TABLES LIKE '{$wpdb->prefix}promoforge_flash_offers'") ||
+        !$wpdb->get_var("SHOW TABLES LIKE '{$wpdb->prefix}promoforge_offers'") ||
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         !$wpdb->get_var("SHOW TABLES LIKE '{$wpdb->prefix}promoforge_offer_products'")
     ) {
@@ -518,7 +521,7 @@ function promoforge_get_offer_data($product)
     // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
     $offers = $wpdb->get_results(
         $wpdb->prepare(
-            "SELECT o.* FROM {$wpdb->prefix}promoforge_flash_offers o
+            "SELECT o.* FROM {$wpdb->prefix}promoforge_offers o
              JOIN {$wpdb->prefix}promoforge_offer_products p ON o.id = p.offer_id
              JOIN {$wpdb->posts} wp ON o.post_id = wp.ID
              WHERE p.product_id = %d
@@ -535,13 +538,33 @@ function promoforge_get_offer_data($product)
     }
 
     // Get settings once
-    $options = get_option('flash_offers_options');
+    $options = get_option('promoforge_offers_options');
     $bg_color = $options['badge_bg_color'] ?? '#00a99d';
-    $locations = $options['locations'] ?? [];
-    $countdown_locations = $options['countdown_locations'] ?? [];
-    $flash_override_type = $options['flash_override_type'] ?? 'sale';
+
+    // Default locations should be ON for main pages if never saved
+    if ($options === false) {
+        $locations = [
+            'shop_loop' => 1,
+            'product_page' => 1,
+            'category_page' => 1,
+            'home_page' => 1,
+            'other_page' => 1,
+        ];
+        $countdown_locations = [
+            'shop_loop' => 1,
+            'product_page' => 1,
+            'category_page' => 1,
+            'home_page' => 1,
+            'other_page' => 1,
+        ];
+    } else {
+        $locations = $options['locations'] ?? [];
+        $countdown_locations = $options['countdown_locations'] ?? [];
+    }
+
+    $promoforge_override_type = $options['promoforge_override_type'] ?? 'sale';
     $countdown_format = $options['countdown_format'] ?? 'format1';
-    $bogo_format = $options['bogo_format'] ?? 'defualt';
+    $bogo_format = $options['bogo_format'] ?? 'default';
 
     // Badge texts
     $active_badge_text = $options['active_badge_text'] ?? '';
@@ -624,7 +647,7 @@ function promoforge_get_offer_data($product)
             'badge_text' => $badge_text,
             'locations' => $locations,
             'countdown_locations' => $countdown_locations,
-            'flash_override_type' => $flash_override_type,
+            'promoforge_override_type' => $promoforge_override_type,
             'countdown_format' => $countdown_format,
             'bogo_format' => $bogo_format,
             'remaining_usage' => isset($limit) && isset($past_usage) ? max(0, $limit - $past_usage) : 9999,
@@ -666,12 +689,12 @@ function promoforge_discount_price($price, $product)
         return $price;
     }
 
-    $flash_override_type = $offer_data['flash_override_type'];
+    $promoforge_override_type = $offer_data['promoforge_override_type'];
 
     $data = $product->get_data();
     $sale_price = $data['sale_price'];
     $regular_price = $data['regular_price'];
-    $base_price = ($flash_override_type === 'sale' && $sale_price > 0) ? $sale_price : $regular_price;
+    $base_price = ($promoforge_override_type === 'sale' && $sale_price > 0) ? $sale_price : $regular_price;
     if ($base_price <= 0)
         return $price;
 
@@ -724,11 +747,11 @@ function promoforge_get_price_html($product)
     if (!$offer_data || $offer_data['status'] !== 'active') {
         return $product->get_price_html();
     }
-    $flash_override_type = $offer_data['flash_override_type'] ?? 'sale';
+    $promoforge_override_type = $offer_data['promoforge_override_type'] ?? 'sale';
     $data = $product->get_data();
     $sale_price = $data['sale_price'];
     $regular_price = $data['regular_price'];
-    $base_price = ($flash_override_type === 'sale' && $sale_price > 0) ? $sale_price : $regular_price;
+    $base_price = ($promoforge_override_type === 'sale' && $sale_price > 0) ? $sale_price : $regular_price;
     $discounted_price = $product->get_price();
 
     if ($base_price && $discounted_price < $base_price) {
@@ -787,7 +810,7 @@ function promoforge_show_discounted_price_html($price_html, $product)
         }
     }
 
-    $flash_override_type = $offer_data['flash_override_type'] ?? 'sale';
+    $promoforge_override_type = $offer_data['promoforge_override_type'] ?? 'sale';
     // 🔷 ACTIVE — Show discounted price
     if ($offer_data['status'] === 'active') {
         if ($product->is_type('variable')) {
@@ -803,7 +826,7 @@ function promoforge_show_discounted_price_html($price_html, $product)
                 $sale_price = (float) $data['sale_price'];
                 $regular_price = (float) $data['regular_price'];
 
-                $base_price = ($flash_override_type === 'sale' && $sale_price > 0) ? $sale_price : $regular_price;
+                $base_price = ($promoforge_override_type === 'sale' && $sale_price > 0) ? $sale_price : $regular_price;
 
                 if ($base_price <= 0)
                     continue;
@@ -826,7 +849,7 @@ function promoforge_show_discounted_price_html($price_html, $product)
             $sale_price = (float) $data['sale_price'];
             $regular_price = (float) $data['regular_price'];
 
-            $base_price = ($flash_override_type === 'sale' && $sale_price > 0) ? $sale_price : $regular_price;
+            $base_price = ($promoforge_override_type === 'sale' && $sale_price > 0) ? $sale_price : $regular_price;
 
             if ($base_price > 0) {
                 $discounted_price = promoforge_calculate_discount($base_price, $offer_data['discount']);
@@ -944,27 +967,29 @@ function promoforge_validate_add_to_cart_login($passed, $product_id, $quantity)
 
 function promoforge_remove_woocommerce_variations_form()
 {
-  // Variable
-  remove_action('woocommerce_variable_add_to_cart', 'woocommerce_variable_add_to_cart', 30);
-  // Simple
-  remove_action('woocommerce_simple_add_to_cart', 'woocommerce_simple_add_to_cart', 30);
-  // Grouped
-  remove_action('woocommerce_grouped_add_to_cart', 'woocommerce_grouped_add_to_cart', 30);
-  // External
-  remove_action('woocommerce_external_add_to_cart', 'woocommerce_external_add_to_cart', 30);
-  
-  // Common
-  remove_action('woocommerce_single_product_summary', 'woocommerce_template_single_price', 10);
-  remove_action('woocommerce_single_product_summary', 'woocommerce_template_single_meta', 40);
+    // Variable
+    remove_action('woocommerce_variable_add_to_cart', 'woocommerce_variable_add_to_cart', 30);
+    // Simple
+    remove_action('woocommerce_simple_add_to_cart', 'woocommerce_simple_add_to_cart', 30);
+    // Grouped
+    remove_action('woocommerce_grouped_add_to_cart', 'woocommerce_grouped_add_to_cart', 30);
+    // External
+    remove_action('woocommerce_external_add_to_cart', 'woocommerce_external_add_to_cart', 30);
+
+    // Common
+    remove_action('woocommerce_single_product_summary', 'woocommerce_template_single_price', 10);
+    remove_action('woocommerce_single_product_summary', 'woocommerce_template_single_meta', 40);
 }
 
-function promoforge_should_use_table_display() {
-    $options = get_option('flash_offers_options');
+function promoforge_should_use_table_display()
+{
+    $options = get_option('promoforge_offers_options');
     return isset($options['variable_product_display']) && $options['variable_product_display'] === 'table';
 }
 
 add_action('wp', 'promoforge_maybe_remove_variations_form');
-function promoforge_maybe_remove_variations_form() {
+function promoforge_maybe_remove_variations_form()
+{
     if (promoforge_should_use_table_display()) {
         promoforge_remove_woocommerce_variations_form();
         // Remove theme's table if it exists
@@ -973,18 +998,19 @@ function promoforge_maybe_remove_variations_form() {
 }
 
 add_action('woocommerce_single_product_summary', 'promoforge_maybe_add_custom_display', 25);
-function promoforge_maybe_add_custom_display() {
+function promoforge_maybe_add_custom_display()
+{
     if (promoforge_should_use_table_display()) {
         promoforge_custom_display_variable_product();
     }
 }
 function promoforge_custom_display_variable_product()
 {
-  global $product;
+    global $product;
 
-  // 1. VARIABLE PRODUCT
-  if ($product->is_type('variable')) {
-    echo '<table class="variable-product-table">
+    // 1. VARIABLE PRODUCT
+    if ($product->is_type('variable')) {
+        echo '<table class="variable-product-table">
       <thead>
         <tr>
           <th>Variation</th>
@@ -996,83 +1022,87 @@ function promoforge_custom_display_variable_product()
       </thead>
       <tbody>';
 
-    $available_variations = $product->get_available_variations();
-    foreach ($available_variations as $variation) {
-      $variation_obj = wc_get_product($variation['variation_id']);
-      $price = $variation_obj->get_price();
-      $attributes = $variation['attributes'];
+        /** @var WC_Product_Variable $product */
+        $available_variations = $product->get_available_variations();
+        foreach ($available_variations as $variation) {
+            $variation_obj = wc_get_product($variation['variation_id']);
+            $price = $variation_obj->get_price();
+            $attributes = $variation['attributes'];
 
-      $is_in_stock = $variation_obj && $variation_obj->is_in_stock();
-      
-      // Calculate Price Per Unit (only if pa_pack-size exists)
-      $pack_size_val = $attributes['attribute_pa_pack-size'] ?? '';
-      
-      // Sanitize pack size to get numeric part (e.g. "100 Tablets" -> 100)
-      $pack_qty = (int) preg_replace('/[^0-9]/', '', $pack_size_val);
-      $price_per_piece = ($pack_qty > 0) ? number_format($price / $pack_qty, 2) : '';
+            $is_in_stock = $variation_obj && $variation_obj->is_in_stock();
 
-      // Generate Variation Description (e.g. "Color: Blue, Size: Large")
-      $variation_specs = [];
-      foreach ($attributes as $attr_name => $attr_value) {
-          // Attribute names usually come as 'attribute_pa_color' or 'attribute_color'
-          // Remove prefix to get slug
-          $taxonomy = str_replace('attribute_', '', $attr_name);
-          
-          // Try to get proper label name from taxonomy
-          $label = wc_attribute_label($taxonomy, $product);
-          
-          // Try to get proper term name
-          $value = $attr_value;
-          if (taxonomy_exists($taxonomy)) {
-              $term = get_term_by('slug', $attr_value, $taxonomy);
-              if ($term) {
-                  $value = $term->name;
-              }
-          }
-          
-          if (!empty($value)) {
-             $variation_specs[] = ucwords($value);
-          }
-      }
-      $variation_html = implode(', ', $variation_specs);
+            // Calculate Price Per Unit (only if pa_pack-size exists)
+            $pack_size_val = $attributes['attribute_pa_pack-size'] ?? '';
 
-      echo '<tr>';
-      echo '<td>' . ((!empty($variation_html)) ? esc_html($variation_html) : esc_html__('Default', 'promoforge-smart-campaigns-for-woocommerce')) . '</td>';
-      echo '<td class="price">' . wp_kses_post(wc_price($price)) . '</td>';
-      
-      echo '<td class="price-unit">';
-      if (is_numeric($price_per_piece)) {
-          echo wp_kses_post(wc_price($price_per_piece)) . ' /Piece';
-      } else {
-          echo wp_kses_post(wc_price($price)) . ' /Piece';
-      }
-      echo '</td>';
-      
-      echo '<td class="list-quantity"><input type="number" value="1" min="1" class="qty" id="qty_' . esc_attr($variation['variation_id']) . '" name="quantity_' . esc_attr($variation['variation_id']) . '"></td>';
-      echo '<td>';
-      ?>
-      <form class="cart" action="<?php echo esc_url($product->get_permalink()); ?>" method="post">
-        <input type="hidden" name="add-to-cart" value="<?php echo esc_attr($product->get_id()); ?>" />
-        <input type="hidden" name="variation_id" value="<?php echo esc_attr($variation['variation_id']); ?>" />
-        <?php
-        foreach ($variation['attributes'] as $attribute_name => $attribute_value) {
-          echo '<input type="hidden" name="attribute_' . esc_attr(str_replace('attribute_', '', $attribute_name)) . '" value="' . esc_attr($attribute_value) . '" />';
+            // Sanitize pack size to get numeric part (e.g. "100 Tablets" -> 100)
+            $pack_qty = (int) preg_replace('/[^0-9]/', '', $pack_size_val);
+            $price_per_piece = ($pack_qty > 0) ? number_format($price / $pack_qty, 2) : '';
+
+            // Generate Variation Description (e.g. "Color: Blue, Size: Large")
+            $variation_specs = [];
+            foreach ($attributes as $attr_name => $attr_value) {
+                // Attribute names usually come as 'attribute_pa_color' or 'attribute_color'
+                // Remove prefix to get slug
+                $taxonomy = str_replace('attribute_', '', $attr_name);
+
+                // Try to get proper label name from taxonomy
+                $label = wc_attribute_label($taxonomy, $product);
+
+                // Try to get proper term name
+                $value = $attr_value;
+                if (taxonomy_exists($taxonomy)) {
+                    $term = get_term_by('slug', $attr_value, $taxonomy);
+                    if ($term) {
+                        $value = $term->name;
+                    }
+                }
+
+                if (!empty($value)) {
+                    $variation_specs[] = ucwords($value);
+                }
+            }
+            $variation_html = implode(', ', $variation_specs);
+
+            echo '<tr>';
+            echo '<td>' . ((!empty($variation_html)) ? esc_html($variation_html) : esc_html__('Default', 'promoforge-smart-campaigns-for-woocommerce')) . '</td>';
+            echo '<td class="price">' . wp_kses_post(wc_price($price)) . '</td>';
+
+            echo '<td class="price-unit">';
+            if (is_numeric($price_per_piece)) {
+                echo wp_kses_post(wc_price($price_per_piece)) . ' /Piece';
+            } else {
+                echo wp_kses_post(wc_price($price)) . ' /Piece';
+            }
+            echo '</td>';
+
+            echo '<td class="list-quantity"><input type="number" value="1" min="1" class="qty" id="qty_' . esc_attr($variation['variation_id']) . '" name="quantity_' . esc_attr($variation['variation_id']) . '"></td>';
+            echo '<td>';
+            ?>
+            <form class="cart" action="<?php echo esc_url($product->get_permalink()); ?>" method="post">
+                <input type="hidden" name="add-to-cart" value="<?php echo esc_attr($product->get_id()); ?>" />
+                <input type="hidden" name="variation_id" value="<?php echo esc_attr($variation['variation_id']); ?>" />
+                <?php
+                foreach ($variation['attributes'] as $attribute_name => $attribute_value) {
+                    echo '<input type="hidden" name="attribute_' . esc_attr(str_replace('attribute_', '', $attribute_name)) . '" value="' . esc_attr($attribute_value) . '" />';
+                }
+                ?>
+                <input type="hidden" name="quantity" id="quantity_<?php echo esc_attr($variation['variation_id']); ?>" value="1" />
+                <?php
+                $onclick = $is_in_stock ? 'onclick="updateQuantity(' . esc_js($variation['variation_id']) . ')"' : '';
+                ?>
+                <button type="submit" class="single_add_to_cart_button button" <?php disabled(!$is_in_stock); ?>             <?php echo $onclick; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+                    <?php echo $is_in_stock ? esc_html($product->single_add_to_cart_text()) : esc_html__('Out of stock', 'promoforge-smart-campaigns-for-woocommerce'); ?>
+                </button>
+            </form>
+            <?php
+            echo '</td>';
+            echo '</tr>';
         }
-        ?>
-        <input type="hidden" name="quantity" id="quantity_<?php echo esc_attr($variation['variation_id']); ?>" value="1" />
-        <button type="submit" class="single_add_to_cart_button button" <?php echo !$is_in_stock ? "disabled" : ""; ?>       <?php echo $is_in_stock ? 'onclick="updateQuantity(' . esc_js($variation['variation_id']) . ')"' : ''; ?>>
-            <?php echo $is_in_stock ? esc_html($product->single_add_to_cart_text()) : esc_html__('Out of stock', 'promoforge-smart-campaigns-for-woocommerce'); ?>
-        </button>
-      </form>
-      <?php
-      echo '</td>';
-      echo '</tr>';
+        echo '</tbody></table>';
     }
-    echo '</tbody></table>';
-  } 
-  // 2. SIMPLE PRODUCT
-  elseif ($product->is_type('simple')) {
-      echo '<table class="variable-product-table">
+    // 2. SIMPLE PRODUCT
+    elseif ($product->is_type('simple')) {
+        echo '<table class="variable-product-table">
       <thead>
         <tr>
           <th>Price</th>
@@ -1083,36 +1113,39 @@ function promoforge_custom_display_variable_product()
       </thead>
       <tbody>';
 
-      $price = $product->get_price();
-      $is_in_stock = $product->is_in_stock();
-      $pack_size_val = $product->get_attribute('pa_pack-size'); 
+        $price = $product->get_price();
+        $is_in_stock = $product->is_in_stock();
+        $pack_size_val = $product->get_attribute('pa_pack-size');
 
-      echo '<tr>';
-      echo '<td class="price">' . wp_kses_post(wc_price($price)) . '</td>';
-      
-      echo '<td class="price-unit">';
-      if (is_numeric($price)) {
-          echo wp_kses_post(wc_price($price)) . ' /Piece';
-      } 
-      echo '</td>';
-      
-      echo '<td class="list-quantity"><input type="number" value="1" min="1" class="qty" id="qty_' . esc_attr($product->get_id()) . '" name="quantity"></td>';
-      echo '<td>';
-      ?>
-      <form class="cart" action="<?php echo esc_url($product->get_permalink()); ?>" method="post">
-        <input type="hidden" name="add-to-cart" value="<?php echo esc_attr($product->get_id()); ?>" />
-        <input type="hidden" name="quantity" id="quantity_<?php echo esc_attr($product->get_id()); ?>" value="1" />
-        <button type="submit" class="single_add_to_cart_button button" <?php echo !$is_in_stock ? "disabled" : ""; ?> <?php echo $is_in_stock ? 'onclick="updateQuantity(' . esc_js($product->get_id()) . ')"' : ''; ?>>
-            <?php echo $is_in_stock ? esc_html($product->single_add_to_cart_text()) : esc_html__('Out of stock', 'promoforge-smart-campaigns-for-woocommerce'); ?>
-        </button>
-      </form>
-      <?php
-      echo '</td></tr>';
-      echo '</tbody></table>';
-  }
-  // 3. GROUPED PRODUCT
-  elseif ($product->is_type('grouped')) {
-      echo '<table class="variable-product-table">
+        echo '<tr>';
+        echo '<td class="price">' . wp_kses_post(wc_price($price)) . '</td>';
+
+        echo '<td class="price-unit">';
+        if (is_numeric($price)) {
+            echo wp_kses_post(wc_price($price)) . ' /Piece';
+        }
+        echo '</td>';
+
+        echo '<td class="list-quantity"><input type="number" value="1" min="1" class="qty" id="qty_' . esc_attr($product->get_id()) . '" name="quantity"></td>';
+        echo '<td>';
+        ?>
+        <form class="cart" action="<?php echo esc_url($product->get_permalink()); ?>" method="post">
+            <input type="hidden" name="add-to-cart" value="<?php echo esc_attr($product->get_id()); ?>" />
+            <input type="hidden" name="quantity" id="quantity_<?php echo esc_attr($product->get_id()); ?>" value="1" />
+            <?php
+            $onclick = $is_in_stock ? 'onclick="updateQuantity(' . esc_js($product->get_id()) . ')"' : '';
+            ?>
+            <button type="submit" class="single_add_to_cart_button button" <?php disabled(!$is_in_stock); ?>         <?php echo $onclick; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+                <?php echo $is_in_stock ? esc_html($product->single_add_to_cart_text()) : esc_html__('Out of stock', 'promoforge-smart-campaigns-for-woocommerce'); ?>
+            </button>
+        </form>
+        <?php
+        echo '</td></tr>';
+        echo '</tbody></table>';
+    }
+    // 3. GROUPED PRODUCT
+    elseif ($product->is_type('grouped')) {
+        echo '<table class="variable-product-table">
       <thead>
         <tr>
           <th>Product</th>
@@ -1124,42 +1157,43 @@ function promoforge_custom_display_variable_product()
       </thead>
       <tbody>';
 
-      $children = $product->get_children();
-      foreach($children as $child_id) {
-          $child = wc_get_product($child_id);
-          if(!$child) continue;
-          
-          $price = $child->get_price();
-          $is_in_stock = $child->is_in_stock();
-          $pack_size_val = $child->get_attribute('pa_pack-size');
-          
-          // Sanitize pack size to get numeric part
-          $pack_qty = (int) preg_replace('/[^0-9]/', '', $pack_size_val);
-          $price_per_piece = ($pack_qty > 0) ? number_format($price / $pack_qty, 2) : '-';
+        $children = $product->get_children();
+        foreach ($children as $child_id) {
+            $child = wc_get_product($child_id);
+            if (!$child)
+                continue;
 
-          echo '<tr>';
-          echo '<td>' . esc_html($child->get_name()) . ' <small>(' . esc_html($pack_size_val) . ')</small></td>';
-          echo '<td class="price">' . wp_kses_post(wc_price($price)) . '</td>';
-          
-          echo '<td class="price-unit">';
-          if (is_numeric($price_per_piece)) {
-              echo wp_kses_post(wc_price($price_per_piece)) . ' /Piece';
-          } else {
-              echo '-';
-          }
-          echo '</td>';
-          
-          echo '<td class="list-quantity"><input type="number" value="1" min="1" class="qty" name="quantity[' . esc_attr($child_id) . ']"></td>';
-          echo '<td>';
-          // Grouped adds to cart via main form usually, but individual adds work too
-          echo '<a href="' . esc_url($child->add_to_cart_url()) . '" class="button single_add_to_cart_button">' . esc_html($child->add_to_cart_text()) . '</a>'; 
-          echo '</td></tr>';
-      }
-      echo '</tbody></table>';
-  }
-  // 4. EXTERNAL PRODUCT
-  elseif ($product->is_type('external')) {
-      echo '<table class="variable-product-table">
+            $price = $child->get_price();
+            $is_in_stock = $child->is_in_stock();
+            $pack_size_val = $child->get_attribute('pa_pack-size');
+
+            // Sanitize pack size to get numeric part
+            $pack_qty = (int) preg_replace('/[^0-9]/', '', $pack_size_val);
+            $price_per_piece = ($pack_qty > 0) ? number_format($price / $pack_qty, 2) : '-';
+
+            echo '<tr>';
+            echo '<td>' . esc_html($child->get_name()) . ' <small>(' . esc_html($pack_size_val) . ')</small></td>';
+            echo '<td class="price">' . wp_kses_post(wc_price($price)) . '</td>';
+
+            echo '<td class="price-unit">';
+            if (is_numeric($price_per_piece)) {
+                echo wp_kses_post(wc_price($price_per_piece)) . ' /Piece';
+            } else {
+                echo '-';
+            }
+            echo '</td>';
+
+            echo '<td class="list-quantity"><input type="number" value="1" min="1" class="qty" name="quantity[' . esc_attr($child_id) . ']"></td>';
+            echo '<td>';
+            // Grouped adds to cart via main form usually, but individual adds work too
+            echo '<a href="' . esc_url($child->add_to_cart_url()) . '" class="button single_add_to_cart_button">' . esc_html($child->add_to_cart_text()) . '</a>';
+            echo '</td></tr>';
+        }
+        echo '</tbody></table>';
+    }
+    // 4. EXTERNAL PRODUCT
+    elseif ($product->is_type('external')) {
+        echo '<table class="variable-product-table">
       <thead>
         <tr>
           <th>Description</th>
@@ -1171,30 +1205,17 @@ function promoforge_custom_display_variable_product()
       </thead>
       <tbody>';
 
-      $price = $product->get_price();
-      $pack_size_val = $product->get_attribute('pa_pack-size');
-      
-      echo '<tr>';
-      echo '<td>' . esc_html($pack_size_val) . '</td>';
-      echo '<td class="price">' . wp_kses_post(wc_price($price)) . '</td>';
-      echo '<td class="price-unit">-</td>';
-      echo '<td class="list-quantity">-</td>';
-      echo '<td>';
-      echo '<a href="' . esc_url($product->get_product_url()) . '" rel="nofollow" class="single_add_to_cart_button button">' . esc_html($product->get_button_text()) . '</a>';
-      echo '</td></tr>';
-      echo '</tbody></table>';
-  }
+        $price = $product->get_price();
+        $pack_size_val = $product->get_attribute('pa_pack-size');
 
-  // No closing bracket for the function-wide table since we closed individual tables
-  ?>
-  <script>
-    function updateQuantity(id) {
-        var qtyInput = document.getElementById('qty_' + id);
-        var hiddenInput = document.getElementById('quantity_' + id);
-        if(qtyInput && hiddenInput) {
-            hiddenInput.value = qtyInput.value;
-        }
+        echo '<tr>';
+        echo '<td>' . esc_html($pack_size_val) . '</td>';
+        echo '<td class="price">' . wp_kses_post(wc_price($price)) . '</td>';
+        echo '<td class="price-unit">-</td>';
+        echo '<td class="list-quantity">-</td>';
+        echo '<td>';
+        echo '<a href="' . esc_url($product->add_to_cart_url()) . '" rel="nofollow" class="single_add_to_cart_button button">' . esc_html($product->add_to_cart_text()) . '</a>';
+        echo '</td></tr>';
+        echo '</tbody></table>';
     }
-  </script>
-  <?php
 }

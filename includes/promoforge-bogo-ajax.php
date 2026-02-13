@@ -9,7 +9,7 @@ add_action('wp_ajax_nopriv_promoforge_bogo_add_to_cart', 'promoforge_handle_bogo
 
 function promoforge_handle_bogo_ajax_add_to_cart()
 {
-    check_ajax_referer('bogo_add_nonce', 'nonce');
+    check_ajax_referer('promoforge_bogo_nonce', 'nonce');
 
     $product_id = isset($_POST['product_id']) ? intval($_POST['product_id']) : 0;
     $variation_id = isset($_POST['variation_id']) ? intval($_POST['variation_id']) : 0;
@@ -36,7 +36,11 @@ function promoforge_handle_bogo_ajax_add_to_cart()
     if ($added) {
         wp_send_json_success(['message' => esc_html__('Product added to cart successfully!', 'promoforge-smart-campaigns-for-woocommerce')]);
     } else {
-        wp_send_json_error(['message' => esc_html__('Could not add product to cart.', 'promoforge-smart-campaigns-for-woocommerce')]);
+        // Capture specific error from WooCommerce to help debugging
+        $errors = wc_get_notices('error');
+        $error_msg = !empty($errors) ? $errors[0]['notice'] : esc_html__('Could not add product to cart.', 'promoforge-smart-campaigns-for-woocommerce');
+        wc_clear_notices(); // Clear notices so they don't persist
+        wp_send_json_error(['message' => wp_strip_all_tags($error_msg)]);
     }
 }
 
