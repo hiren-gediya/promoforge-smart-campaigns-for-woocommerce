@@ -3,7 +3,7 @@
 Plugin Name: PromoForge Smart Campaigns for WooCommerce
 Description: A powerful WooCommerce plugin to create **Flash Offers, Upcoming Offers, Special Offers, and BOGO Offers**
 with full control over products, categories, discounts, and display logic.
-Version: 1.1
+Version: 1.0.0
 Author: Hiren Gediya
 Tested up to: 6.9
 Text Domain: promoforge-smart-campaigns-for-woocommerce
