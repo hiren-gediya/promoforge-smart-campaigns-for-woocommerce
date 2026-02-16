@@ -93,7 +93,7 @@ function promoforge_validate_cart_bogo()
             if ($has_any && $max_single_qty < $total_required) {
                 wc_add_notice(sprintf(
                     /* translators: 1: required quantity, 2: product title */
-                    esc_html__('To apply this BOGO offer, please add %1$d quantity of "%2$s" to your cart.', 'promoforge-smart-campaigns-for-woocommerce'),
+                    esc_html__('To apply this BOGO offer, please add %1$d quantity of "%2$s".', 'promoforge-smart-campaigns-for-woocommerce'),
                     $total_required,
                     get_the_title($buy_id)
                 ), 'error');
@@ -110,7 +110,7 @@ function promoforge_validate_cart_bogo()
             if ($has_buy_qty >= $buy_req && $has_get_qty < $get_req) {
                 wc_add_notice(sprintf(
                     /* translators: 1: required quantity, 2: product title */
-                    esc_html__('To apply this BOGO offer, Please add %1$d quantity of "%2$s" to your cart.', 'promoforge-smart-campaigns-for-woocommerce'),
+                    esc_html__('To apply this BOGO offer, Please add %1$d quantity of "%2$s" to your cart to receive the discount.', 'promoforge-smart-campaigns-for-woocommerce'),
                     $get_req,
                     get_the_title($get_id)
                 ), 'error');
