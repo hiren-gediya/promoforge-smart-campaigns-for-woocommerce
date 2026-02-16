@@ -1,3 +1,11 @@
+## 🚀 Live Plugin on WordPress.org
+
+PromoForge Smart Campaigns for WooCommerce is officially available on WordPress.org:
+
+👉 https://wordpress.org/plugins/promoforge-smart-campaigns-for-woocommerce/
+
+Feel free to install, test, and contribute.
+
 # PromoForge Smart Campaigns for WooCommerce
 
 PromoForge Smart Campaigns for WooCommerce is a powerful and flexible plugin that allows you to create **Flash Offers, Upcoming Offers, Special Offers, and BOGO (Buy One Get One & Buy X Get Y On Discount) Offers** with full control over products, categories, discounts, and offer visibility.
