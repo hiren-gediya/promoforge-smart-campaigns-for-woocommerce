@@ -1,10 +1,14 @@
-## 🚀 Live Plugin on WordPress.org
+![WordPress Plugin Version](https://img.shields.io/wordpress/plugin/v/promoforge-smart-campaigns-for-woocommerce)
+![WordPress Plugin Downloads](https://img.shields.io/wordpress/plugin/dt/promoforge-smart-campaigns-for-woocommerce)
+![WordPress Tested](https://img.shields.io/wordpress/plugin/tested/promoforge-smart-campaigns-for-woocommerce)
+
+## 🚀 Official WordPress.org Plugin
 
 PromoForge Smart Campaigns for WooCommerce is officially available on WordPress.org:
 
-👉 https://wordpress.org/plugins/promoforge-smart-campaigns-for-woocommerce/
+🔗 https://wordpress.org/plugins/promoforge-smart-campaigns-for-woocommerce/
 
-Feel free to install, test, and contribute.
+Install directly from your WordPress dashboard.
 
 # PromoForge Smart Campaigns for WooCommerce
 
