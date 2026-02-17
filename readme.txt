@@ -1,9 +1,9 @@
 === PromoForge Smart Campaigns for WooCommerce ===
 Contributors: hirengediya
-Tags: woocommerce, offers, bogo, flash sales, discounts
+Tags: woocommerce, bogo, flash sale, discount plugin, promotional offers
 Requires at least: 5.8
 Tested up to: 6.9
-Stable tag: trunk
+Stable tag: 1.0.0
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -12,18 +12,22 @@ Create powerful Flash Offers, Scheduled Offers, Special URL-based promotions, an
 
 == Description ==
 
-PromoForge Smart Campaigns for WooCommerce is a powerful and flexible promotional plugin that helps store owners create structured offer campaigns inside WooCommerce.
+PromoForge Smart Campaigns for WooCommerce is a powerful WooCommerce discount plugin that lets you create structured Flash Sales, BOGO deals, scheduled offers, and special URL-based promotions — without modifying global pricing rules.
 
-Create Flash Sales, Scheduled Offers, Special URL-Based Offers, and BOGO (Buy One Get One & Buy X Get Y) promotions with complete control over products, categories, discount logic, and visibility.
+If you are looking for a WooCommerce BOGO plugin, WooCommerce flash sale plugin, or an advanced WooCommerce discount rules system, PromoForge gives you full control over products, categories, timing, and campaign visibility.
 
 Designed for real-world WooCommerce stores, PromoForge ensures discounts are applied correctly on the product page, cart, and checkout — without affecting global pricing rules.
+
+Unlike simple discount plugins that override global pricing, PromoForge applies campaign-based pricing logic only where required.
+
+PromoForge is built for WooCommerce store owners who want structured promotional campaigns — not just basic discounts.
 
 === Key Features ===
 
 * Flash Offers with countdown timer support  
 * Upcoming Offers with scheduled start and end dates  
 * Special Offers displayed via shortcode  
-* BOGO Offers (Buy One Get One / Buy X Get Y with discount)  
+* BOGO Offers (Buy One Get One / Buy X Get Y discount logic)  
 * Category-based or product-based targeting  
 * Offer-specific pricing logic (no global price override)  
 * Discounts applied on:
@@ -47,7 +51,7 @@ Schedule campaigns to automatically activate and expire at a future date and tim
 Create exclusive URL-based offers and display them using shortcodes. Discounts apply only when accessed through the specific offer link.
 
 === BOGO Offers ===
-Create Buy One Get One or Buy X Get Y campaigns with quantity-based rules.
+Create Buy One Get One or Buy X Get Y campaigns with quantity-based discount rules applied directly in cart and checkout.
 
 === How It Works ===
 
@@ -57,7 +61,7 @@ Create Buy One Get One or Buy X Get Y campaigns with quantity-based rules.
 4. Define discount rules.
 5. The offer applies automatically based on configured conditions.
 
-= Global Settings Panel =
+=== Global Settings Panel ===
 
 PromoForge includes a centralized settings panel where store owners can:
 
@@ -67,7 +71,7 @@ PromoForge includes a centralized settings panel where store owners can:
 * Configure countdown display format
 * Override product pricing behavior
 * Customize the Thank You page savings message
-* Product display control for single product pages
+* Control single product display behavior
 
 === Perfect For ===
 
@@ -76,9 +80,15 @@ PromoForge includes a centralized settings panel where store owners can:
 * Marketing campaigns with limited-time discounts
 * Seasonal or scheduled promotional events
 
+=== Why Choose PromoForge? ===
+
+Unlike basic WooCommerce discount plugins that override global pricing, PromoForge applies campaign-based pricing logic only where required. This ensures accurate discount calculations on product pages, cart, and checkout — without interfering with regular pricing rules.
+
+PromoForge is ideal for store owners who want advanced WooCommerce discount rules with structured campaign management.
+
 == Installation ==
 
-1. Upload the plugin files to the `/wp-content/plugins/promoforge-smart-campaigns-for-woocommerce` directory, or install the plugin through the WordPress plugins screen directly.
+1. Upload the plugin files to the `/wp-content/plugins/promoforge-smart-campaigns-for-woocommerce` directory, or install the plugin through the WordPress Plugins screen.
 2. Activate the plugin through the 'Plugins' screen in WordPress.
 3. Use the 'PromoForge Offers' menu in the dashboard to manage offers and settings.
 
@@ -109,10 +119,10 @@ PromoForge includes a centralized settings panel where store owners can:
 == Frequently Asked Questions ==
 
 = Does this work with variable products? =
-Yes. The plugin fully supports simple and variable WooCommerce products.
+Yes. The plugin fully supports both simple and variable WooCommerce products.
 
 = Does the discount apply globally to all products? =
-No. Discounts are applied only to products assigned to a specific offer. It does not modify global WooCommerce pricing rules.
+No. Discounts are applied only to products assigned to a specific offer. Global WooCommerce pricing remains unchanged.
 
 = Can I schedule offers for future dates? =
 Yes. You can create Upcoming Offers with start and end dates. The offer automatically activates and expires based on the schedule.
